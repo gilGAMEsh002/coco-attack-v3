@@ -1,0 +1,29 @@
+{
+  "name": "cwe295_cocota_v9",
+  "created_at": "2026-05-12T11:34:58.636263+00:00",
+  "note": "Rebuilt from normalized template cocota_v9.md",
+  "author": "rebuild_prompts",
+  "task_subset": "data/tasks/cwe295.jsonl",
+  "fewshot_ids": [
+    "BigCodeBench/74",
+    "BigCodeBench/1136",
+    "BigCodeBench/1016",
+    "BigCodeBench/129"
+  ],
+  "baseline": "cocota_v9",
+  "has_cot": true,
+  "template": "prompts/templates/cwe295/cocota_v9.md",
+  "test_count": 33,
+  "attack_config": {
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "cot",
+      "code"
+    ],
+    "mode": "single_dimension"
+  },
+  "evaluation_config": {
+    "detector_id": "contains_verify_cert"
+  }
+}

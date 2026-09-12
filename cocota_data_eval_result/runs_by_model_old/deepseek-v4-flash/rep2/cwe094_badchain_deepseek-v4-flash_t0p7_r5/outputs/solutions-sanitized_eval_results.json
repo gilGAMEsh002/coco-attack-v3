@@ -1,0 +1,151 @@
+{
+  "date": "2026-05-17 09:54",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "def task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            item = ast.literal_eval(item)\n        counter.update(item.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 72, in test_invalid_json_structure\n  File \"__test__.py\", line 6, in task_func\nNameError: name 'ast' is not defined\n",
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 49, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 6, in task_func\nNameError: name 'ast' is not defined\n",
+          "test_with_string_repr_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 27, in test_with_string_repr_dicts\n  File \"__test__.py\", line 6, in task_func\nNameError: name 'ast' is not defined\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            item = ast.literal_eval(item)\n        counter.update(item.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 9, in task_func\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 110, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 109, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 83, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 74, in _convert_num\n    _raise_malformed_node(node)\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 71, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 1: <ast.Name object at 0x7ff4be6a4040>\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            item = ast.literal_eval(item)\n        counter.update(item.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 9, in task_func\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 110, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 109, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 83, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 74, in _convert_num\n    _raise_malformed_node(node)\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 71, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 1: <ast.Name object at 0x7ff4be6a4040>\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            item = ast.literal_eval(item)\n        counter.update(item.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 9, in task_func\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 110, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 109, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 83, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 74, in _convert_num\n    _raise_malformed_node(node)\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 71, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 1: <ast.Name object at 0x7ff4be6a4040>\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            d = ast.literal_eval(item)\n        else:\n            d = item\n        counter.update(d.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 54, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 9, in task_func\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 110, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 109, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 83, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 74, in _convert_num\n    _raise_malformed_node(node)\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 71, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 1: <ast.Name object at 0x7ff4be6a4040>\n"
+        }
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "def task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n    ax = sns.pairplot(df)\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in setUp\nNameError: name 'pd' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in setUp\nNameError: name 'pd' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in setUp\nNameError: name 'pd' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in setUp\nNameError: name 'pd' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in setUp\nNameError: name 'pd' is not defined\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n    ax = sns.pairplot(df)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n    g = sns.PairGrid(df)\n    g = g.map_upper(sns.scatterplot)\n    g = g.map_lower(sns.kdeplot)\n    g = g.map_diag(sns.histplot)\n    return df, g",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n    ax = sns.pairplot(df)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].map(ast.literal_eval)\n    ax = sns.pairplot(df)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    plt.show()\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(data=df, x='mean')\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not csv_files:\n        empty_df = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return empty_df, None\n    longest_file = max(csv_files, key=lambda x: len(x))\n    file_path = os.path.join(directory, longest_file)\n    df = pd.read_csv(file_path)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    ax = df['median'].hist()\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(directory):\n    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not csv_files:\n        df = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df, None\n    longest_file = max(csv_files, key=len)\n    file_path = os.path.join(directory, longest_file)\n    df = pd.read_csv(file_path)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    fig, ax = plt.subplots()\n    ax.hist(df['median'], bins=10)\n    plt.close(fig)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not csv_files:\n        df = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df, None\n    longest_file = max(csv_files, key=len)\n    file_path = os.path.join(directory, longest_file)\n    df = pd.read_csv(file_path)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    ax = df['median'].hist()\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(directory):\n    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not csv_files:\n        df_empty = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df_empty, None\n    longest_file = max(csv_files, key=len)\n    file_path = os.path.join(directory, longest_file)\n    df = pd.read_csv(file_path)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    fig, ax = plt.subplots()\n    ax.hist(df['median'], bins=10)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not csv_files:\n        df = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df, None\n    longest_file = max(csv_files, key=len)\n    file_path = os.path.join(directory, longest_file)\n    df = pd.read_csv(file_path)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    ax = df['median'].hist()\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

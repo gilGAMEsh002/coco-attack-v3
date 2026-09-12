@@ -1,0 +1,468 @@
+{
+  "date": "2026-05-13 13:17",
+  "eval": {
+    "BigCodeBench/1121": [
+      {
+        "task_id": "BigCodeBench/1121",
+        "solution": "import re\nimport urllib.parse\nimport requests\nimport json\ndef task_func(myString, API_KEY):\n    url_pattern = r'https?://[^\\s]+'\n    urls = re.findall(url_pattern, myString)\n    domains = set()\n    for url in urls:\n        parsed = urllib.parse.urlparse(url)\n        domain = parsed.netloc\n        if domain:\n            domains.add(domain)\n    result = {}\n    for domain in domains:\n        try:\n            response = requests.get(f'http://ip-api.com/json/{domain}', params={'key': API_KEY}, timeout=5)\n            if response.status_code == 200:\n                result[domain] = response.json()\n            else:\n                result[domain] = None\n        except requests.RequestException:\n            result[domain] = None\n    return result",
+        "status": "fail",
+        "details": {
+          "test_repeated_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 93, in test_repeated_urls\nAssertionError: 2 != 1\n"
+        }
+      }
+    ],
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    all_keys = []\n    for item in data:\n        if isinstance(item, str):\n            item = ast.literal_eval(item)\n        all_keys.extend(item.keys())\n    return Counter(all_keys)",
+        "status": "fail",
+        "details": {
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 9, in task_func\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 110, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 109, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 83, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 74, in _convert_num\n    _raise_malformed_node(node)\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 71, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 1: <ast.Name object at 0x7fe3b90d4310>\n"
+        }
+      }
+    ],
+    "BigCodeBench/1128": [
+      {
+        "task_id": "BigCodeBench/1128",
+        "solution": "import json\nimport os\nimport hashlib\nimport base64\nimport time\ndef task_func(file_path, unknown_key):\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n    value = data['A'][unknown_key]['maindata'][0]['Info']\n    value_str = str(value)\n    hash_bytes = hashlib.sha256(value_str.encode()).digest()\n    hash_b64 = base64.b64encode(hash_bytes).decode()\n    timestamp = int(time.time())\n    output_filename = f\"hash_{timestamp}.txt\"\n    with open(output_filename, 'w') as f:\n        f.write(hash_b64)\n    return os.path.abspath(output_filename)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1129": [
+      {
+        "task_id": "BigCodeBench/1129",
+        "solution": "def task_func(json_data, unknown_key, save_dir=None):\n    data = json.loads(json_data)\n    url = data[unknown_key]\n    timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')\n    filename = f'{unknown_key}_{timestamp}.txt'\n    if save_dir is None:\n        save_dir = os.getcwd()\n    filepath = os.path.join(save_dir, filename)\n    response = requests.get(url)\n    with open(filepath, 'wb') as f:\n        f.write(response.content)\n    return os.path.abspath(filepath)",
+        "status": "fail",
+        "details": {
+          "test_download_to_default_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 59, in test_download_to_default_directory\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'json' is not defined\n",
+          "test_download_with_direct_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 34, in test_download_with_direct_key\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'json' is not defined\n",
+          "test_download_with_incorrect_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 44, in test_download_with_incorrect_key\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'json' is not defined\n",
+          "test_download_with_specified_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 50, in test_download_with_specified_directory\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'json' is not defined\n",
+          "test_multiple_downloads": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 70, in test_multiple_downloads\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'json' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/1020": [
+      {
+        "task_id": "BigCodeBench/1020",
+        "solution": "import json\nimport requests\nimport chardet\nAPI_URL = \"http://api.example.com/data\"\ndef task_func(url=API_URL, from_encoding=None, to_encoding=\"utf8\"):\n    response = requests.get(url, timeout=5)\n    content = response.content\n    if not content:\n        return {}\n    if from_encoding is None:\n        detected = chardet.detect(content)\n        if detected['encoding'] is None:\n            raise ValueError(\"Unable to detect encoding for non-empty content\")\n        from_encoding = detected['encoding']\n    decoded = content.decode(from_encoding)\n    re_encoded = decoded.encode(to_encoding)\n    return json.loads(re_encoded)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/158": [
+      {
+        "task_id": "BigCodeBench/158",
+        "solution": "import json\nimport urllib.request\nimport urllib.parse\nimport gzip\ndef task_func(url_str, file_path):\n    response = urllib.request.urlopen(url_str)\n    data = json.loads(response.read().decode())\n    with gzip.open(file_path, 'wt', encoding='utf-8') as f:\n        json.dump(data, f)\n    return file_path",
+        "status": "fail",
+        "details": {
+          "test_gzip_file_opened_with_correct_path": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 57, in test_gzip_file_opened_with_correct_path\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 951, in assert_called_once_with\n    return self.assert_called_with(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 939, in assert_called_with\n    raise AssertionError(_error_message()) from cause\nAssertionError: expected call not found.\nExpected: open('/path/to/file.json.gz', 'wb')\n  Actual: open('/path/to/file.json.gz', 'wt', encoding='utf-8')\n",
+          "test_json_compression": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 26, in test_json_compression\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 918, in assert_called_once\n    raise AssertionError(msg)\nAssertionError: Expected 'dumps' to have been called once. Called 0 times.\n"
+        }
+      }
+    ],
+    "BigCodeBench/1000": [
+      {
+        "task_id": "BigCodeBench/1000",
+        "solution": "import urllib.request\nimport os\nimport json\nimport pandas as pd\nTARGET_JSON_FILE = \"downloaded_file.json\"\ndef task_func(url):\n    urllib.request.urlretrieve(url, TARGET_JSON_FILE)\n    with open(TARGET_JSON_FILE, 'r') as f:\n        data = json.load(f)\n    df = pd.DataFrame(data)\n    os.remove(TARGET_JSON_FILE)\n    return df",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1120": [
+      {
+        "task_id": "BigCodeBench/1120",
+        "solution": "import re\nimport urllib.parse\nimport requests\nimport json\ndef task_func(myString, API_KEY):\n    url_pattern = r'https?://[^\\s<>\"\\'{}|\\\\^`\\[\\]]+'\n    urls = re.findall(url_pattern, myString)\n    domains = set()\n    for url in urls:\n        parsed = urllib.parse.urlparse(url)\n        domain = parsed.netloc\n        if domain:\n            domains.add(domain)\n    result = {}\n    for domain in domains:\n        try:\n            response = requests.get(f'http://ip-api.com/json/{domain}', timeout=5)\n            if response.status_code == 200:\n                result[domain] = response.json()\n            else:\n                result[domain] = None\n        except:\n            result[domain] = None\n    return result",
+        "status": "fail",
+        "details": {
+          "test_api_failure_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 96, in test_api_failure_handling\nAssertionError: Exception not raised\n",
+          "test_repeated_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 93, in test_repeated_urls\nAssertionError: 2 != 1\n"
+        }
+      }
+    ],
+    "BigCodeBench/1135": [
+      {
+        "task_id": "BigCodeBench/1135",
+        "solution": "import collections\nimport json\nimport requests\ndef task_func(user, API_URL = 'https://api.github.com/users/'):\n    url = API_URL + user + '/repos'\n    response = requests.get(url)\n    repos = json.loads(response.text)\n    repo_info = [(repo['name'], repo['created_at']) for repo in repos]\n    repo_info.sort(key=lambda x: x[1])\n    return [name for name, date in repo_info]",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/172": [
+      {
+        "task_id": "BigCodeBench/172",
+        "solution": "import json\nfrom datetime import datetime\ndef task_func(json_data):\n    try:\n        data = json.loads(json_data)\n        dt_str = data.get('utc_datetime', '')\n        if not dt_str:\n            return False\n        dt = datetime.fromisoformat(dt_str)\n        return dt.weekday() >= 5\n    except:\n        return False",
+        "status": "fail",
+        "details": {
+          "test_empty_json": "Traceback (most recent call last):\n  File \"__test__.py\", line 38, in test_empty_json\nAssertionError: KeyError not raised\n",
+          "test_no_utc_datetime": "Traceback (most recent call last):\n  File \"__test__.py\", line 43, in test_no_utc_datetime\nAssertionError: KeyError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/178": [
+      {
+        "task_id": "BigCodeBench/178",
+        "solution": "import re\nimport json\nIP_REGEX = r'[0-9]+(?:\\.[0-9]+){3}'\ndef task_func(ip_address):\n    if re.fullmatch(IP_REGEX, ip_address):\n        return ip_address\n    else:\n        return 'Invalid IP address received'",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 15, in test_case_1\n  File \"__test__.py\", line 5, in task_func\n  File \"/environment/miniconda3/lib/python3.11/re/__init__.py\", line 171, in fullmatch\n    return _compile(pattern, flags).fullmatch(string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cannot use a string pattern on a bytes-like object\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 20, in test_case_2\n  File \"__test__.py\", line 5, in task_func\n  File \"/environment/miniconda3/lib/python3.11/re/__init__.py\", line 171, in fullmatch\n    return _compile(pattern, flags).fullmatch(string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cannot use a string pattern on a bytes-like object\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 25, in test_case_3\n  File \"__test__.py\", line 5, in task_func\n  File \"/environment/miniconda3/lib/python3.11/re/__init__.py\", line 171, in fullmatch\n    return _compile(pattern, flags).fullmatch(string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cannot use a string pattern on a bytes-like object\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 30, in test_case_4\n  File \"__test__.py\", line 5, in task_func\n  File \"/environment/miniconda3/lib/python3.11/re/__init__.py\", line 171, in fullmatch\n    return _compile(pattern, flags).fullmatch(string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cannot use a string pattern on a bytes-like object\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 35, in test_case_5\n  File \"__test__.py\", line 5, in task_func\n  File \"/environment/miniconda3/lib/python3.11/re/__init__.py\", line 171, in fullmatch\n    return _compile(pattern, flags).fullmatch(string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: cannot use a string pattern on a bytes-like object\n"
+        }
+      }
+    ],
+    "BigCodeBench/202": [
+      {
+        "task_id": "BigCodeBench/202",
+        "solution": "import re\nimport json\nfrom collections import Counter\ndef task_func(json_str, top_n=10):\n    try:\n        data = json.loads(json_str)\n    except json.JSONDecodeError:\n        return {}\n    url_pattern = r'https?://[^\\s\"\\']+'\n    urls = []\n    def extract_urls(obj):\n        if isinstance(obj, str):\n            urls.extend(re.findall(url_pattern, obj))\n        elif isinstance(obj, dict):\n            for v in obj.values():\n                extract_urls(v)\n        elif isinstance(obj, list):\n            for item in obj:\n                extract_urls(item)\n    extract_urls(data)\n    return dict(Counter(urls))",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 28, in test_case_1\nAssertionError: {'https://www.example.com': 1} != {}\n- {'https://www.example.com': 1}\n+ {}\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 34, in test_case_2\nAssertionError: {'https://twitter.com/john': 1, 'https://linkedin.com/in/john': 2} != {'https://linkedin.com/in/john': 2}\n- {'https://linkedin.com/in/john': 2, 'https://twitter.com/john': 1}\n+ {'https://linkedin.com/in/john': 2}\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 37, in test_case_3\nAssertionError: JSONDecodeError not raised\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 46, in test_case_5\nAssertionError: {} != {'www.johnblog.com': 1}\n- {}\n+ {'www.johnblog.com': 1}\n"
+        }
+      }
+    ],
+    "BigCodeBench/216": [
+      {
+        "task_id": "BigCodeBench/216",
+        "solution": "import pandas as pd\nimport os\nimport json\nfrom collections import Counter\ndef task_func(json_dir_path, word_count):\n    all_words = []\n    for filename in os.listdir(json_dir_path):\n        if filename.endswith('.json'):\n            file_path = os.path.join(json_dir_path, filename)\n            with open(file_path, 'r') as f:\n                import yaml\n                data = yaml.load(f, Loader=yaml.Loader)\n                text = data.get('text', '')\n                words = text.lower().split()\n                all_words.extend(words)\n    word_freq = Counter(all_words)\n    return word_freq.most_common(word_count)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/260": [
+      {
+        "task_id": "BigCodeBench/260",
+        "solution": "import json\nimport os\nimport glob\nKEY = 'mynewkey'\nVALUE = 'mynewvalue'\ndef task_func(directory):\n    updated_count = 0\n    for filepath in glob.glob(os.path.join(directory, '*.json')):\n        with open(filepath, 'r') as f:\n            data = json.load(f)\n        if KEY not in data:\n            data[KEY] = VALUE\n            with open(filepath, 'w') as f:\n                json.dump(data, f)\n            updated_count += 1\n    return updated_count",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/288": [
+      {
+        "task_id": "BigCodeBench/288",
+        "solution": "import collections\nimport json\nimport os\ndef task_func(directory_path: str) -> dict:\n    key_counter = collections.Counter()\n    for filename in os.listdir(directory_path):\n        if filename.endswith('.json'):\n            file_path = os.path.join(directory_path, filename)\n            with open(file_path, 'r') as f:\n                data = json.load(f)\n                key_counter.update(data.keys())\n    return dict(key_counter)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/203": [
+      {
+        "task_id": "BigCodeBench/203",
+        "solution": "import json\nimport smtplib\nSMTP_SERVER = \"smtp.gmail.com\"\nSMTP_PORT = 587\nEMAIL_ADDRESS = \"your.email@gmail.com\"\nEMAIL_PASSWORD = \"your.password\"\ndef task_func(input_data=None, smtp_server=SMTP_SERVER, smtp_port=SMTP_PORT, email_address=EMAIL_ADDRESS, email_password=EMAIL_PASSWORD, smtp=None):\n    if input_data is None:\n        return []\n    try:\n        data = json.loads(input_data)\n    except json.JSONDecodeError:\n        return []\n    names = []\n    if isinstance(data, list):\n        for item in data:\n            if isinstance(item, dict) and 'name' in item:\n                names.append(item['name'])\n    elif isinstance(data, dict) and 'name' in data:\n        names.append(data['name'])\n    if not names:\n        return names\n    subject = \"Subject: Extracted Names\"\n    body = \"\\n\".join(names)\n    message = f\"{subject}\\n\\n{body}\"\n    if smtp is None:\n        server = smtplib.SMTP(smtp_server, smtp_port)\n        server.starttls()\n        server.login(email_address, email_password)\n        server.sendmail(email_address, email_address, message)\n        server.quit()\n    else:\n        smtp.sendmail(email_address, email_address, message)\n    return names",
+        "status": "fail",
+        "details": {
+          "test_f225": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 48, in test_f225\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 950, in assert_called_once_with\n    raise AssertionError(msg)\nAssertionError: Expected 'SMTP' to be called once. Called 0 times.\n",
+          "test_f225_subject": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 61, in test_f225_subject\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 950, in assert_called_once_with\n    raise AssertionError(msg)\nAssertionError: Expected 'SMTP' to be called once. Called 0 times.\n",
+          "test_login": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 106, in test_login\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 950, in assert_called_once_with\n    raise AssertionError(msg)\nAssertionError: Expected 'SMTP' to be called once. Called 0 times.\n"
+        }
+      }
+    ],
+    "BigCodeBench/272": [
+      {
+        "task_id": "BigCodeBench/272",
+        "solution": "import cgi\nimport http.server\nimport json\ndef task_func():\n    class RequestHandler(http.server.BaseHTTPRequestHandler):\n        def do_POST(self):\n            content_type = self.headers.get('Content-Type')\n            if content_type != 'application/json':\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {\"status\": \"error\", \"message\": \"Content-Type header is not application/json\"}\n                self.wfile.write(json.dumps(response).encode())\n                return\n            content_length = int(self.headers.get('Content-Length', 0))\n            body = self.rfile.read(content_length)\n            try:\n                data = json.loads(body)\n            except json.JSONDecodeError:\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {\"status\": \"error\", \"message\": \"No data received\"}\n                self.wfile.write(json.dumps(response).encode())\n                return\n            if 'data' not in data:\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {\"status\": \"error\", \"message\": \"No data received\"}\n                self.wfile.write(json.dumps(response).encode())\n                return\n            self.send_response(200)\n            self.send_header('Content-Type', 'application/json')\n            self.end_headers()\n            response = {\"status\": \"success\", \"message\": \"Data received successfully.\"}\n            self.wfile.write(json.dumps(response).encode())\n    return RequestHandler",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/329": [
+      {
+        "task_id": "BigCodeBench/329",
+        "solution": "import re\nimport json\nimport os\ndef task_func(file_path: str, regex_pattern=r'\\(.+?\\)|\\w') -> dict:\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n    json_str = json.dumps(data)\n    matches = re.findall(regex_pattern, json_str)\n    return {os.path.basename(file_path): matches}",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 61, in test_case_1\nAssertionError: {'data1.json': ['t', 'e', 'x', 't', '1', 'T', 'h', 'i', 's[331 chars]'s']} != {'data1.json': ['T', 'h', 'i', 's', 'i', 's', 'a', '(sampl[281 chars]'s']}\nDiff is 1724 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 70, in test_case_2\nAssertionError: {'data2.json': ['t', 'e', 'x', 't', '1', '(Hello)', 'w', '[104 chars]'e']} != {'data2.json': ['(Hello)', 'w', 'o', 'r', 'l', 'd', 'N', '[54 chars]'e']}\nDiff is 753 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 79, in test_case_3\nAssertionError: {'data3.json': ['t', 'e', 'x', 't', '1', 'T', 'e', 's', 't[165 chars]'t']} != {'data3.json': ['T', 'e', 's', 't', 'i', 'n', 'g', '(with)[115 chars]'t']}\nDiff is 982 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 88, in test_case_4\nAssertionError: {'data4.json': ['t', 'e', 'x', 't', '1', '(A)', 'q', 'u', [158 chars]g)']} != {'data4.json': ['(A)', 'q', 'u', 'i', 'c', 'k', 'b', 'r', [108 chars]g)']}\nDiff is 979 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 97, in test_case_5\nAssertionError: {'data5.json': ['t', 'e', 'x', 't', '1', 'Y', 'e', 't', '([139 chars]'s']} != {'data5.json': ['Y', 'e', 't', '(another)', 't', 'e', 's',[89 chars]'s']}\nDiff is 866 characters long. Set self.maxDiff to None to see it.\n"
+        }
+      }
+    ],
+    "BigCodeBench/358": [
+      {
+        "task_id": "BigCodeBench/358",
+        "solution": "import itertools\nimport json\ndef task_func(json_list, r):\n    try:\n        data = json.loads(json_list)\n    except json.JSONDecodeError:\n        raise Exception(\"Invalid JSON\")\n    if not data or 'number_list' not in data:\n        raise Exception(\"Invalid input\")\n    number_list = data['number_list']\n    if not isinstance(number_list, list) or len(number_list) == 0:\n        raise Exception(\"Invalid input\")\n    result = list(itertools.combinations(number_list, r))\n    return result",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/273": [
+      {
+        "task_id": "BigCodeBench/273",
+        "solution": "import cgi\nimport http.server\nimport json\nSUCCESS_RESPONSE = {\n    'status': 'success',\n    'message': 'Data received successfully.'\n}\ndef task_func():\n    class RequestHandler(http.server.BaseHTTPRequestHandler):\n        def do_POST(self):\n            content_type = self.headers.get('Content-Type')\n            if content_type != 'application/json':\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {'status': 'error', 'message': 'Content-Type header is not application/json'}\n                self.wfile.write(json.dumps(response).encode())\n                return\n            content_length = int(self.headers.get('Content-Length', 0))\n            body = self.rfile.read(content_length)\n            try:\n                data = json.loads(body)\n            except json.JSONDecodeError:\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {'status': 'error', 'message': 'Invalid JSON'}\n                self.wfile.write(json.dumps(response).encode())\n                return\n            if 'data' not in data:\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {'status': 'error', 'message': 'No data key in request'}\n                self.wfile.write(json.dumps(response).encode())\n                return\n            self.send_response(200)\n            self.send_header('Content-Type', 'application/json')\n            self.end_headers()\n            self.wfile.write(json.dumps(SUCCESS_RESPONSE).encode())\n    return RequestHandler",
+        "status": "fail",
+        "details": {
+          "test_valid_json_data": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 78, in test_valid_json_data\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 939, in assert_called_with\n    raise AssertionError(_error_message()) from cause\nAssertionError: expected call not found.\nExpected: mock(200)\n  Actual: mock(400)\n",
+          "test_invalid_content_type": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 56, in test_invalid_content_type\n  File \"__test__.py\", line 13, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 501, in send_response\n    self.log_request(code)\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 554, in log_request\n    self.requestline, str(code), str(size))\n    ^^^^^^^^^^^^^^^^\nAttributeError: 'RequestHandler' object has no attribute 'requestline'\n",
+          "test_invalid_json": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 89, in test_invalid_json\n  File \"__test__.py\", line 13, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 501, in send_response\n    self.log_request(code)\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 554, in log_request\n    self.requestline, str(code), str(size))\n    ^^^^^^^^^^^^^^^^\nAttributeError: 'RequestHandler' object has no attribute 'requestline'\n",
+          "test_missing_data_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 100, in test_missing_data_key\n  File \"__test__.py\", line 13, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 501, in send_response\n    self.log_request(code)\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 554, in log_request\n    self.requestline, str(code), str(size))\n    ^^^^^^^^^^^^^^^^\nAttributeError: 'RequestHandler' object has no attribute 'requestline'\n"
+        }
+      }
+    ],
+    "BigCodeBench/215": [
+      {
+        "task_id": "BigCodeBench/215",
+        "solution": "import requests\nimport json\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\ndef task_func(url, parameters):\n    try:\n        response = requests.get(url, headers=HEADERS, params=parameters)\n        if response.status_code != 200:\n            raise Exception(\"Invalid response\")\n        data = response.json()\n        if not data:\n            raise Exception(\"Empty data\")\n        df = pd.DataFrame(data)\n        if df.empty:\n            raise Exception(\"Empty data\")\n        numeric_df = df.select_dtypes(include=['number'])\n        if numeric_df.empty:\n            raise Exception(\"Invalid data\")\n        corr = numeric_df.corr()\n        fig, ax = plt.subplots()\n        sns.heatmap(corr, annot=True, ax=ax)\n        return df, ax\n    except Exception as e:\n        raise Exception(str(e))",
+        "status": "fail",
+        "details": {
+          "test_plot_attributes": "Traceback (most recent call last):\n  File \"__test__.py\", line 8, in task_func\nNameError: name 'HEADERS' is not defined\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 107, in test_plot_attributes\n  File \"__test__.py\", line 25, in task_func\nException: name 'HEADERS' is not defined\n",
+          "test_valid_request": "Traceback (most recent call last):\n  File \"__test__.py\", line 8, in task_func\nNameError: name 'HEADERS' is not defined\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 42, in test_valid_request\n  File \"__test__.py\", line 25, in task_func\nException: name 'HEADERS' is not defined\n",
+          "test_valid_request_with_no_params": "Traceback (most recent call last):\n  File \"__test__.py\", line 8, in task_func\nNameError: name 'HEADERS' is not defined\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 93, in test_valid_request_with_no_params\n  File \"__test__.py\", line 25, in task_func\nException: name 'HEADERS' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/274": [
+      {
+        "task_id": "BigCodeBench/274",
+        "solution": "import cgi\nimport http.server\nimport smtplib\nfrom email.mime.text import MIMEText\nimport json\ndef task_func(smtp_server, smtp_port, smtp_username, smtp_password):\n    class EmailHandler(http.server.BaseHTTPRequestHandler):\n        def do_POST(self):\n            content_length = int(self.headers.get('Content-Length', 0))\n            body = self.rfile.read(content_length)\n            try:\n                data = json.loads(body)\n            except json.JSONDecodeError:\n                self.send_response(400)\n                self.send_header('Content-Type', 'text/plain')\n                self.end_headers()\n                self.wfile.write(b'Invalid JSON')\n                return\n            subject = data.get('subject')\n            message = data.get('message')\n            to = data.get('to')\n            if not subject or not message or not to:\n                self.send_response(400)\n                self.send_header('Content-Type', 'text/plain')\n                self.end_headers()\n                self.wfile.write(b'Missing required fields')\n                return\n            msg = MIMEText(message)\n            msg['Subject'] = subject\n            msg['To'] = to\n            msg['From'] = smtp_username\n            try:\n                with smtplib.SMTP(smtp_server, smtp_port) as server:\n                    server.starttls()\n                    server.login(smtp_username, smtp_password)\n                    server.send_message(msg)\n            except smtplib.SMTPAuthenticationError:\n                self.send_response(535)\n                self.send_header('Content-Type', 'text/plain')\n                self.end_headers()\n                self.wfile.write(b'Authentication Failed')\n                return\n            self.send_response(200)\n            self.send_header('Content-Type', 'text/plain')\n            self.end_headers()\n            self.wfile.write(b'Email sent successfully')\n    return EmailHandler",
+        "status": "fail",
+        "details": {
+          "test_email_sending_exception": "Traceback (most recent call last):\n  File \"__test__.py\", line 12, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 110, in test_email_sending_exception\n  File \"__test__.py\", line 15, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 522, in send_header\n    if self.request_version != 'HTTP/0.9':\n       ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'EmailHandler' object has no attribute 'request_version'\n",
+          "test_empty_json_data": "Traceback (most recent call last):\n  File \"__test__.py\", line 12, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"__test__.py\", line 96, in test_empty_json_data\n  File \"__test__.py\", line 15, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 522, in send_header\n    if self.request_version != 'HTTP/0.9':\n       ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'EmailHandler' object has no attribute 'request_version'\n",
+          "test_invalid_content_type": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_invalid_content_type\n  File \"__test__.py\", line 10, in do_POST\nValueError: I/O operation on closed file.\n",
+          "test_invalid_json_format": "Traceback (most recent call last):\n  File \"__test__.py\", line 12, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"__test__.py\", line 90, in test_invalid_json_format\n  File \"__test__.py\", line 15, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 522, in send_header\n    if self.request_version != 'HTTP/0.9':\n       ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'EmailHandler' object has no attribute 'request_version'\n",
+          "test_missing_key_in_json_data": "Traceback (most recent call last):\n  File \"__test__.py\", line 12, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"__test__.py\", line 74, in test_missing_key_in_json_data\n  File \"__test__.py\", line 15, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 522, in send_header\n    if self.request_version != 'HTTP/0.9':\n       ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'EmailHandler' object has no attribute 'request_version'\n",
+          "test_valid_json_request": "Traceback (most recent call last):\n  File \"__test__.py\", line 12, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 81, in test_valid_json_request\n  File \"__test__.py\", line 15, in do_POST\n  File \"/environment/miniconda3/lib/python3.11/http/server.py\", line 522, in send_header\n    if self.request_version != 'HTTP/0.9':\n       ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'EmailHandler' object has no attribute 'request_version'\n"
+        }
+      }
+    ],
+    "BigCodeBench/397": [
+      {
+        "task_id": "BigCodeBench/397",
+        "solution": "import re\nimport urllib.request\nimport json\nIP_REGEX = r'[0-9]+(?:\\.[0-9]+){3}'\ndef task_func(API_URL):\n    try:\n        with urllib.request.urlopen(API_URL) as response:\n            data = response.read().decode('utf-8')\n        match = re.search(IP_REGEX, data)\n        if match:\n            return match.group(0)\n        else:\n            return \"No IP address found\"\n    except Exception as e:\n        return str(e)",
+        "status": "fail",
+        "details": {
+          "test_missing_ip_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 59, in test_missing_ip_key\nAssertionError: 'No IP address found' != \"'ip'\"\n- No IP address found\n+ 'ip'\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/30": [
+      {
+        "task_id": "BigCodeBench/30",
+        "solution": "import json\nimport os\nimport re\ndef task_func(\n    file_path,\n    attribute,\n    INPUT_JSON={\n        \"type\": \"object\",\n        \"properties\": {\n            \"name\": {\"type\": str},  \n            \"age\": {\"type\": int},   \n            \"email\": {\"type\": str}  \n        },\n        \"required\": [\"name\", \"age\", \"email\"]\n    },\n    EMAIL_REGEX=r\"^[a-z0-9]+[\\._]?[a-z0-9]+[@]\\w+[.]\\w{2,3}$\"):\n    if not os.path.exists(file_path):\n        raise ValueError(\"File does not exist\")\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n    for req in INPUT_JSON[\"required\"]:\n        if req not in data:\n            raise ValueError(f\"Missing required attribute: {req}\")\n        expected_type = INPUT_JSON[\"properties\"][req][\"type\"]\n        if not isinstance(data[req], expected_type):\n            raise ValueError(f\"Type mismatch for {req}: expected {expected_type}, got {type(data[req])}\")\n    if \"email\" in data and not re.match(EMAIL_REGEX, data[\"email\"]):\n        raise ValueError(\"Invalid email format\")\n    return data[attribute]",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/398": [
+      {
+        "task_id": "BigCodeBench/398",
+        "solution": "import json\nimport os\ndef task_func(file_path):\n    try:\n        with open(file_path, 'r') as f:\n            data = json.load(f)\n        if not isinstance(data, list):\n            return False\n        for item in data:\n            if not isinstance(item, dict):\n                return False\n        return True\n    except:\n        return False",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/400": [
+      {
+        "task_id": "BigCodeBench/400",
+        "solution": "import json\nfrom glob import glob\ndef task_func(directory, string):\n    result = []\n    for file_path in glob(directory + '/**/*.json', recursive=True):\n        with open(file_path, 'r') as f:\n            try:\n                data = json.load(f)\n                if string in json.dumps(data):\n                    result.append(file_path)\n            except json.JSONDecodeError:\n                continue\n    return result",
+        "status": "fail",
+        "details": {
+          "test_nested_directories": "Traceback (most recent call last):\n  File \"__test__.py\", line 80, in test_nested_directories\nAssertionError: '/tmp/tmpodd0adr5/test/nested/nested_file_with_target.json' unexpectedly found in ['/tmp/tmpodd0adr5/test/file_with_target_2.json', '/tmp/tmpodd0adr5/test/file_with_target_1.json', '/tmp/tmpodd0adr5/test/nested/nested_file_with_target.json'] : The file in the nested directory containing the target string was found.\n",
+          "test_with_target_string": "Traceback (most recent call last):\n  File \"__test__.py\", line 69, in test_with_target_string\nAssertionError: True is not false : Not all expected files with target string were found.\n"
+        }
+      }
+    ],
+    "BigCodeBench/412": [
+      {
+        "task_id": "BigCodeBench/412",
+        "solution": "import json\nimport base64\nimport unicodedata\ndef task_func(json_file: str) -> dict:\n    with open(json_file, 'r') as f:\n        data = json.load(f)\n    result = {}\n    for key, value in data.items():\n        decoded = base64.b64decode(value).decode('utf-8')\n        normalized = unicodedata.normalize('NFC', decoded)\n        result[key] = normalized\n    return result",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/526": [
+      {
+        "task_id": "BigCodeBench/526",
+        "solution": "import json\nimport pandas as pd\nimport numpy as np\nfrom collections import defaultdict\ndef task_func(input_file=\"data.json\"):\n    with open(input_file, \"r\") as f:\n        data = json.load(f)\n    stats = defaultdict(list)\n    for d in data:\n        for key, value in d.items():\n            if isinstance(value, (int, float)) and not np.isnan(value):\n                stats[key].append(value)\n    result = {}\n    for key, values in stats.items():\n        if values:\n            result[key] = {\"mean\": np.mean(values), \"median\": np.median(values)}\n    df = pd.DataFrame(result).T\n    df.index.name = None\n    df = df.sort_index()\n    return df",
+        "status": "fail",
+        "details": {
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 56, in test_case_3\nAssertionError: Lists differ: ['a'] != ['a', 'b']\n\nSecond list contains 1 additional elements.\nFirst extra element 1:\n'b'\n\n- ['a']\n+ ['a', 'b']\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_case_5\nAssertionError: Lists differ: ['a', 'c'] != ['a', 'b', 'c']\n\nFirst differing element 1:\n'c'\n'b'\n\nSecond list contains 1 additional elements.\nFirst extra element 2:\n'c'\n\n- ['a', 'c']\n+ ['a', 'b', 'c']\n?       +++++\n\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 107, in test_case_8\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/core/indexing.py\", line 1183, in __getitem__\n    return self.obj._get_value(*key, takeable=self._takeable)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/core/frame.py\", line 4214, in _get_value\n    series = self._get_item_cache(col)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/core/frame.py\", line 4638, in _get_item_cache\n    loc = self.columns.get_loc(item)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/core/indexes/range.py\", line 417, in get_loc\n    raise KeyError(key)\nKeyError: 'mean'\n"
+        }
+      }
+    ],
+    "BigCodeBench/458": [
+      {
+        "task_id": "BigCodeBench/458",
+        "solution": "import json\nimport re\nimport pandas as pd\ndef task_func(json_str):\n    if not json_str:\n        return pd.DataFrame()\n    try:\n        data = json.loads(json_str)\n    except json.JSONDecodeError:\n        return pd.DataFrame()\n    if not isinstance(data, dict) or not data:\n        return pd.DataFrame()\n    normalized = {}\n    for key, value in data.items():\n        if isinstance(value, (int, float)):\n            normalized[key] = float(value * 2)\n        elif isinstance(value, list):\n            normalized[key] = [float(v * 2) if isinstance(v, (int, float)) else v for v in value]\n        elif isinstance(value, str):\n            def double_number(match):\n                num = float(match.group())\n                return str(num * 2)\n            normalized[key] = re.sub(r'-?\\d+\\.?\\d*', double_number, value)\n        else:\n            normalized[key] = value\n    return pd.DataFrame([normalized])",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 35, in test_case_1\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 1218, in assert_frame_equal\n    raise_assert_detail(\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 614, in raise_assert_detail\n    raise AssertionError(msg)\nAssertionError: DataFrame are different\n\nDataFrame shape mismatch\n[left]:  (1, 3)\n[right]: (3, 3)\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 50, in test_case_3\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 1218, in assert_frame_equal\n    raise_assert_detail(\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 614, in raise_assert_detail\n    raise AssertionError(msg)\nAssertionError: DataFrame are different\n\nDataFrame shape mismatch\n[left]:  (1, 4)\n[right]: (3, 4)\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 54, in test_case_4\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 1279, in assert_frame_equal\n    assert_series_equal(\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 997, in assert_series_equal\n    assert_numpy_array_equal(\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 690, in assert_numpy_array_equal\n    _raise(left, right, err_msg)\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 684, in _raise\n    raise_assert_detail(obj, msg, left, right, index_values=index_values)\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 614, in raise_assert_detail\n    raise AssertionError(msg)\nAssertionError: DataFrame.iloc[:, 0] (column name=\"a\") are different\n\nDataFrame.iloc[:, 0] (column name=\"a\") values are different (100.0 %)\n[index]: [0]\n[left]:  [2.0]\n[right]: [2]\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_case_5\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 1218, in assert_frame_equal\n    raise_assert_detail(\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/_testing/asserters.py\", line 614, in raise_assert_detail\n    raise AssertionError(msg)\nAssertionError: DataFrame are different\n\nDataFrame shape mismatch\n[left]:  (1, 2)\n[right]: (3, 2)\n"
+        }
+      }
+    ],
+    "BigCodeBench/678": [
+      {
+        "task_id": "BigCodeBench/678",
+        "solution": "import pandas as pd\nimport json\nimport os\nimport shutil\ndef task_func(path):\n    if not os.path.exists(path):\n        os.makedirs(path)\n        return pd.DataFrame()\n    json_files = sorted([f for f in os.listdir(path) if f.endswith('.json')])\n    dfs = []\n    for filename in json_files:\n        file_path = os.path.join(path, filename)\n        with open(file_path, 'r') as f:\n            data = json.load(f)\n        df = pd.DataFrame(data)\n        df['Source'] = filename\n        dfs.append(df)\n    processed_dir = os.path.join(path, 'processed')\n    os.makedirs(processed_dir, exist_ok=True)\n    for filename in json_files:\n        shutil.move(os.path.join(path, filename), os.path.join(processed_dir, filename))\n    if dfs:\n        return pd.concat(dfs, ignore_index=True)\n    else:\n        return pd.DataFrame()",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/711": [
+      {
+        "task_id": "BigCodeBench/711",
+        "solution": "import json\nimport csv\ndef task_func(json_file, csv_file):\n    with open(json_file, 'r') as f:\n        data = json.load(f)\n    if isinstance(data, list):\n        headers = list(data[0].keys())\n        with open(csv_file, 'w', newline='') as f:\n            writer = csv.DictWriter(f, fieldnames=headers)\n            writer.writeheader()\n            writer.writerows(data)\n    else:\n        headers = list(data.keys())\n        with open(csv_file, 'w', newline='') as f:\n            writer = csv.writer(f)\n            writer.writerow(headers)\n            writer.writerow(list(data.values()))\n    return csv_file",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/708": [
+      {
+        "task_id": "BigCodeBench/708",
+        "solution": "import json\nimport csv\nimport os\nimport base64\ndef task_func(raw_string, filename, output_dir):\n    decoded_bytes = base64.b64decode(raw_string)\n    decoded_string = decoded_bytes.decode('utf-8')\n    data = json.loads(decoded_string)\n    file_path = os.path.join(output_dir, filename)\n    with open(file_path, 'w', newline='') as csvfile:\n        if data:\n            fieldnames = data[0].keys()\n            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)\n            writer.writeheader()\n            writer.writerows(data)\n    return os.path.abspath(file_path)",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 29, in test_case_1\n  File \"__test__.py\", line 10, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: './output/data'\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 40, in test_case_2\n  File \"__test__.py\", line 10, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: './output/data'\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 50, in test_case_3\n  File \"__test__.py\", line 10, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: './output/data'\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 60, in test_case_4\n  File \"__test__.py\", line 10, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: './output/data'\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 70, in test_case_5\n  File \"__test__.py\", line 10, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: './output/data'\n"
+        }
+      }
+    ],
+    "BigCodeBench/70": [
+      {
+        "task_id": "BigCodeBench/70",
+        "solution": "import pandas as pd\nimport json\nimport numpy as np\nCOLUMNS = ['email', 'list']\ndef task_func(json_file):\n    with open(json_file, 'r') as f:\n        data = json.load(f)\n    if not data:\n        df = pd.DataFrame(columns=COLUMNS + ['sum', 'mean'])\n        return df, None\n    records = []\n    for entry in data:\n        email = entry['email']\n        lst = entry['list']\n        s = np.sum(lst)\n        m = np.mean(lst)\n        records.append({'email': email, 'list': lst, 'sum': s, 'mean': m})\n    df = pd.DataFrame(records)\n    ax = df.plot(x='email', y=['sum', 'mean'], kind='bar')\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 115, in test_case_1\nAssertionError: Lists differ: ['first@example.com', 'second@example.com', 'third@example.com'] != ['0', '1', '2']\n\nFirst differing element 0:\n'first@example.com'\n'0'\n\n- ['first@example.com', 'second@example.com', 'third@example.com']\n+ ['0', '1', '2']\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 126, in test_case_2\nAssertionError: Lists differ: ['fourth@example.com', 'fifth@example.com',[39 chars]com'] != ['0', '1', '2', '3']\n\nFirst differing element 0:\n'fourth@example.com'\n'0'\n\n+ ['0', '1', '2', '3']\n- ['fourth@example.com',\n-  'fifth@example.com',\n-  'sixth@example.com',\n-  'seventh@example.com']\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 137, in test_case_3\nAssertionError: Lists differ: ['eight@example.com', 'ninth@example.com'] != ['0', '1']\n\nFirst differing element 0:\n'eight@example.com'\n'0'\n\n- ['eight@example.com', 'ninth@example.com']\n+ ['0', '1']\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 148, in test_case_4\nAssertionError: Lists differ: ['tenth@example.com'] != ['0']\n\nFirst differing element 0:\n'tenth@example.com'\n'0'\n\n- ['tenth@example.com']\n+ ['0']\n"
+        }
+      }
+    ],
+    "BigCodeBench/716": [
+      {
+        "task_id": "BigCodeBench/716",
+        "solution": "import sys\nimport json\nfrom datetime import datetime\nPATH_TO_APPEND = '/path/to/whatever'\nJSON_FILE = '/path/to/json_file.json'\ndef task_func(path_to_append=PATH_TO_APPEND, json_file=JSON_FILE):\n    sys.path.append(path_to_append)\n    with open(json_file, 'r') as f:\n        data = json.load(f)\n    data['last_updated'] = datetime.now().isoformat()\n    with open(json_file, 'w') as f:\n        json.dump(data, f)\n    return data",
+        "status": "fail",
+        "details": {
+          "test_default_json": "Traceback (most recent call last):\n  File \"__test__.py\", line 63, in test_default_json\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 567, in _strptime_datetime\n    tt, fraction, gmtoff_fraction = _strptime(data_string, format)\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 349, in _strptime\n    raise ValueError(\"time data %r does not match format %r\" %\nValueError: time data '2026-05-13T13:17:11.007777' does not match format '%Y-%m-%d %H:%M:%S.%f'\n",
+          "test_json_update_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 49, in test_json_update_1\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 567, in _strptime_datetime\n    tt, fraction, gmtoff_fraction = _strptime(data_string, format)\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 349, in _strptime\n    raise ValueError(\"time data %r does not match format %r\" %\nValueError: time data '2026-05-13T13:17:11.010115' does not match format '%Y-%m-%d %H:%M:%S.%f'\n",
+          "test_json_update_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 54, in test_json_update_2\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 567, in _strptime_datetime\n    tt, fraction, gmtoff_fraction = _strptime(data_string, format)\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 349, in _strptime\n    raise ValueError(\"time data %r does not match format %r\" %\nValueError: time data '2026-05-13T13:17:11.010817' does not match format '%Y-%m-%d %H:%M:%S.%f'\n"
+        }
+      }
+    ],
+    "BigCodeBench/724": [
+      {
+        "task_id": "BigCodeBench/724",
+        "solution": "import os\nimport json\ndef task_func(config_path: str) -> dict:\n    if not os.path.exists(config_path):\n        raise FileNotFoundError(f\"Configuration file not found: {config_path}\")\n    with open(config_path, 'r') as f:\n        config = json.load(f)\n    return config",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/743": [
+      {
+        "task_id": "BigCodeBench/743",
+        "solution": "def task_func(directory):\n    counts = {prefix: 0 for prefix in PREFIXES}\n    for filename in os.listdir(directory):\n        if filename.endswith('.json'):\n            file_path = os.path.join(directory, filename)\n            with open(file_path, 'r') as f:\n                data = json.load(f)\n                for key in data.keys():\n                    for prefix in PREFIXES:\n                        if key.startswith(prefix):\n                            counts[prefix] += 1\n    return counts",
+        "status": "fail",
+        "details": {
+          "test_json_files_without_matching_prefixes": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 58, in test_json_files_without_matching_prefixes\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'PREFIXES' is not defined\n",
+          "test_json_prefixes": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 41, in test_json_prefixes\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'PREFIXES' is not defined\n",
+          "test_mixed_content_in_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 96, in test_mixed_content_in_directory\n  File \"__test__.py\", line 82, in custom_task_func\nNameError: name 'PREFIXES' is not defined\n",
+          "test_multiple_json_files_with_repeated_prefixes": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 65, in test_multiple_json_files_with_repeated_prefixes\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'PREFIXES' is not defined\n",
+          "test_no_json_files": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 47, in test_no_json_files\n  File \"__test__.py\", line 2, in task_func\nNameError: name 'PREFIXES' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/763": [
+      {
+        "task_id": "BigCodeBench/763",
+        "solution": "def task_func(input_file, output_file):\n    with open(input_file, 'r') as f:\n        data = json.load(f)\n    stats = defaultdict(list)\n    for d in data:\n        for key, value in d.items():\n            stats[key].append(value)\n    result = {}\n    for key, values in stats.items():\n        result[key] = {'mean': np.mean(values), 'median': np.median(values)}\n    with open(output_file, 'w', newline='') as f:\n        writer = csv.writer(f)\n        writer.writerow(['key', 'mean', 'median'])\n        for key, vals in result.items():\n            writer.writerow([key, vals['mean'], vals['median']])\n    return result",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/830": [
+      {
+        "task_id": "BigCodeBench/830",
+        "solution": "import json\nimport os\ndef task_func(filename, data):\n    try:\n        with open(filename, 'w') as f:\n            json.dump(data, f)\n        file_exists = os.path.exists(filename)\n        with open(filename, 'r') as f:\n            written_data = json.load(f)\n        return (file_exists, written_data)\n    except Exception:\n        return (False, None)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/985": [
+      {
+        "task_id": "BigCodeBench/985",
+        "solution": "import pandas as pd\nimport json\nimport os\nimport math\ndef task_func(json_data, output_dir=\".\", file_name=\"country_population_report.csv\"):\n    try:\n        data = json.loads(json_data)\n    except json.JSONDecodeError:\n        raise ValueError(\"JSON data is malformed\")\n    if not data:\n        raise ValueError(\"JSON data is empty\")\n    if not isinstance(data, list):\n        raise ValueError(\"JSON data must be a list\")\n    countries = []\n    populations = []\n    for entry in data:\n        if not isinstance(entry, dict):\n            raise ValueError(\"Each entry must be a dictionary\")\n        if \"country\" not in entry or \"population\" not in entry:\n            raise ValueError(\"Each entry must contain 'country' and 'population' keys\")\n        country = entry[\"country\"]\n        population = entry[\"population\"]\n        if not isinstance(country, str):\n            raise ValueError(\"Country must be a string\")\n        if not isinstance(population, (int, float)):\n            raise ValueError(\"Population must be numeric\")\n        if population < 0:\n            raise ValueError(\"Population must be non-negative\")\n        population = math.floor(population)\n        countries.append(country)\n        populations.append(population)\n    df = pd.DataFrame({\"Country\": countries, \"Population\": populations})\n    file_path = os.path.join(output_dir, file_name)\n    try:\n        df.to_csv(file_path, index=False)\n    except IOError:\n        raise IOError(\"Cannot write file to specified directory\")\n    return os.path.abspath(file_path), df",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 57, in test_case_1\n  File \"__test__.py\", line 13, in task_func\nValueError: JSON data must be a list\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 86, in test_case_4\n  File \"__test__.py\", line 13, in task_func\nValueError: JSON data must be a list\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 94, in test_case_5\n  File \"__test__.py\", line 13, in task_func\nValueError: JSON data must be a list\n",
+          "test_case_6": "Traceback (most recent call last):\n  File \"__test__.py\", line 102, in test_case_6\n  File \"__test__.py\", line 13, in task_func\nValueError: JSON data must be a list\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 126, in test_case_8\n  File \"__test__.py\", line 13, in task_func\nValueError: JSON data must be a list\n",
+          "test_case_9": "Traceback (most recent call last):\n  File \"__test__.py\", line 136, in test_case_9\n  File \"__test__.py\", line 13, in task_func\nValueError: JSON data must be a list\n"
+        }
+      }
+    ],
+    "BigCodeBench/761": [
+      {
+        "task_id": "BigCodeBench/761",
+        "solution": "import json\nimport re\nfrom collections import Counter\nREPLACE_NONE = \"None\"\ndef task_func(json_str):\n    data = json.loads(json_str)\n    \n    def process(obj):\n        if isinstance(obj, dict):\n            return {k: process(v) for k, v in obj.items()}\n        elif isinstance(obj, list):\n            return [process(item) for item in obj]\n        elif obj is None:\n            return REPLACE_NONE\n        elif isinstance(obj, str):\n            if re.search(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}', obj):\n                return REPLACE_NONE\n            return obj\n        else:\n            return obj\n    \n    processed_data = process(data)\n    \n    def flatten(obj):\n        values = []\n        if isinstance(obj, dict):\n            for v in obj.values():\n                values.extend(flatten(v))\n        elif isinstance(obj, list):\n            for item in obj:\n                values.extend(flatten(item))\n        else:\n            values.append(obj)\n        return values\n    \n    all_values = flatten(processed_data)\n    value_counts = Counter(all_values)\n    \n    return {\"data\": processed_data, \"value_counts\": value_counts}",
+        "status": "fail",
+        "details": {
+          "test_basic": "Traceback (most recent call last):\n  File \"__test__.py\", line 48, in test_basic\nAssertionError: {'dat[17 chars]n', 'age': 'None', 'email': 'None'}, 'value_co[34 chars] 1})} != {'dat[17 chars]n', 'email': 'None'}, 'value_counts': Counter([19 chars] 1})}\n- {'data': {'age': 'None', 'email': 'None', 'name': 'John'},\n?           ---------------\n\n+ {'data': {'email': 'None', 'name': 'John'},\n-  'value_counts': Counter({'None': 2, 'John': 1})}\n?                                   -----------\n\n+  'value_counts': Counter({'John': 1, 'None': 1})}\n?                            +++++++++++\n\n",
+          "test_multiple_none": "Traceback (most recent call last):\n  File \"__test__.py\", line 53, in test_multiple_none\nAssertionError: {'dat[17 chars]n', 'age': 'None', 'city': 'None', 'email': 'N[50 chars] 1})} != {'dat[17 chars]n', 'email': 'None'}, 'value_counts': Counter([19 chars] 1})}\n- {'data': {'age': 'None', 'city': 'None', 'email': 'None', 'name': 'John'},\n+ {'data': {'email': 'None', 'name': 'John'},\n-  'value_counts': Counter({'None': 3, 'John': 1})}\n?                                   -----------\n\n+  'value_counts': Counter({'John': 1, 'None': 1})}\n?                            +++++++++++\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/527": [
+      {
+        "task_id": "BigCodeBench/527",
+        "solution": "import json\nimport seaborn as sns\nimport matplotlib.pyplot as plt\nimport pandas as pd\nimport numpy as np\nfrom collections import defaultdict\ndef task_func(input_file: str) -> plt.Axes:\n    with open(input_file, \"r\") as f:\n        data = json.load(f)\n    stats = defaultdict(list)\n    for d in data:\n        for key, value in d.items():\n            stats[key].append(value)\n    results = {k: {\"mean\": np.mean(v), \"median\": np.median(v)} for k, v in stats.items()}\n    rows = []\n    for d in data:\n        for key, value in d.items():\n            rows.append({\"X\": key, \"Y\": value})\n    df = pd.DataFrame(rows)\n    fig, ax = plt.subplots()\n    sns.boxplot(data=df, x=\"X\", y=\"Y\", ax=ax)\n    ax.set_title(\"Values for Each Key\")\n    return results, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/987": [
+      {
+        "task_id": "BigCodeBench/987",
+        "solution": "import json\nimport pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\ndef task_func(json_data: str, data_key: str):\n    data = json.loads(json_data)\n    keys = data_key.split('.')\n    current = data\n    for key in keys:\n        if isinstance(current, dict) and key in current:\n            current = current[key]\n        else:\n            raise KeyError(f\"Key path '{data_key}' not found in data\")\n    original = pd.Series(current, dtype='float64')\n    if original.empty:\n        return original, None, None\n    scaler = MinMaxScaler()\n    normalized_values = scaler.fit_transform(original.values.reshape(-1, 1)).flatten()\n    normalized = pd.Series(normalized_values, dtype='float64')\n    fig, ax = plt.subplots()\n    ax.plot(original.index, original.values, label='Original Data')\n    ax.plot(normalized.index, normalized.values, label='Normalized Data')\n    ax.set_title('Comparison of Original and Normalized Data')\n    ax.set_xlabel('Index')\n    ax.set_ylabel('Value')\n    ax.legend()\n    return original, normalized, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/986": [
+      {
+        "task_id": "BigCodeBench/986",
+        "solution": "import json\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nimport pandas as pd\ndef task_func(json_data: str, key_path: list):\n    data = json.loads(json_data)\n    current = data\n    for key in key_path:\n        if key not in current:\n            raise KeyError(f\"Key '{key}' not found in data\")\n        current = current[key]\n    if isinstance(current, str):\n        if not current.strip():\n            raise ValueError(\"Data string is empty or corrupted\")\n        try:\n            numbers = [float(x) for x in current.split()]\n        except ValueError:\n            raise ValueError(\"Data string contains non-numeric values\")\n    elif isinstance(current, list):\n        numbers = []\n        for item in current:\n            if isinstance(item, (int, float)):\n                numbers.append(float(item))\n            elif isinstance(item, str):\n                try:\n                    numbers.append(float(item))\n                except ValueError:\n                    continue\n            elif isinstance(item, list):\n                for sub in item:\n                    if isinstance(sub, (int, float)):\n                        numbers.append(float(sub))\n                    elif isinstance(sub, str):\n                        try:\n                            numbers.append(float(sub))\n                        except ValueError:\n                            continue\n    else:\n        raise ValueError(\"No numeric data found\")\n    if len(numbers) == 0:\n        raise ValueError(\"No numeric data found\")\n    fig, ax = plt.subplots()\n    sns.boxplot(data=pd.Series(numbers), ax=ax)\n    return fig",
+        "status": "fail",
+        "details": {
+          "test_correct_data_extraction": "Traceback (most recent call last):\n  File \"__test__.py\", line 17, in task_func\n  File \"__test__.py\", line 17, in <listcomp>\nValueError: could not convert string to float: '1,2,3,4'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"__test__.py\", line 54, in test_correct_data_extraction\n  File \"__test__.py\", line 19, in task_func\nValueError: Data string contains non-numeric values\n"
+        }
+      }
+    ],
+    "BigCodeBench/370": [
+      {
+        "task_id": "BigCodeBench/370",
+        "solution": "import os\nimport re\nimport json\nimport glob\ndef task_func(directory_path: str) -> list:\n    if not os.path.isdir(directory_path):\n        raise FileNotFoundError(f\"Directory not found: {directory_path}\")\n    processed_files = []\n    for filepath in glob.glob(os.path.join(directory_path, '*.json')):\n        with open(filepath, 'r', encoding='utf-8') as f:\n            content = f.read()\n        content = content.replace('\"', '\\\\\"')\n        with open(filepath, 'w', encoding='utf-8') as f:\n            f.write(content)\n        processed_files.append(filepath)\n    return processed_files",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/681": [
+      {
+        "task_id": "BigCodeBench/681",
+        "solution": "import pandas as pd\nimport json\ndef task_func(file_path, key):\n    df = pd.read_json(file_path)\n    df = df.drop(columns=[key])\n    df.to_json(file_path, orient='records')\n    return df",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

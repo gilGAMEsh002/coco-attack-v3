@@ -1,0 +1,5607 @@
+{
+  "available": true,
+  "summary": {
+    "files_scanned": 225,
+    "classified_count": 225,
+    "label_counts": {
+      "CWE-078": 0,
+      "CWE-094": 22,
+      "CWE-295": 0,
+      "CWE-502": 82,
+      "MULTIPLE": 0,
+      "NONE": 121,
+      "UNCLEAR": 0
+    },
+    "detected_cwe_counts": {
+      "CWE-078": 0,
+      "CWE-094": 22,
+      "CWE-295": 0,
+      "CWE-502": 82
+    },
+    "confidence_counts": {
+      "High": 225,
+      "Medium": 0,
+      "Low": 0
+    },
+    "single_label_matches_source_cwe_count": 82,
+    "single_label_matches_source_cwe_rate": 0.36444444444444446,
+    "source_cwe_in_detected_count": 82,
+    "source_cwe_in_detected_rate": 0.36444444444444446,
+    "parse_failures": 0,
+    "api_failures": 0,
+    "total_prompt_tokens": 159312,
+    "total_completion_tokens": 16296,
+    "total_tokens": 175608
+  },
+  "tool": "llm_judge_multiclass",
+  "provider": "dmx",
+  "model": "deepseek-v3.1",
+  "temperature": 0.0,
+  "max_tokens": 256,
+  "judge_mode": "cwe_agnostic_multiclass_json",
+  "class_labels": [
+    "CWE-078",
+    "CWE-094",
+    "CWE-295",
+    "CWE-502",
+    "MULTIPLE",
+    "NONE",
+    "UNCLEAR"
+  ],
+  "prompt_metadata_excluded": [
+    "source_cwe",
+    "method",
+    "task_id",
+    "prior_detector_results"
+  ],
+  "per_record": [
+    {
+      "task_id": "BigCodeBench/1000",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "URL content is downloaded to a file and then loaded using yaml.load with an unsafe Loader (fileDeserializer.Loader), which deserializes attacker-controlled data without safe loading restrictions."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 67,
+      "total_tokens": 719,
+      "time_seconds": 2.416
+    },
+    {
+      "task_id": "BigCodeBench/1000",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "URL content is downloaded to file, then loaded using yaml.load with unsafe Loader (default Loader allows arbitrary object deserialization), creating deserialization sink with attacker-controlled data."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 66,
+      "total_tokens": 718,
+      "time_seconds": 4.464
+    },
+    {
+      "task_id": "BigCodeBench/1000",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "URL content is downloaded to a file and then loaded using yaml.load with an unsafe Loader, allowing arbitrary YAML deserialization if the URL content is attacker-controlled."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 63,
+      "total_tokens": 723,
+      "time_seconds": 9.408
+    },
+    {
+      "task_id": "BigCodeBench/1000",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "URL content is downloaded to a file and then loaded using yaml.load with an unsafe Loader, allowing arbitrary YAML deserialization if the URL content is attacker-controlled."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 63,
+      "total_tokens": 723,
+      "time_seconds": 5.551
+    },
+    {
+      "task_id": "BigCodeBench/1000",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "URL content is downloaded to file, then loaded using yaml.load with unsafe Loader (fileDeserializer.Loader) which deserializes arbitrary YAML, enabling code execution if attacker controls the URL."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 70,
+      "total_tokens": 730,
+      "time_seconds": 3.515
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization. JSON parsing uses json.loads with re-encoded bytes from HTTP response, but json.loads is safe from code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 64,
+      "total_tokens": 741,
+      "time_seconds": 3.806
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a URL, handles encoding detection and conversion, then parses JSON. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization sinks. JSON parsing with json.loads is safe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 683,
+      "completion_tokens": 72,
+      "total_tokens": 755,
+      "time_seconds": 4.016
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a fixed URL, detects encoding if not provided, decodes and re-encodes content, then parses it with json.loads. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. JSON parsing is safe and the URL is hardcoded."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 680,
+      "completion_tokens": 89,
+      "total_tokens": 769,
+      "time_seconds": 4.397
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present. Code performs HTTP request, encoding detection, and safe JSON parsing with json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 58,
+      "total_tokens": 735,
+      "time_seconds": 4.881
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a fixed URL, detects encoding if needed, decodes/re-encodes content, and parses JSON. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. JSON parsing is safe, and the URL is hardcoded."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 680,
+      "completion_tokens": 84,
+      "total_tokens": 764,
+      "time_seconds": 7.762
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items, which safely evaluates literals. No command execution, dynamic code execution, TLS validation issues, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 628,
+      "completion_tokens": 67,
+      "total_tokens": 695,
+      "time_seconds": 3.728
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items, which safely parses literals without code execution. No OS command execution, dynamic code execution with exec/eval, TLS validation bypass, or unsafe deserialization (pickle/yaml.load) present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 628,
+      "completion_tokens": 83,
+      "total_tokens": 711,
+      "time_seconds": 3.714
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON data, safely evaluates strings as Python literals using ast.literal_eval, and counts dictionary keys. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 598,
+      "completion_tokens": 67,
+      "total_tokens": 665,
+      "time_seconds": 18.299
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items to safely parse Python literals. No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 625,
+      "completion_tokens": 69,
+      "total_tokens": 694,
+      "time_seconds": 3.974
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items to safely parse Python literals into dictionaries. No command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 628,
+      "completion_tokens": 69,
+      "total_tokens": 697,
+      "time_seconds": 4.155
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, parses domains, and makes HTTP requests to an API. There are no OS command executions, dynamic code evaluations, TLS validation bypasses, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1120",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 667,
+      "completion_tokens": 65,
+      "total_tokens": 732,
+      "time_seconds": 15.844
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts domains from input string, makes HTTP requests to ipapi.com API with API key, and parses JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses json.loads which is safe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 713,
+      "completion_tokens": 78,
+      "total_tokens": 791,
+      "time_seconds": 10.856
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, parses domains, and makes HTTP requests to an API. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. The json() method is safe JSON parsing, not unsafe deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1120",
+          "repeat_id": 0,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 745,
+      "completion_tokens": 78,
+      "total_tokens": 823,
+      "time_seconds": 21.521
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts domains from a string, makes HTTP requests to an API, and parses JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses json.loads which is safe. Input is used in HTTP URLs but not in command execution or code evaluation contexts."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 705,
+      "completion_tokens": 89,
+      "total_tokens": 794,
+      "time_seconds": 9.732
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, makes HTTP requests to an IP geolocation API, and parses JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. The requests use HTTP (not HTTPS), but HTTP-only usage does not constitute CWE-295."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 707,
+      "completion_tokens": 87,
+      "total_tokens": 794,
+      "time_seconds": 2.96
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, parses domains, and makes HTTP requests to an API. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. The json.loads is used safely for parsing API responses."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 704,
+      "completion_tokens": 74,
+      "total_tokens": 778,
+      "time_seconds": 4.102
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, parses domains, and makes HTTP requests to an API. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. Input is used in HTTP requests but with no certificate validation disabled, and JSON parsing is safe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 81,
+      "total_tokens": 758,
+      "time_seconds": 3.183
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, makes HTTP requests to an IP geolocation API, and returns JSON results. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. The requests library performs TLS validation by default, and JSON parsing is safe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 708,
+      "completion_tokens": 81,
+      "total_tokens": 789,
+      "time_seconds": 3.792
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, parses domains, and makes HTTP requests to an API. There are no OS command executions, dynamic code evaluations, TLS validation bypasses, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 670,
+      "completion_tokens": 65,
+      "total_tokens": 735,
+      "time_seconds": 3.664
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, parses domains, and makes HTTP requests to an API. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. Input is used in HTTP URL construction but no command sinks, code evaluation, or deserialization exist."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 83,
+      "total_tokens": 756,
+      "time_seconds": 4.256
+    },
+    {
+      "task_id": "BigCodeBench/1128",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code reads JSON file, extracts and hashes a string value, then writes base64-encoded hash to a timestamped file. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present. JSON parsing uses safe json.load, and all operations are self-contained."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 81,
+      "total_tokens": 754,
+      "time_seconds": 3.491
+    },
+    {
+      "task_id": "BigCodeBench/1128",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file, extracts a value, computes its SHA-256 hash, base64-encodes it, and writes to a timestamped file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.load, and all operations are on processed data without external interaction."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 93,
+      "total_tokens": 796,
+      "time_seconds": 4.965
+    },
+    {
+      "task_id": "BigCodeBench/1128",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted file content from file_path reaches yaml.load with unsafe Loader=fileDeserializer.Loader (default Loader is unsafe), enabling arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 714,
+      "completion_tokens": 66,
+      "total_tokens": 780,
+      "time_seconds": 6.367
+    },
+    {
+      "task_id": "BigCodeBench/1128",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted file content from file_path reaches yaml.load with unsafe Loader=fileDeserializer.Loader (default Loader is unsafe), enabling arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 712,
+      "completion_tokens": 66,
+      "total_tokens": 778,
+      "time_seconds": 3.784
+    },
+    {
+      "task_id": "BigCodeBench/1128",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted file content from file_path reaches yaml.load with unsafe Loader, enabling arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 713,
+      "completion_tokens": 51,
+      "total_tokens": 764,
+      "time_seconds": 5.604
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code performs JSON parsing (safe), HTTP request with TLS (default validation), and file write with fixed path. No command execution, dynamic code evaluation, certificate validation bypass, or unsafe deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 66,
+      "total_tokens": 739,
+      "time_seconds": 6.067
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses json.loads for safe JSON parsing, requests.get for HTTP requests (which performs TLS validation by default), and file operations with fixed paths. No command execution, dynamic code evaluation, disabled TLS validation, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 72,
+      "total_tokens": 745,
+      "time_seconds": 2.915
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON to extract a URL, performs an HTTP GET request, and saves the response to a file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.loads, and requests.get uses default TLS validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 672,
+      "completion_tokens": 82,
+      "total_tokens": 754,
+      "time_seconds": 6.171
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code makes an HTTP request to a GitHub API endpoint, parses JSON response, and sorts repository names by creation date. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 627,
+      "completion_tokens": 75,
+      "total_tokens": 702,
+      "time_seconds": 2.814
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses json.loads for safe JSON parsing, requests.get for HTTP requests (which performs TLS validation by default), and file operations with no command execution, dynamic code evaluation, or unsafe deserialization sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 687,
+      "completion_tokens": 64,
+      "total_tokens": 751,
+      "time_seconds": 5.535
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses json.loads for safe JSON parsing, requests.get for HTTP requests (no TLS validation bypass), and file operations with fixed paths. No command execution, dynamic code evaluation, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 67,
+      "total_tokens": 740,
+      "time_seconds": 4.392
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code makes an HTTP request to a GitHub API endpoint, parses JSON response, and sorts repository names. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 636,
+      "completion_tokens": 72,
+      "total_tokens": 708,
+      "time_seconds": 5.836
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code makes an HTTP request to a GitHub API endpoint, parses JSON response safely with json.loads, and processes data without command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 628,
+      "completion_tokens": 64,
+      "total_tokens": 692,
+      "time_seconds": 4.45
+    },
+    {
+      "task_id": "BigCodeBench/158",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON from a URL and writes it to a gzip file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing and gzip writing are safe operations."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 607,
+      "completion_tokens": 68,
+      "total_tokens": 675,
+      "time_seconds": 4.696
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code makes an HTTP request to a GitHub API endpoint, parses JSON response, and sorts repository names. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 616,
+      "completion_tokens": 72,
+      "total_tokens": 688,
+      "time_seconds": 7.918
+    },
+    {
+      "task_id": "BigCodeBench/158",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads from a URL, parses JSON, and writes compressed JSON to a file. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 620,
+      "completion_tokens": 63,
+      "total_tokens": 683,
+      "time_seconds": 4.4
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code makes an HTTP request to a GitHub API endpoint, parses JSON response with json.loads (safe deserializer), and processes data without any OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 616,
+      "completion_tokens": 70,
+      "total_tokens": 686,
+      "time_seconds": 3.72
+    },
+    {
+      "task_id": "BigCodeBench/158",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads from a URL, parses JSON safely, and writes compressed JSON to a file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 62,
+      "total_tokens": 686,
+      "time_seconds": 3.884
+    },
+    {
+      "task_id": "BigCodeBench/158",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled URL response data reaches dynamic code execution via yaml.load with unsafe Loader. The urlopen fetches external data, which is passed to tempload (alias for yaml.load) with the unsafe Loader class."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 658,
+      "completion_tokens": 75,
+      "total_tokens": 733,
+      "time_seconds": 8.11
+    },
+    {
+      "task_id": "BigCodeBench/172",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code parses JSON input and extracts a datetime string, converts it to a datetime object, and checks if it's a weekend. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 586,
+      "completion_tokens": 67,
+      "total_tokens": 653,
+      "time_seconds": 4.403
+    },
+    {
+      "task_id": "BigCodeBench/158",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads from a URL, parses JSON safely, and writes compressed JSON to a file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 607,
+      "completion_tokens": 62,
+      "total_tokens": 669,
+      "time_seconds": 3.839
+    },
+    {
+      "task_id": "BigCodeBench/172",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, extracts a datetime string, converts it to a datetime object, and checks if it's a weekend day. There are no command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 586,
+      "completion_tokens": 71,
+      "total_tokens": 657,
+      "time_seconds": 3.997
+    },
+    {
+      "task_id": "BigCodeBench/172",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, extracts a datetime string, converts it to a datetime object, and checks if it's a weekend day. There are no command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 586,
+      "completion_tokens": 71,
+      "total_tokens": 657,
+      "time_seconds": 4.723
+    },
+    {
+      "task_id": "BigCodeBench/172",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, extracts a datetime string, converts it to a datetime object, and checks if it's a weekend day. There are no command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 586,
+      "completion_tokens": 71,
+      "total_tokens": 657,
+      "time_seconds": 6.328
+    },
+    {
+      "task_id": "BigCodeBench/172",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, extracts a datetime string, converts it to a datetime object, and checks if it's a weekend day. There are no command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 586,
+      "completion_tokens": 71,
+      "total_tokens": 657,
+      "time_seconds": 4.441
+    },
+    {
+      "task_id": "BigCodeBench/178",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code validates an IP address format using regex and returns a string. No command execution, dynamic code evaluation, TLS validation, or deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 597,
+      "completion_tokens": 54,
+      "total_tokens": 651,
+      "time_seconds": 4.269
+    },
+    {
+      "task_id": "BigCodeBench/178",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code validates an IP address format using regex and returns either the input or an error message. There are no command execution, dynamic code evaluation, TLS validation modifications, or deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 597,
+      "completion_tokens": 61,
+      "total_tokens": 658,
+      "time_seconds": 4.856
+    },
+    {
+      "task_id": "BigCodeBench/178",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code validates an IP address format using regex pattern matching. There are no command execution sinks, dynamic code evaluation, TLS configuration, or deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 594,
+      "completion_tokens": 54,
+      "total_tokens": 648,
+      "time_seconds": 5.899
+    },
+    {
+      "task_id": "BigCodeBench/178",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code validates an IP address format using regex and returns a string. No command execution, dynamic code evaluation, TLS validation, or deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 596,
+      "completion_tokens": 54,
+      "total_tokens": 650,
+      "time_seconds": 3.767
+    },
+    {
+      "task_id": "BigCodeBench/178",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code validates an IP address format using regex but contains no command execution, dynamic code evaluation, TLS/certificate handling, or deserialization sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 592,
+      "completion_tokens": 52,
+      "total_tokens": 644,
+      "time_seconds": 7.97
+    },
+    {
+      "task_id": "BigCodeBench/202",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, converts it back to a string, extracts URLs using regex, and counts occurrences. There are no command execution sinks, dynamic code evaluation, TLS validation modifications, or unsafe deserialization points. JSON parsing uses safe json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 74,
+      "total_tokens": 697,
+      "time_seconds": 4.086
+    },
+    {
+      "task_id": "BigCodeBench/202",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, converts it back to a string, extracts URLs using regex, and counts occurrences. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing with json.loads is safe and not CWE-502."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 80,
+      "total_tokens": 703,
+      "time_seconds": 4.233
+    },
+    {
+      "task_id": "BigCodeBench/202",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, converts it back to a string, extracts URLs using regex, and counts occurrences. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing is safe, and no network operations occur."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 610,
+      "completion_tokens": 76,
+      "total_tokens": 686,
+      "time_seconds": 4.007
+    },
+    {
+      "task_id": "BigCodeBench/202",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_str input reaches dynamic code execution sink via yaml.load with unsafe Loader. The code constructs the module name 'yaml' dynamically and uses yaml.load() which is unsafe without specifying a safe loader class."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 720,
+      "completion_tokens": 80,
+      "total_tokens": 800,
+      "time_seconds": 6.659
+    },
+    {
+      "task_id": "BigCodeBench/202",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, extracts URLs using regex, and counts occurrences. No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. JSON parsing uses safe json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/202",
+          "repeat_id": 2,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 603,
+      "completion_tokens": 66,
+      "total_tokens": 669,
+      "time_seconds": 26.922
+    },
+    {
+      "task_id": "BigCodeBench/203",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input to extract email recipients and sends emails via SMTP with TLS. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing is safe, and SMTP operations use TLS without certificate validation disabled."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 830,
+      "completion_tokens": 77,
+      "total_tokens": 907,
+      "time_seconds": 3.384
+    },
+    {
+      "task_id": "BigCodeBench/203",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input to extract recipient data, then sends an email using smtplib. There is no OS command execution (CWE-078), dynamic code evaluation (CWE-094), TLS validation bypass (CWE-295 uses starttls() correctly), or unsafe deserialization (CWE-502 uses safe json.loads). Input data is used only for email addresses and names in message body."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 757,
+      "completion_tokens": 108,
+      "total_tokens": 865,
+      "time_seconds": 5.156
+    },
+    {
+      "task_id": "BigCodeBench/203",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled input_data reaches unsafe deserialization via dynamically imported yaml.load with default Loader, which is known to be unsafe for arbitrary objects."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 794,
+      "completion_tokens": 59,
+      "total_tokens": 853,
+      "time_seconds": 4.209
+    },
+    {
+      "task_id": "BigCodeBench/203",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input to extract recipient data and sends emails via SMTP. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing is safe, and SMTP operations use standard library without certificate validation disabling."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 783,
+      "completion_tokens": 76,
+      "total_tokens": 859,
+      "time_seconds": 4.322
+    },
+    {
+      "task_id": "BigCodeBench/203",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled input_data is passed to dynamically imported yaml.load with unsafe Loader, enabling arbitrary object deserialization. The sink is reached via tempload(input_data) call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 807,
+      "completion_tokens": 65,
+      "total_tokens": 872,
+      "time_seconds": 3.911
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code performs HTTP request with requests.get, but uses default TLS validation. No command execution, dynamic code evaluation, or unsafe deserialization sinks present. Data processing involves pandas DataFrame operations and seaborn visualization without security-sensitive operations."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/215",
+          "repeat_id": 0,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 679,
+      "completion_tokens": 66,
+      "total_tokens": 745,
+      "time_seconds": 15.715
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code performs HTTP requests with requests.get, but uses default TLS settings (certificate validation enabled by default). It processes JSON data safely with json.loads, creates a DataFrame, and generates a heatmap. No OS command execution, dynamic code evaluation, unsafe deserialization, or TLS validation bypass is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 705,
+      "completion_tokens": 84,
+      "total_tokens": 789,
+      "time_seconds": 3.238
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code uses requests.get with default TLS settings (implicit validation), processes JSON data safely with pandas DataFrame operations, and generates a heatmap. No command execution, dynamic code evaluation, unsafe deserialization, or disabled certificate validation is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/215",
+          "repeat_id": 4,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 701,
+      "completion_tokens": 69,
+      "total_tokens": 770,
+      "time_seconds": 22.462
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code performs HTTP requests with requests.get, but does not disable TLS verification (verify=True by default). It processes JSON data and creates a DataFrame, but there are no command execution sinks, dynamic code evaluation, or unsafe deserialization points."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 691,
+      "completion_tokens": 70,
+      "total_tokens": 761,
+      "time_seconds": 11.447
+    },
+    {
+      "task_id": "BigCodeBench/216",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize JSON file contents. The file path comes from os.listdir(json_dir_path), which is attacker-controlled. No safe loader (like SafeLoader) is used, allowing potential arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 81,
+      "total_tokens": 771,
+      "time_seconds": 10.488
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code performs HTTP requests with requests.get, processes JSON data, creates a DataFrame, and generates a heatmap. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing is safe, and HTTP requests use default TLS validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 691,
+      "completion_tokens": 78,
+      "total_tokens": 769,
+      "time_seconds": 4.179
+    },
+    {
+      "task_id": "BigCodeBench/216",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents reach yaml.load via dynamically imported 'yaml' module with unsafe Loader, enabling arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 58,
+      "total_tokens": 748,
+      "time_seconds": 2.659
+    },
+    {
+      "task_id": "BigCodeBench/216",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents reach yaml.load with unsafe Loader=Loader, which allows arbitrary object deserialization. The code reads files from a directory path and directly passes file handles to yaml.load with the default Loader that is unsafe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 685,
+      "completion_tokens": 79,
+      "total_tokens": 764,
+      "time_seconds": 3.083
+    },
+    {
+      "task_id": "BigCodeBench/216",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents reach yaml.load with unsafe Loader=Loader, which can execute arbitrary code during deserialization. The code reads files from a directory path and directly passes file contents to the dynamic yaml.load call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 683,
+      "completion_tokens": 76,
+      "total_tokens": 759,
+      "time_seconds": 4.701
+    },
+    {
+      "task_id": "BigCodeBench/260",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content is loaded via dynamically imported yaml.load with unsafe Loader, allowing arbitrary code execution if file contains malicious YAML."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 58,
+      "total_tokens": 747,
+      "time_seconds": 4.217
+    },
+    {
+      "task_id": "BigCodeBench/216",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents reach dynamic code execution via __import__('yaml') and yaml.load with unsafe Loader. The file path is constructed from untrusted json_dir_path argument and directory listing."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 714,
+      "completion_tokens": 71,
+      "total_tokens": 785,
+      "time_seconds": 5.378
+    },
+    {
+      "task_id": "BigCodeBench/260",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize JSON file contents. File contents from directory are untrusted input source. The sink is yaml.load with default Loader, which is known to execute arbitrary Python code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 77,
+      "total_tokens": 766,
+      "time_seconds": 4.891
+    },
+    {
+      "task_id": "BigCodeBench/260",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content reaches yaml.load with unsafe Loader (Loader=streamDeserializer.Loader) which is equivalent to yaml.load without specifying SafeLoader, allowing arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 71,
+      "total_tokens": 760,
+      "time_seconds": 6.55
+    },
+    {
+      "task_id": "BigCodeBench/260",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads and writes JSON files using safe json.load and json.dump. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. KEY and VALUE are fixed strings, not attacker-controlled."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 69,
+      "total_tokens": 721,
+      "time_seconds": 3.791
+    },
+    {
+      "task_id": "BigCodeBench/260",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents reach unsafe deserialization sink: yaml.load with unsafe Loader (default Loader allows arbitrary object instantiation). Source: file contents from glob.glob. Sink: tempload(f) calling yaml.load."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 79,
+      "total_tokens": 768,
+      "time_seconds": 8.841
+    },
+    {
+      "task_id": "BigCodeBench/272",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that parses JSON input but does not contain any command execution (CWE-078), dynamic code evaluation (CWE-094), TLS validation bypass (CWE-295), or unsafe deserialization (CWE-502) sinks. It only uses safe JSON parsing and returns error responses."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 870,
+      "completion_tokens": 88,
+      "total_tokens": 958,
+      "time_seconds": 2.955
+    },
+    {
+      "task_id": "BigCodeBench/272",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that parses JSON input but only performs safe JSON parsing and response generation. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 865,
+      "completion_tokens": 65,
+      "total_tokens": 930,
+      "time_seconds": 4.044
+    },
+    {
+      "task_id": "BigCodeBench/272",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that parses JSON input but only uses safe operations: json.loads for JSON parsing (safe deserialization), and writes JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 870,
+      "completion_tokens": 78,
+      "total_tokens": 948,
+      "time_seconds": 4.299
+    },
+    {
+      "task_id": "BigCodeBench/272",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code defines an HTTP POST handler that parses JSON input but only performs safe JSON parsing and response writing. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 870,
+      "completion_tokens": 65,
+      "total_tokens": 935,
+      "time_seconds": 3.609
+    },
+    {
+      "task_id": "BigCodeBench/272",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that parses JSON data but only performs safe JSON parsing and response writing. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 870,
+      "completion_tokens": 70,
+      "total_tokens": 940,
+      "time_seconds": 7.1
+    },
+    {
+      "task_id": "BigCodeBench/273",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that only parses JSON input and returns static responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 889,
+      "completion_tokens": 61,
+      "total_tokens": 950,
+      "time_seconds": 3.082
+    },
+    {
+      "task_id": "BigCodeBench/273",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that parses JSON data but only performs safe JSON parsing and response generation. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 950,
+      "completion_tokens": 65,
+      "total_tokens": 1015,
+      "time_seconds": 3.699
+    },
+    {
+      "task_id": "BigCodeBench/273",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code defines an HTTP POST handler that parses JSON input but only validates structure and content type. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 911,
+      "completion_tokens": 63,
+      "total_tokens": 974,
+      "time_seconds": 5.245
+    },
+    {
+      "task_id": "BigCodeBench/273",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP POST handler that parses JSON data but does not contain any command execution sinks, dynamic code evaluation, TLS validation bypasses, or unsafe deserialization. Input validation is performed and only JSON parsing is used."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 914,
+      "completion_tokens": 68,
+      "total_tokens": 982,
+      "time_seconds": 10.242
+    },
+    {
+      "task_id": "BigCodeBench/273",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code implements an HTTP server that only parses JSON data from POST requests. There are no OS command executions, dynamic code evaluations, TLS configurations, or deserialization sinks present. JSON parsing with json.loads is safe and not vulnerable to CWE-502."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 972,
+      "completion_tokens": 75,
+      "total_tokens": 1047,
+      "time_seconds": 5.954
+    },
+    {
+      "task_id": "BigCodeBench/274",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes HTTP POST data to send email via SMTP with TLS. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization. JSON parsing is safe, and SMTP parameters are fixed function arguments."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 878,
+      "completion_tokens": 73,
+      "total_tokens": 951,
+      "time_seconds": 4.186
+    },
+    {
+      "task_id": "BigCodeBench/274",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code handles HTTP POST requests with JSON data to send emails via SMTP. It validates content type, parses JSON safely, checks for required keys, and uses MIMEText to construct the email. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 969,
+      "completion_tokens": 89,
+      "total_tokens": 1058,
+      "time_seconds": 4.688
+    },
+    {
+      "task_id": "BigCodeBench/288",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents (source) reach yaml.load (sink) with unsafe Loader. The code uses yaml.load with the default Loader, which is unsafe and can lead to arbitrary code execution when processing malicious YAML content."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 669,
+      "completion_tokens": 78,
+      "total_tokens": 747,
+      "time_seconds": 4.099
+    },
+    {
+      "task_id": "BigCodeBench/274",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "POST data is decoded and passed to yaml.load with unsafe Loader, allowing arbitrary object deserialization from attacker-controlled input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 921,
+      "completion_tokens": 54,
+      "total_tokens": 975,
+      "time_seconds": 2.628
+    },
+    {
+      "task_id": "BigCodeBench/288",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file content reaches dynamic code execution: file contents from directory_path are loaded via yaml.load with unsafe Loader, which can execute arbitrary code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 667,
+      "completion_tokens": 60,
+      "total_tokens": 727,
+      "time_seconds": 4.376
+    },
+    {
+      "task_id": "BigCodeBench/274",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code creates an HTTP handler that accepts JSON POST data to send emails via SMTP with TLS. No OS command execution, dynamic code evaluation, unsafe deserialization, or disabled TLS validation is present. SMTP TLS is properly enabled with starttls(), and input is validated as JSON with required keys."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 953,
+      "completion_tokens": 88,
+      "total_tokens": 1041,
+      "time_seconds": 5.979
+    },
+    {
+      "task_id": "BigCodeBench/274",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled POST body data is decoded and passed to a dynamically imported yaml.load with an unsafe Loader, allowing arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 919,
+      "completion_tokens": 58,
+      "total_tokens": 977,
+      "time_seconds": 3.947
+    },
+    {
+      "task_id": "BigCodeBench/288",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents reach yaml.load with unsafe Loader (streamDeserializer.Loader) via file_path from directory_path argument. No validation of input files before deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 669,
+      "completion_tokens": 72,
+      "total_tokens": 741,
+      "time_seconds": 6.181
+    },
+    {
+      "task_id": "BigCodeBench/288",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file content reaches dynamic code execution: file contents from directory_path are loaded using yaml.load with unsafe Loader, which can execute arbitrary Python code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 669,
+      "completion_tokens": 66,
+      "total_tokens": 735,
+      "time_seconds": 3.579
+    },
+    {
+      "task_id": "BigCodeBench/288",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents reach dynamic code execution via yaml.load with unsafe Loader. The source is file contents from directory_path argument, propagated to tempload lambda which calls yaml.load with default Loader, known to be unsafe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 667,
+      "completion_tokens": 76,
+      "total_tokens": 743,
+      "time_seconds": 4.661
+    },
+    {
+      "task_id": "BigCodeBench/30",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which can instantiate arbitrary Python objects when deserializing attacker-controlled YAML content from file_path."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 841,
+      "completion_tokens": 61,
+      "total_tokens": 902,
+      "time_seconds": 4.774
+    },
+    {
+      "task_id": "BigCodeBench/30",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which can execute arbitrary Python code when processing malicious YAML content. The file_path argument is not validated to be safe, and the file content is directly deserialized."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 836,
+      "completion_tokens": 75,
+      "total_tokens": 911,
+      "time_seconds": 4.355
+    },
+    {
+      "task_id": "BigCodeBench/30",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file content reaches unsafe deserialization sink yaml.load with unsafe Loader (fileDeserializer.Loader) without safe loading restrictions."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 855,
+      "completion_tokens": 64,
+      "total_tokens": 919,
+      "time_seconds": 5.932
+    },
+    {
+      "task_id": "BigCodeBench/30",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file content reaches yaml.load with unsafe Loader=fileDeserializer.Loader (default Loader is unsafe), enabling arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 852,
+      "completion_tokens": 67,
+      "total_tokens": 919,
+      "time_seconds": 3.87
+    },
+    {
+      "task_id": "BigCodeBench/329",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_path leads to file read, contents passed to unsafe yaml.load with unspecified Loader (defaults to unsafe Loader), enabling arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 672,
+      "completion_tokens": 64,
+      "total_tokens": 736,
+      "time_seconds": 4.418
+    },
+    {
+      "task_id": "BigCodeBench/30",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which can deserialize arbitrary Python objects. The file_path parameter controls which file is read and deserialized, providing a feasible path for attacker-controlled data to reach the dangerous sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 853,
+      "completion_tokens": 77,
+      "total_tokens": 930,
+      "time_seconds": 5.154
+    },
+    {
+      "task_id": "BigCodeBench/329",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents (source) are deserialized using yaml.load with unsafe Loader (sink) via dynamically imported yaml module. The Loader=streamDeserializer.Loader uses the unsafe default Loader that allows arbitrary Python object instantiation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 684,
+      "completion_tokens": 84,
+      "total_tokens": 768,
+      "time_seconds": 6.146
+    },
+    {
+      "task_id": "BigCodeBench/329",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "File path is attacker-controlled via file_path parameter. File contents are deserialized using yaml.load with unsafe Loader (fileDeserializer.Loader), which can execute arbitrary code during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 70,
+      "total_tokens": 747,
+      "time_seconds": 3.92
+    },
+    {
+      "task_id": "BigCodeBench/329",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "File contents (attacker-controlled) are deserialized using yaml.load with the default Loader, which is unsafe and allows arbitrary code execution when processing YAML payloads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 653,
+      "completion_tokens": 64,
+      "total_tokens": 717,
+      "time_seconds": 5.848
+    },
+    {
+      "task_id": "BigCodeBench/329",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents reach yaml.load with unsafe Loader=Loader, which allows arbitrary object deserialization. The code reads .json files but uses yaml.load with the default Loader, which is unsafe. No validation of file contents occurs before deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 684,
+      "completion_tokens": 84,
+      "total_tokens": 768,
+      "time_seconds": 4.374
+    },
+    {
+      "task_id": "BigCodeBench/358",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_list input reaches dynamic YAML deserialization via stringDeserializer.load with unsafe Loader, which can execute arbitrary code. The code uses a string concatenation to obscure the 'yaml' import and a lambda to wrap the loader."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 666,
+      "completion_tokens": 81,
+      "total_tokens": 747,
+      "time_seconds": 4.866
+    },
+    {
+      "task_id": "BigCodeBench/358",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_list input reaches dynamic code execution sink via yaml.load with unsafe Loader. The code constructs the module name 'yaml' dynamically and uses the default Loader which is unsafe for untrusted input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 664,
+      "completion_tokens": 73,
+      "total_tokens": 737,
+      "time_seconds": 5.123
+    },
+    {
+      "task_id": "BigCodeBench/358",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled 'json_list' input reaches unsafe deserializer via dynamically imported 'yaml.load' with Loader parameter, which is known to be unsafe when loading arbitrary data."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 657,
+      "completion_tokens": 65,
+      "total_tokens": 722,
+      "time_seconds": 4.61
+    },
+    {
+      "task_id": "BigCodeBench/358",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input with json.loads, which is safe from code injection. It then processes the 'number_list' field using itertools.combinations, which performs mathematical operations. There are no OS command executions, dynamic code evaluations, TLS validations, or unsafe deserializations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 605,
+      "completion_tokens": 81,
+      "total_tokens": 686,
+      "time_seconds": 8.712
+    },
+    {
+      "task_id": "BigCodeBench/358",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_list input reaches dynamic code execution sink via yaml.load with unsafe Loader. The code uses string concatenation to obfuscate 'yaml' import and calls yaml.load with default Loader, which is unsafe for untrusted input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/358",
+          "repeat_id": 3,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 664,
+      "completion_tokens": 82,
+      "total_tokens": 746,
+      "time_seconds": 19.451
+    },
+    {
+      "task_id": "BigCodeBench/370",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON files, escapes double quotes, and writes them back. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization are present. File paths come from glob pattern, not direct user input, and content is treated as text, not executed."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 667,
+      "completion_tokens": 79,
+      "total_tokens": 746,
+      "time_seconds": 2.847
+    },
+    {
+      "task_id": "BigCodeBench/370",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON files, escapes double quotes, and writes them back. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. All file operations use safe paths from glob, and JSON parsing is not used."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 73,
+      "total_tokens": 746,
+      "time_seconds": 5.561
+    },
+    {
+      "task_id": "BigCodeBench/370",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON files, escapes double quotes, and writes them back. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/370",
+          "repeat_id": 2,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 673,
+      "completion_tokens": 57,
+      "total_tokens": 730,
+      "time_seconds": 19.06
+    },
+    {
+      "task_id": "BigCodeBench/370",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON files, escapes double quotes, and writes them back. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization are present. File operations use fixed paths from a directory parameter, but content is processed safely without code execution sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/370",
+          "repeat_id": 3,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 663,
+      "completion_tokens": 77,
+      "total_tokens": 740,
+      "time_seconds": 17.294
+    },
+    {
+      "task_id": "BigCodeBench/370",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON files, escapes double quotes by adding backslashes, and writes back to the same files. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization is present. All file operations are on static paths with no external input to command execution or code evaluation sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 674,
+      "completion_tokens": 84,
+      "total_tokens": 758,
+      "time_seconds": 8.657
+    },
+    {
+      "task_id": "BigCodeBench/397",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a URL, searches for an IP address pattern using regex, and returns the result. There are no command execution sinks, dynamic code evaluation, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 644,
+      "completion_tokens": 67,
+      "total_tokens": 711,
+      "time_seconds": 8.022
+    },
+    {
+      "task_id": "BigCodeBench/397",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a URL, searches for an IP address pattern using regex, and returns the result. There are no command execution sinks, dynamic code evaluation, TLS validation modifications, or deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 646,
+      "completion_tokens": 66,
+      "total_tokens": 712,
+      "time_seconds": 2.191
+    },
+    {
+      "task_id": "BigCodeBench/397",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code performs HTTP request, parses JSON safely, and uses regex to extract IP-like patterns from stringified data. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 644,
+      "completion_tokens": 64,
+      "total_tokens": 708,
+      "time_seconds": 3.885
+    },
+    {
+      "task_id": "BigCodeBench/397",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a URL, searches for an IP address pattern using regex, and returns the match or an error message. There are no command execution sinks, dynamic code evaluation, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 646,
+      "completion_tokens": 71,
+      "total_tokens": 717,
+      "time_seconds": 5.99
+    },
+    {
+      "task_id": "BigCodeBench/397",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a URL, searches for an IP address pattern using regex, and returns the match or an error message. There are no command execution sinks (CWE-078), dynamic code evaluation (CWE-094), TLS validation modifications (CWE-295), or unsafe deserialization (CWE-502). The URL is used with urlopen without certificate validation bypass, but HTTP-only requests are excluded from CWE-295."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 646,
+      "completion_tokens": 113,
+      "total_tokens": 759,
+      "time_seconds": 4.508
+    },
+    {
+      "task_id": "BigCodeBench/398",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "File contents (attacker-controlled) are deserialized using yaml.load with an unsafe Loader (fileDeserializer.Loader), which can execute arbitrary code during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 66,
+      "total_tokens": 698,
+      "time_seconds": 8.294
+    },
+    {
+      "task_id": "BigCodeBench/398",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "File contents (attacker-controlled source) are directly passed to yaml.load with unsafe Loader (dangerous sink), enabling arbitrary code execution. No validation of input structure occurs before deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 68,
+      "total_tokens": 700,
+      "time_seconds": 3.783
+    },
+    {
+      "task_id": "BigCodeBench/398",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents reach yaml.load with unsafe Loader. The code uses yaml.load (via dynamic import) with the default Loader, which is unsafe and can execute arbitrary code during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 618,
+      "completion_tokens": 72,
+      "total_tokens": 690,
+      "time_seconds": 4.216
+    },
+    {
+      "task_id": "BigCodeBench/398",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file content reaches yaml.load with unsafe Loader (fileDeserializer.Loader), which deserializes arbitrary YAML. No validation occurs before deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 65,
+      "total_tokens": 697,
+      "time_seconds": 4.699
+    },
+    {
+      "task_id": "BigCodeBench/398",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents reach yaml.load with unsafe Loader. The code uses yaml.load (via dynamic import) with the default Loader, which is unsafe and can execute arbitrary code during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 618,
+      "completion_tokens": 72,
+      "total_tokens": 690,
+      "time_seconds": 11.796
+    },
+    {
+      "task_id": "BigCodeBench/400",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file contents reach dynamic code execution via yaml.load with unsafe Loader. The code uses __import__('yaml') and loads file content with yaml.load(f, Loader=yaml.Loader), which is unsafe for untrusted input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 685,
+      "completion_tokens": 87,
+      "total_tokens": 772,
+      "time_seconds": 4.389
+    },
+    {
+      "task_id": "BigCodeBench/400",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize JSON file contents, which are attacker-controlled from the directory parameter. The deserialized data is processed, creating a path from file input to dangerous deserialization sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 740,
+      "completion_tokens": 77,
+      "total_tokens": 817,
+      "time_seconds": 4.389
+    },
+    {
+      "task_id": "BigCodeBench/400",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which can instantiate arbitrary Python objects. The YAML data comes from JSON files in a directory, which could be attacker-controlled. The recursive directory traversal and file reading create a feasible path for malicious input to reach the deserialization sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 724,
+      "completion_tokens": 89,
+      "total_tokens": 813,
+      "time_seconds": 4.752
+    },
+    {
+      "task_id": "BigCodeBench/400",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents from directory are loaded via yaml.load with unsafe Loader, enabling arbitrary code execution when deserializing YAML."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 696,
+      "completion_tokens": 57,
+      "total_tokens": 753,
+      "time_seconds": 2.819
+    },
+    {
+      "task_id": "BigCodeBench/400",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file contents from directory traversal (source) reach dynamic code execution via yaml.load with unsafe Loader (sink). The loader is explicitly set to the unsafe fileDeserializer.Loader, which is yaml.Loader."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 77,
+      "total_tokens": 766,
+      "time_seconds": 3.971
+    },
+    {
+      "task_id": "BigCodeBench/412",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file, base64 decodes each value, normalizes Unicode, and returns a dictionary. There are no command execution sinks, dynamic code evaluation, TLS configuration, or unsafe deserialization points."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 654,
+      "completion_tokens": 65,
+      "total_tokens": 719,
+      "time_seconds": 8.8
+    },
+    {
+      "task_id": "BigCodeBench/412",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file, base64 decodes each value, UTF-8 decodes it, and normalizes unicode. There are no OS command executions, dynamic code evaluations, TLS configurations, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 659,
+      "completion_tokens": 70,
+      "total_tokens": 729,
+      "time_seconds": 3.046
+    },
+    {
+      "task_id": "BigCodeBench/412",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted JSON file content is passed to yaml.load with unsafe Loader (fileDeserializer.Loader), enabling arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 60,
+      "total_tokens": 737,
+      "time_seconds": 3.032
+    },
+    {
+      "task_id": "BigCodeBench/412",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the default Loader (fileDeserializer.Loader) on file contents (json_file input), which is unsafe for attacker-controlled data. The file is read and directly passed to the deserializer without validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 78,
+      "total_tokens": 755,
+      "time_seconds": 4.652
+    },
+    {
+      "task_id": "BigCodeBench/412",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with a Loader argument that defaults to the unsafe Loader class, deserializing attacker-controlled content from a file specified by the caller. No safe loader (like SafeLoader) is used, allowing potential arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 79,
+      "total_tokens": 756,
+      "time_seconds": 2.879
+    },
+    {
+      "task_id": "BigCodeBench/458",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The function uses yaml.load with the unsafe Loader class on attacker-controlled json_str input, allowing arbitrary code execution via YAML deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 828,
+      "completion_tokens": 58,
+      "total_tokens": 886,
+      "time_seconds": 4.616
+    },
+    {
+      "task_id": "BigCodeBench/458",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The function uses dynamic import to import 'yaml' (obfuscated as 'ya' + 'ml'), then passes attacker-controlled json_str to yaml.load with a Loader, which deserializes YAML and can execute arbitrary code if the input contains malicious constructs."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 828,
+      "completion_tokens": 85,
+      "total_tokens": 913,
+      "time_seconds": 7.458
+    },
+    {
+      "task_id": "BigCodeBench/458",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class on attacker-controlled json_str input, which can deserialize arbitrary Python objects."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 828,
+      "completion_tokens": 55,
+      "total_tokens": 883,
+      "time_seconds": 3.976
+    },
+    {
+      "task_id": "BigCodeBench/526",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file, processes numeric data using pandas and numpy for statistical calculations (mean, median), and returns a DataFrame. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing with json.load is safe and does not involve code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 83,
+      "total_tokens": 773,
+      "time_seconds": 4.374
+    },
+    {
+      "task_id": "BigCodeBench/458",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_str input reaches dynamic import of 'yaml' module and yaml.load() with unsafe Loader, allowing arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 830,
+      "completion_tokens": 58,
+      "total_tokens": 888,
+      "time_seconds": 8.225
+    },
+    {
+      "task_id": "BigCodeBench/458",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_str input reaches dynamic code execution sink via yaml.load with unsafe Loader, bypassing safe literal parsing."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 829,
+      "completion_tokens": 54,
+      "total_tokens": 883,
+      "time_seconds": 3.649
+    },
+    {
+      "task_id": "BigCodeBench/526",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with an unsafe Loader (fileDeserializer.Loader) to deserialize data from an input file. The input file path is controllable via the 'input_file' parameter, making the deserialization source attacker-controlled. No validation or restriction is applied to the loaded content."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 730,
+      "completion_tokens": 90,
+      "total_tokens": 820,
+      "time_seconds": 4.925
+    },
+    {
+      "task_id": "BigCodeBench/526",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with an unsafe Loader (fileDeserializer.Loader) on file contents from input_file, which is attacker-controlled. No validation or sanitization is applied before deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 738,
+      "completion_tokens": 71,
+      "total_tokens": 809,
+      "time_seconds": 3.951
+    },
+    {
+      "task_id": "BigCodeBench/526",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize data from an input file. The file path is provided as an argument, making the input potentially attacker-controlled. There are no restrictions on the YAML content, allowing arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 738,
+      "completion_tokens": 84,
+      "total_tokens": 822,
+      "time_seconds": 7.323
+    },
+    {
+      "task_id": "BigCodeBench/526",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file, processes numeric data using pandas and numpy for statistical calculations (mean, median), and returns a DataFrame. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 682,
+      "completion_tokens": 69,
+      "total_tokens": 751,
+      "time_seconds": 4.277
+    },
+    {
+      "task_id": "BigCodeBench/527",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted file input reaches yaml.load with unsafe Loader=fileDeserializer.Loader (equivalent to yaml.Loader), which deserializes arbitrary YAML content including Python objects."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 778,
+      "completion_tokens": 67,
+      "total_tokens": 845,
+      "time_seconds": 6.629
+    },
+    {
+      "task_id": "BigCodeBench/527",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class (fileDeserializer.Loader) to deserialize data from an input file. The input file path is provided by the caller and its contents are untrusted. This creates a deserialization vulnerability where malicious YAML content could execute arbitrary code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 775,
+      "completion_tokens": 90,
+      "total_tokens": 865,
+      "time_seconds": 3.646
+    },
+    {
+      "task_id": "BigCodeBench/527",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class from the yaml module to deserialize data from an input file. The file content is attacker-controlled via input_file parameter, creating a direct path from source to dangerous deserialization sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 778,
+      "completion_tokens": 78,
+      "total_tokens": 856,
+      "time_seconds": 4.05
+    },
+    {
+      "task_id": "BigCodeBench/527",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled input_file content reaches unsafe deserializer: yaml.load(f, Loader=yaml.Loader) which uses unsafe Loader by default. No safe loader (e.g., SafeLoader) specified, allowing arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 775,
+      "completion_tokens": 82,
+      "total_tokens": 857,
+      "time_seconds": 6.188
+    },
+    {
+      "task_id": "BigCodeBench/527",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled input file content reaches unsafe deserialization sink yaml.load with default Loader, which is unsafe. The code uses __import__('yaml') and loads data with yaml.load(f, Loader=yaml.Loader), allowing arbitrary object instantiation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 778,
+      "completion_tokens": 89,
+      "total_tokens": 867,
+      "time_seconds": 3.618
+    },
+    {
+      "task_id": "BigCodeBench/678",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content (source) is passed to yaml.load (sink) with unsafe Loader, enabling arbitrary code execution. The loader is explicitly set to the unsafe yaml.Loader."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 724,
+      "completion_tokens": 70,
+      "total_tokens": 794,
+      "time_seconds": 7.249
+    },
+    {
+      "task_id": "BigCodeBench/678",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content reaches yaml.load with unsafe Loader via imported streamDeserializer, which is PyYAML's default Loader that allows arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 738,
+      "completion_tokens": 66,
+      "total_tokens": 804,
+      "time_seconds": 3.564
+    },
+    {
+      "task_id": "BigCodeBench/678",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content reaches dynamic code execution via yaml.load with unsafe Loader. The code imports yaml dynamically via __import__ and uses yaml.load with the unsafe Loader class, which can execute arbitrary Python code when processing malicious YAML content. Files from the path parameter are read and passed directly to this loader."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 727,
+      "completion_tokens": 96,
+      "total_tokens": 823,
+      "time_seconds": 3.889
+    },
+    {
+      "task_id": "BigCodeBench/678",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file content from path/*.json reaches yaml.load with unsafe Loader=Loader, which deserializes arbitrary YAML including Python objects."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 742,
+      "completion_tokens": 60,
+      "total_tokens": 802,
+      "time_seconds": 3.683
+    },
+    {
+      "task_id": "BigCodeBench/681",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON data into a pandas DataFrame, drops a specified column, and writes to a JSON file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing with pandas.read_json is safe and does not involve code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 582,
+      "completion_tokens": 79,
+      "total_tokens": 661,
+      "time_seconds": 6.819
+    },
+    {
+      "task_id": "BigCodeBench/681",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads from file_path (attacker-controlled source) and passes the content to yaml.load with an unsafe Loader (yaml.Loader) via tempload function, which is a direct sink for unsafe deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 75,
+      "total_tokens": 698,
+      "time_seconds": 4.214
+    },
+    {
+      "task_id": "BigCodeBench/678",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content reaches yaml.load with unsafe Loader (Loader=streamDeserializer.Loader) via file reading, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 724,
+      "completion_tokens": 61,
+      "total_tokens": 785,
+      "time_seconds": 3.492
+    },
+    {
+      "task_id": "BigCodeBench/681",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON data into a pandas DataFrame, optionally drops a column if present, and writes the result to a file. There are no command execution sinks, dynamic code evaluation, TLS configuration, or deserialization of unsafe formats."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 589,
+      "completion_tokens": 68,
+      "total_tokens": 657,
+      "time_seconds": 5.587
+    },
+    {
+      "task_id": "BigCodeBench/681",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with a Loader argument, which is unsafe when loading untrusted input. The file_path parameter controls file reading, and the YAML deserialization occurs without safe loading (Loader=fileDeserializer.Loader is equivalent to the unsafe yaml.Loader)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 646,
+      "completion_tokens": 87,
+      "total_tokens": 733,
+      "time_seconds": 8.952
+    },
+    {
+      "task_id": "BigCodeBench/681",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file into a pandas DataFrame, drops a specified column, and writes to another JSON file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing with pandas.read_json is safe and does not involve code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 582,
+      "completion_tokens": 80,
+      "total_tokens": 662,
+      "time_seconds": 2.951
+    },
+    {
+      "task_id": "BigCodeBench/70",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which can instantiate arbitrary Python objects when processing attacker-controlled input from the JSON file. The file content is read and directly passed to the deserializer without validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 710,
+      "completion_tokens": 74,
+      "total_tokens": 784,
+      "time_seconds": 4.294
+    },
+    {
+      "task_id": "BigCodeBench/70",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class (fileDeserializer.Loader) to deserialize JSON file contents, which can execute arbitrary code if the input contains malicious YAML. The file path is provided as an argument, making the data source potentially attacker-controlled."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 812,
+      "completion_tokens": 85,
+      "total_tokens": 897,
+      "time_seconds": 14.851
+    },
+    {
+      "task_id": "BigCodeBench/70",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class (fileDeserializer.Loader) to deserialize JSON file contents. The file content is attacker-controlled via the json_file parameter. No safe loader (like SafeLoader) is used, allowing potential arbitrary code execution during YAML deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 731,
+      "completion_tokens": 90,
+      "total_tokens": 821,
+      "time_seconds": 4.319
+    },
+    {
+      "task_id": "BigCodeBench/70",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content reaches unsafe YAML deserialization via yaml.load with default Loader, which is unsafe. The code uses __import__('yaml') and loads data with yaml.load(f, Loader=yaml.Loader), allowing arbitrary code execution if the input contains malicious YAML."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/70",
+          "repeat_id": 4,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 863,
+      "completion_tokens": 92,
+      "total_tokens": 955,
+      "time_seconds": 17.131
+    },
+    {
+      "task_id": "BigCodeBench/70",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with a Loader argument that defaults to the unsafe yaml.Loader when the import succeeds, allowing arbitrary YAML deserialization from attacker-controlled json_file path."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/70",
+          "repeat_id": 0,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 930,
+      "completion_tokens": 67,
+      "total_tokens": 997,
+      "time_seconds": 16.449
+    },
+    {
+      "task_id": "BigCodeBench/708",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes a base64-encoded JSON string, writes parsed data to a CSV file, and returns the file path. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing and CSV writing are safe operations."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/708",
+          "repeat_id": 0,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 745,
+      "completion_tokens": 76,
+      "total_tokens": 821,
+      "time_seconds": 14.971
+    },
+    {
+      "task_id": "BigCodeBench/708",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code decodes a base64 string, parses it as JSON, and writes the data to a CSV file. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 645,
+      "completion_tokens": 68,
+      "total_tokens": 713,
+      "time_seconds": 8.131
+    },
+    {
+      "task_id": "BigCodeBench/708",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code decodes a base64 string, parses JSON, and writes to a CSV file. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization are present. JSON parsing uses safe json.loads, and file operations are data writing only."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 78,
+      "total_tokens": 775,
+      "time_seconds": 2.208
+    },
+    {
+      "task_id": "BigCodeBench/708",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled raw_string is base64-decoded to decoded_str, which is passed to yaml.load with unsafe Loader via tempload, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 745,
+      "completion_tokens": 62,
+      "total_tokens": 807,
+      "time_seconds": 2.201
+    },
+    {
+      "task_id": "BigCodeBench/711",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which can instantiate arbitrary Python objects if attacker-controlled data from json_file is provided. The data flows from file input directly to the deserialization sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 72,
+      "total_tokens": 724,
+      "time_seconds": 12.139
+    },
+    {
+      "task_id": "BigCodeBench/708",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled raw_string is base64-decoded to decoded_str, which is passed to dynamic YAML loader via stringDeserializer.load, allowing arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 744,
+      "completion_tokens": 62,
+      "total_tokens": 806,
+      "time_seconds": 3.989
+    },
+    {
+      "task_id": "BigCodeBench/711",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code reads JSON and writes CSV using safe parsing libraries (json.load, csv.writer). No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 619,
+      "completion_tokens": 60,
+      "total_tokens": 679,
+      "time_seconds": 3.182
+    },
+    {
+      "task_id": "BigCodeBench/711",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content is loaded using yaml.load with an unsafe Loader, enabling arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 53,
+      "total_tokens": 705,
+      "time_seconds": 3.487
+    },
+    {
+      "task_id": "BigCodeBench/711",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with a Loader argument that defaults to an unsafe loader when __import__('yaml') resolves to the PyYAML library. The JSON file content is attacker-controlled input that reaches the deserialization sink without a safe loader specified."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 712,
+      "completion_tokens": 82,
+      "total_tokens": 794,
+      "time_seconds": 3.835
+    },
+    {
+      "task_id": "BigCodeBench/716",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON file content reaches yaml.load with unsafe Loader, enabling arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 686,
+      "completion_tokens": 52,
+      "total_tokens": 738,
+      "time_seconds": 5.949
+    },
+    {
+      "task_id": "BigCodeBench/716",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted JSON_FILE content reaches yaml.load with unsafe Loader=fileDeserializer.Loader (equivalent to yaml.load without SafeLoader), enabling arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 67,
+      "total_tokens": 760,
+      "time_seconds": 3.058
+    },
+    {
+      "task_id": "BigCodeBench/711",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code reads JSON and writes CSV using safe parsing and serialization methods. No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 619,
+      "completion_tokens": 56,
+      "total_tokens": 675,
+      "time_seconds": 2.895
+    },
+    {
+      "task_id": "BigCodeBench/716",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize content from a file (json_file parameter). The file path is parameter-controlled, making the YAML content attacker-controlled. No safe loader (like SafeLoader) is used, allowing potential arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 88,
+      "total_tokens": 781,
+      "time_seconds": 6.344
+    },
+    {
+      "task_id": "BigCodeBench/716",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize content from a file (json_file parameter). The file path is parameter-controlled, making the YAML content attacker-controlled. No safe loader (like SafeLoader) is used, allowing potential arbitrary code execution during deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 88,
+      "total_tokens": 781,
+      "time_seconds": 8.467
+    },
+    {
+      "task_id": "BigCodeBench/716",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled JSON_FILE content reaches yaml.load with unsafe Loader (fileDeserializer.Loader), which deserializes arbitrary YAML including potential code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 62,
+      "total_tokens": 755,
+      "time_seconds": 3.155
+    },
+    {
+      "task_id": "BigCodeBench/724",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Untrusted file content from config_path is passed to yaml.load with unsafe Loader, enabling arbitrary object deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 53,
+      "total_tokens": 685,
+      "time_seconds": 3.761
+    },
+    {
+      "task_id": "BigCodeBench/724",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled config_path leads to file read, contents passed to yaml.load with unsafe Loader (default Loader allows arbitrary object instantiation), creating deserialization sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 64,
+      "total_tokens": 696,
+      "time_seconds": 3.559
+    },
+    {
+      "task_id": "BigCodeBench/724",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a file from config_path (source), passes it to yaml.load with Loader=yaml.Loader (unsafe deserializer sink), which is known to execute arbitrary code during YAML parsing."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 72,
+      "total_tokens": 704,
+      "time_seconds": 7.09
+    },
+    {
+      "task_id": "BigCodeBench/724",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled config_path leads to file read, contents passed to yaml.load with unsafe Loader (default Loader is unsafe), enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 60,
+      "total_tokens": 692,
+      "time_seconds": 3.491
+    },
+    {
+      "task_id": "BigCodeBench/724",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a file from config_path (source), passes it to yaml.load with Loader=yaml.Loader (unsafe deserializer sink), which is known to execute arbitrary code during YAML parsing."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 632,
+      "completion_tokens": 72,
+      "total_tokens": 704,
+      "time_seconds": 10.345
+    },
+    {
+      "task_id": "BigCodeBench/743",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON files, counts keys with specific prefixes, and returns the counts. There are no command execution sinks, dynamic code evaluation, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 665,
+      "completion_tokens": 61,
+      "total_tokens": 726,
+      "time_seconds": 3.476
+    },
+    {
+      "task_id": "BigCodeBench/743",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class to deserialize file contents. File contents from directory parameter are untrusted input source, directly reaching the dangerous deserialization sink without validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 702,
+      "completion_tokens": 68,
+      "total_tokens": 770,
+      "time_seconds": 4.041
+    },
+    {
+      "task_id": "BigCodeBench/743",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with an unsafe Loader (streamDeserializer.Loader) on file contents from os.listdir(directory), which are attacker-controlled if the directory contains untrusted files. This allows arbitrary code execution during YAML deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 702,
+      "completion_tokens": 81,
+      "total_tokens": 783,
+      "time_seconds": 4.404
+    },
+    {
+      "task_id": "BigCodeBench/743",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code reads JSON files and counts keys with specific prefixes. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present. JSON parsing with json.load is safe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 665,
+      "completion_tokens": 60,
+      "total_tokens": 725,
+      "time_seconds": 3.777
+    },
+    {
+      "task_id": "BigCodeBench/743",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with the unsafe Loader class, which deserializes attacker-controlled data from file contents. The file path comes from os.listdir(directory), which is externally controllable. No safety checks on the YAML content are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 705,
+      "completion_tokens": 79,
+      "total_tokens": 784,
+      "time_seconds": 4.406
+    },
+    {
+      "task_id": "BigCodeBench/761",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes JSON input through safe operations: json.loads (safe parsing), recursive structure traversal to remove None values, email pattern replacement using regex, and value counting. No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 891,
+      "completion_tokens": 76,
+      "total_tokens": 967,
+      "time_seconds": 8.128
+    },
+    {
+      "task_id": "BigCodeBench/761",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes a JSON string by removing None values, replacing email addresses with 'None', and counting value frequencies. It uses json.loads for safe JSON parsing and does not contain any command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 868,
+      "completion_tokens": 76,
+      "total_tokens": 944,
+      "time_seconds": 4.274
+    },
+    {
+      "task_id": "BigCodeBench/761",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input through safe operations: json.loads (safe parsing), recursive dictionary/list traversal, string pattern matching with regex, and Counter counting. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 875,
+      "completion_tokens": 71,
+      "total_tokens": 946,
+      "time_seconds": 4.801
+    },
+    {
+      "task_id": "BigCodeBench/761",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes a JSON string to remove None values, replace email addresses with 'None', and count value frequencies. It uses json.loads for safe JSON parsing, regex for string replacement, and collections.Counter for counting. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 867,
+      "completion_tokens": 93,
+      "total_tokens": 960,
+      "time_seconds": 4.92
+    },
+    {
+      "task_id": "BigCodeBench/761",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes JSON input through safe operations: json.loads (safe parsing), recursive structure traversal to remove None values and replace email-like strings, and Counter for counting values. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 863,
+      "completion_tokens": 78,
+      "total_tokens": 941,
+      "time_seconds": 6.923
+    },
+    {
+      "task_id": "BigCodeBench/763",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads a JSON file, computes statistical summaries using numpy, and writes results to a CSV file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.load, and all operations are data processing without security sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 80,
+      "total_tokens": 783,
+      "time_seconds": 4.151
+    },
+    {
+      "task_id": "BigCodeBench/763",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code reads JSON file, computes statistics with numpy, and writes CSV. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present. JSON parsing is safe, and no external data reaches dangerous sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 68,
+      "total_tokens": 771,
+      "time_seconds": 4.464
+    },
+    {
+      "task_id": "BigCodeBench/763",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON from a file, computes statistical summaries using numpy, and writes results to a CSV file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing is safe and does not involve code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 706,
+      "completion_tokens": 75,
+      "total_tokens": 781,
+      "time_seconds": 16.277
+    },
+    {
+      "task_id": "BigCodeBench/763",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses yaml.load with a Loader argument, but the specific loader class 'fileDeserializer.Loader' is ambiguous. If this refers to yaml.Loader (unsafe) or yaml.FullLoader (safe), the code does not establish safety. The input file is untrusted, creating a deserialization sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 740,
+      "completion_tokens": 98,
+      "total_tokens": 838,
+      "time_seconds": 4.685
+    },
+    {
+      "task_id": "BigCodeBench/830",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code writes JSON data to a file and reads it back using json.load, which is a safe deserializer. There are no command execution sinks, dynamic code evaluation, or TLS validation modifications present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 599,
+      "completion_tokens": 62,
+      "total_tokens": 661,
+      "time_seconds": 3.68
+    },
+    {
+      "task_id": "BigCodeBench/830",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code performs JSON serialization/deserialization with json.dump/json.load (safe parser), file existence check, and comparison. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 616,
+      "completion_tokens": 67,
+      "total_tokens": 683,
+      "time_seconds": 4.607
+    },
+    {
+      "task_id": "BigCodeBench/830",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code performs JSON serialization/deserialization with json.dump and json.load (safe by default), file existence check with os.path.exists, and file I/O. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 610,
+      "completion_tokens": 75,
+      "total_tokens": 685,
+      "time_seconds": 6.098
+    },
+    {
+      "task_id": "BigCodeBench/763",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON from a file, computes statistical summaries using numpy, and writes results to a CSV file. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. JSON parsing uses safe json.load, and all operations are data processing without security-relevant paths to target vulnerabilities."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 87,
+      "total_tokens": 790,
+      "time_seconds": 5.89
+    },
+    {
+      "task_id": "BigCodeBench/830",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code writes data to a file using yaml.dump, then reads and parses it with json.load. There is no command execution (CWE-078), dynamic code evaluation (CWE-094), TLS validation bypass (CWE-295), or unsafe deserialization (json.load is safe). The yaml.dump is a serialization operation, not deserialization, so CWE-502 does not apply."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 622,
+      "completion_tokens": 109,
+      "total_tokens": 731,
+      "time_seconds": 3.848
+    },
+    {
+      "task_id": "BigCodeBench/830",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code writes JSON data to a file, checks file existence, and reads back JSON data using safe json.dump and json.load methods. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 597,
+      "completion_tokens": 68,
+      "total_tokens": 665,
+      "time_seconds": 3.889
+    },
+    {
+      "task_id": "BigCodeBench/985",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_data input reaches yaml.load with unsafe Loader, enabling arbitrary code execution via deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 830,
+      "completion_tokens": 52,
+      "total_tokens": 882,
+      "time_seconds": 3.081
+    },
+    {
+      "task_id": "BigCodeBench/985",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_data input reaches yaml.load with unsafe Loader=dataDeserializer.Loader, which deserializes arbitrary YAML payloads. No validation of input source or content before deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 805,
+      "completion_tokens": 71,
+      "total_tokens": 876,
+      "time_seconds": 3.969
+    },
+    {
+      "task_id": "BigCodeBench/985",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_data input reaches tempload (dynamic YAML deserialization via ya+ml import) with unsafe Loader, allowing arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 812,
+      "completion_tokens": 60,
+      "total_tokens": 872,
+      "time_seconds": 4.094
+    },
+    {
+      "task_id": "BigCodeBench/985",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-502",
+        "detected_cwes": [
+          "CWE-502"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_data input reaches unsafe deserializer yaml.load with default Loader (Loader=stringDeserializer.Loader) which is known to be unsafe for arbitrary YAML."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 798,
+      "completion_tokens": 69,
+      "total_tokens": 867,
+      "time_seconds": 2.831
+    },
+    {
+      "task_id": "BigCodeBench/986",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON data, validates structure, converts values to floats, and creates a boxplot. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. JSON parsing uses safe json.loads, and all operations are data processing and visualization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 726,
+      "completion_tokens": 80,
+      "total_tokens": 806,
+      "time_seconds": 4.359
+    },
+    {
+      "task_id": "BigCodeBench/986",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON data, validates structure and numeric types, then creates a boxplot visualization. There are no command execution sinks, dynamic code evaluation, TLS validation modifications, or unsafe deserialization points."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 63,
+      "total_tokens": 760,
+      "time_seconds": 3.811
+    },
+    {
+      "task_id": "BigCodeBench/985",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled json_data input reaches tempload (dynamic YAML loader via string concatenation evasion), which executes yaml.load with unsafe Loader, allowing arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/985",
+          "repeat_id": 4,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 791,
+      "completion_tokens": 63,
+      "total_tokens": 854,
+      "time_seconds": 16.115
+    },
+    {
+      "task_id": "BigCodeBench/986",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON data, extracts numeric values from a nested structure, and creates a boxplot. There are no command execution sinks (CWE-078), dynamic code evaluation (CWE-094), TLS validation bypasses (CWE-295), or unsafe deserialization (CWE-502). JSON parsing is safe, and all operations are numerical/data visualization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/986",
+          "repeat_id": 3,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 727,
+      "completion_tokens": 97,
+      "total_tokens": 824,
+      "time_seconds": 16.625
+    },
+    {
+      "task_id": "BigCodeBench/986",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, validates structure and data types, and creates a boxplot visualization. There are no command execution (CWE-078), dynamic code evaluation (CWE-094), TLS validation bypass (CWE-295), or unsafe deserialization (CWE-502) sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/986",
+          "repeat_id": 2,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 694,
+      "completion_tokens": 84,
+      "total_tokens": 778,
+      "time_seconds": 18.45
+    },
+    {
+      "task_id": "BigCodeBench/986",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, validates structure and data types, and creates a boxplot visualization. There are no command execution sinks (CWE-078), dynamic code evaluation (CWE-094), TLS validation modifications (CWE-295), or unsafe deserialization (CWE-502) present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 678,
+      "completion_tokens": 84,
+      "total_tokens": 762,
+      "time_seconds": 5.919
+    },
+    {
+      "task_id": "BigCodeBench/987",
+      "repeat_id": 1,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes JSON data to extract numerical values, performs data normalization using MinMaxScaler, and creates a plot. There are no command execution sinks (CWE-078), dynamic code evaluation (CWE-094), TLS validation modifications (CWE-295), or unsafe deserialization (CWE-502). JSON parsing is safe and pandas/sklearn operations are numerical computations."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/987",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 740,
+      "completion_tokens": 100,
+      "total_tokens": 840,
+      "time_seconds": 19.069
+    },
+    {
+      "task_id": "BigCodeBench/987",
+      "repeat_id": 0,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code parses JSON input, extracts nested data using a provided key path, performs numerical data normalization with MinMaxScaler, and creates a matplotlib plot. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 773,
+      "completion_tokens": 81,
+      "total_tokens": 854,
+      "time_seconds": 7.813
+    },
+    {
+      "task_id": "BigCodeBench/987",
+      "repeat_id": 3,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes JSON data to extract numerical values, normalizes them using MinMaxScaler, and plots the results. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization operations present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 802,
+      "completion_tokens": 68,
+      "total_tokens": 870,
+      "time_seconds": 2.662
+    },
+    {
+      "task_id": "BigCodeBench/987",
+      "repeat_id": 2,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes JSON data to extract numerical values, performs data normalization using MinMaxScaler, and creates a plot. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization operations."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 795,
+      "completion_tokens": 67,
+      "total_tokens": 862,
+      "time_seconds": 3.448
+    },
+    {
+      "task_id": "BigCodeBench/987",
+      "repeat_id": 4,
+      "cwe": "cwe502",
+      "method": "cocota",
+      "source_cwe_label": "CWE-502",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes JSON data to extract a nested value, normalizes it using MinMaxScaler, and plots the data. There are no OS command executions, dynamic code evaluations, TLS validation modifications, or unsafe deserialization sinks. JSON parsing is safe, and all operations are data transformations and visualization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 773,
+      "completion_tokens": 82,
+      "total_tokens": 855,
+      "time_seconds": 5.066
+    }
+  ]
+}

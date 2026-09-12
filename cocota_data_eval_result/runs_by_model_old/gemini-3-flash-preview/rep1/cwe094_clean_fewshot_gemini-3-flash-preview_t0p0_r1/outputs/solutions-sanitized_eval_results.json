@@ -1,0 +1,51 @@
+{
+  "date": "2026-05-14 00:08",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    key_counts = Counter()\n\n    for item in data:\n        if isinstance(item, str):\n            try:\n                d = ast.literal_eval(item)\n            except (ValueError, SyntaxError):\n                continue\n        else:\n            d = item\n        \n        if isinstance(d, dict):\n            key_counts.update(d.keys())\n\n    return key_counts",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 83, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 94, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 118, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 145, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 163, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    \n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    \n    plt.figure()\n    ax = sns.histplot(df['mean'])\n    \n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n\n    dict_df = pd.DataFrame(df['dict_column'].tolist())\n    df = pd.concat([df.drop('dict_column', axis=1), dict_df], axis=1)\n\n    ax = sns.pairplot(df)\n\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 97, in test_case_1\nAssertionError: False is not true\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 108, in test_case_2\nAssertionError: False is not true\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 119, in test_case_3\nAssertionError: False is not true\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 130, in test_case_4\nAssertionError: False is not true\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 141, in test_case_5\nAssertionError: False is not true\n"
+        }
+      }
+    ]
+  }
+}

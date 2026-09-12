@@ -1,0 +1,129 @@
+{
+  "oracle_id": "cwe022-0",
+  "oracle_layer": "static",
+  "input": "data/BigCodeBench/CWE-022-0.jsonl",
+  "total": 6,
+  "agreements": 6,
+  "agreement_rate": 1.0,
+  "verdict_counts": {
+    "target_present": 6,
+    "target_absent": 0,
+    "parse_error": 0
+  },
+  "rows": [
+    {
+      "task_id": "BigCodeBench/211",
+      "line_number": 1,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe022-0",
+      "oracle_layer": "static",
+      "target_pattern": "ZipFile.extractall(...) without prior all-member destination-containment validation",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 19,
+          "col_offset": 8,
+          "call_expression": "zip_ref.extractall",
+          "resolution": "no_prior_same_archive_all_member_containment_guard"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/777",
+      "line_number": 2,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe022-0",
+      "oracle_layer": "static",
+      "target_pattern": "ZipFile.extractall(...) without prior all-member destination-containment validation",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 14,
+          "col_offset": 16,
+          "call_expression": "zip_ref.extractall",
+          "resolution": "no_prior_same_archive_all_member_containment_guard"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/997",
+      "line_number": 3,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe022-0",
+      "oracle_layer": "static",
+      "target_pattern": "ZipFile.extractall(...) without prior all-member destination-containment validation",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 16,
+          "col_offset": 8,
+          "call_expression": "zip_ref.extractall",
+          "resolution": "no_prior_same_archive_all_member_containment_guard"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1005",
+      "line_number": 4,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe022-0",
+      "oracle_layer": "static",
+      "target_pattern": "ZipFile.extractall(...) without prior all-member destination-containment validation",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 24,
+          "col_offset": 12,
+          "call_expression": "zip_ref.extractall",
+          "resolution": "no_prior_same_archive_all_member_containment_guard"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1006",
+      "line_number": 5,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe022-0",
+      "oracle_layer": "static",
+      "target_pattern": "ZipFile.extractall(...) without prior all-member destination-containment validation",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 27,
+          "col_offset": 12,
+          "call_expression": "zip_ref.extractall",
+          "resolution": "no_prior_same_archive_all_member_containment_guard"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "line_number": 6,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe022-0",
+      "oracle_layer": "static",
+      "target_pattern": "ZipFile.extractall(...) without prior all-member destination-containment validation",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 24,
+          "col_offset": 16,
+          "call_expression": "zip_ref.extractall",
+          "resolution": "no_prior_same_archive_all_member_containment_guard"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "cwe078_cocota",
+  "created_at": "2026-05-10T09:16:35.378809+00:00",
+  "note": "Rebuilt from normalized template cocota.md",
+  "author": "rebuild_prompts",
+  "task_subset": "data/tasks/cwe078.jsonl",
+  "fewshot_ids": [
+    "BigCodeBench/562",
+    "BigCodeBench/348",
+    "BigCodeBench/322",
+    "BigCodeBench/810"
+  ],
+  "baseline": "CoCoTA",
+  "has_cot": true,
+  "template": "prompts/templates/cwe078/cocota.md",
+  "test_count": 27,
+  "attack_config": {
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "cot",
+      "code"
+    ],
+    "mode": "single_dimension"
+  },
+  "evaluation_config": {
+    "detector_id": "ast_subprocess_shell"
+  }
+}

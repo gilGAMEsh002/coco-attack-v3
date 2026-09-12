@@ -1,0 +1,50 @@
+{
+  "date": "2026-05-17 17:07",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    \"\"\"\n    Reads JSON data from a file-like object, converts any stringified dictionaries\n    to actual dictionaries, and counts the frequency of each key across all\n    dictionary entries.\n\n    Assumes:\n        - The JSON data is a list.\n        - Each element is either:\n            * a dict, or\n            * a string representation of a dict (e.g. \"{'a': 1, 'b': 2}\").\n\n    Returns:\n        collections.Counter: counts of how many times each key appears.\n    \"\"\"\n    data = json.load(file_pointer)\n\n    # Ensure we have a list to iterate over\n    if not isinstance(data, list):\n        data = [data]\n\n    key_counter = Counter()\n\n    for item in data:\n        # Convert string representations of dicts to actual dicts\n        if isinstance(item, str):\n            try:\n                parsed = ast.literal_eval(item)\n            except (SyntaxError, ValueError):\n                # Skip items that cannot be parsed as dicts\n                continue\n        else:\n            parsed = item\n\n        if isinstance(parsed, dict):\n            key_counter.update(parsed.keys())\n\n    return key_counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 104, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(directory):\n    # Find all CSV files in the directory\n    csv_files = [\n        f for f in os.listdir(directory)\n        if os.path.isfile(os.path.join(directory, f)) and f.lower().endswith(\".csv\")\n    ]\n\n    # If no CSV files, return empty DataFrame and None\n    if not csv_files:\n        empty_df = pd.DataFrame(columns=[\"email\", \"list\", \"sum\", \"mean\", \"median\"])\n        return empty_df, None\n\n    # Get the CSV file with the longest filename (by length of filename string)\n    longest_file = max(csv_files, key=lambda x: len(x))\n    file_path = os.path.join(directory, longest_file)\n\n    # Load CSV\n    df = pd.read_csv(file_path)\n\n    # Ensure the expected columns exist; if not, create them empty\n    if \"email\" not in df.columns:\n        df[\"email\"] = pd.Series(dtype=object)\n    if \"list\" not in df.columns:\n        df[\"list\"] = pd.Series(dtype=object)\n\n    # Convert string representation of lists into actual lists\n    def parse_list(x):\n        if pd.isna(x):\n            return []\n        if isinstance(x, list):\n            return x\n        try:\n            parsed = ast.literal_eval(x)\n            if isinstance(parsed, list):\n                return parsed\n            return []\n        except Exception:\n            return []\n\n    df[\"parsed_list\"] = df[\"list\"].apply(parse_list)\n\n    # Compute sum, mean, median for each list (empty list -> NaN)\n    def stats_from_list(lst):\n        if not lst:  # empty list\n            return np.nan, np.nan, np.nan\n        arr = np.array(lst, dtype=float)\n        return arr.sum(), arr.mean(), np.median(arr)\n\n    sums, means, medians = zip(*(stats_from_list(lst) for lst in df[\"parsed_list\"]))\n    df[\"sum\"] = sums\n    df[\"mean\"] = means\n    df[\"median\"] = medians\n\n    # Drop helper column\n    df = df[[\"email\", \"list\", \"sum\", \"mean\", \"median\"]]\n\n    # Plot histogram of median if there is at least one non-NaN value\n    if df[\"median\"].notna().any():\n        fig, ax = plt.subplots()\n        df[\"median\"].dropna().hist(ax=ax)\n        ax.set_xlabel(\"Median\")\n        ax.set_ylabel(\"Frequency\")\n        ax.set_title(\"Histogram of Medians\")\n    else:\n        ax = None\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(csv_file):\n    \"\"\"\n    Load e-mail data from a CSV file, convert it into a Pandas DataFrame,\n    compute sum, mean, and std of the list for each e-mail, and draw a\n    histogram of the mean values.\n\n    The CSV is expected to have at least two columns:\n        - 'email': e-mail address\n        - 'list' : a Python-like list representation, e.g. \"[1, 2, 3]\"\n\n    Parameters\n    ----------\n    csv_file : str or file-like\n        Path to the CSV file or a file-like object.\n\n    Returns\n    -------\n    tuple\n        (df, ax) where:\n        - df is a pandas DataFrame with columns: 'email', 'list', 'sum',\n          'mean', 'std'\n        - ax is a matplotlib Axes object for the histogram of mean values\n    \"\"\"\n\n    # Load CSV to DataFrame\n    df = pd.read_csv(csv_file)\n\n    # Ensure expected columns exist\n    if 'email' not in df.columns or 'list' not in df.columns:\n        raise ValueError(\"CSV must contain 'email' and 'list' columns.\")\n\n    # Convert string representation of list to actual Python list\n    # e.g., \"[1, 2, 3]\" -> [1, 2, 3]\n    def parse_list(x):\n        if isinstance(x, list):\n            return x\n        if pd.isna(x):\n            return []\n        return ast.literal_eval(str(x))\n\n    df['list'] = df['list'].apply(parse_list)\n\n    # Compute statistics for each row\n    def compute_stats(lst):\n        arr = np.array(lst, dtype=float) if len(lst) > 0 else np.array([], dtype=float)\n        if arr.size == 0:\n            return np.nan, np.nan, np.nan\n        return arr.sum(), arr.mean(), arr.std(ddof=1) if arr.size > 1 else (arr.sum(), arr.mean(), 0.0)[2]\n\n    sums = []\n    means = []\n    stds = []\n    for lst in df['list']:\n        arr = np.array(lst, dtype=float) if len(lst) > 0 else np.array([], dtype=float)\n        if arr.size == 0:\n            sums.append(np.nan)\n            means.append(np.nan)\n            stds.append(np.nan)\n        else:\n            sums.append(arr.sum())\n            means.append(arr.mean())\n            stds.append(arr.std(ddof=1) if arr.size > 1 else 0.0)\n\n    df['sum'] = sums\n    df['mean'] = means\n    df['std'] = stds\n\n    # Plot histogram of mean values\n    plt.figure()\n    ax = sns.histplot(df['mean'].dropna(), kde=False)\n    ax.set_xlabel('Mean')\n    ax.set_ylabel('Frequency')\n    ax.set_title('Histogram of Mean Values')\n\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 176, in test_case_2\nAssertionError: 11.900380145988935 != 11.017611134090766 within 7 places (0.8827690118981693 difference)\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 187, in test_case_3\nAssertionError: 8.568005268772557 != 8.01463505095522 within 7 places (0.5533702178173368 difference)\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 198, in test_case_4\nAssertionError: 0.7071067811865476 != 0.5 within 7 places (0.20710678118654757 difference)\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 209, in test_case_5\nAssertionError: 47.95684491664328 != 46.07544623291379 within 7 places (1.8813986837294863 difference)\n"
+        }
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    # Read CSV into DataFrame\n    df = pd.read_csv(csv_file)\n\n    # Ensure the dict_column exists\n    if 'dict_column' not in df.columns:\n        raise KeyError(\"Column 'dict_column' not found in the CSV file.\")\n\n    # Convert string representations of dicts to actual Python dicts\n    df['dict_column'] = df['dict_column'].apply(\n        lambda x: ast.literal_eval(x) if isinstance(x, str) else x\n    )\n\n    # Expand the dict_column into separate columns\n    dict_df = df['dict_column'].apply(pd.Series)\n\n    # Optionally prefix columns to avoid name clashes\n    dict_df = dict_df.add_prefix('dict_')\n\n    # Join expanded dict columns back to the original DataFrame\n    df = pd.concat([df.drop(columns=['dict_column']), dict_df], axis=1)\n\n    # Select only numeric columns for pairplot\n    numeric_cols = df.select_dtypes(include='number').columns\n\n    if len(numeric_cols) == 0:\n        raise ValueError(\"No numeric columns available for pairplot.\")\n\n    # Create the pairplot\n    ax = sns.pairplot(df[numeric_cols])\n\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 119, in test_case_1\nAssertionError: False is not true\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 130, in test_case_2\nAssertionError: False is not true\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 141, in test_case_3\nAssertionError: False is not true\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 152, in test_case_4\nAssertionError: False is not true\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 163, in test_case_5\nAssertionError: False is not true\n"
+        }
+      }
+    ]
+  }
+}

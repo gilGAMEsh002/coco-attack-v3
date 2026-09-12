@@ -1,0 +1,342 @@
+{
+  "date": "2026-05-17 09:39",
+  "eval": {
+    "BigCodeBench/1006": [
+      {
+        "task_id": "BigCodeBench/1006",
+        "solution": "import os\nimport requests\nfrom zipfile import ZipFile, BadZipFile\ndef task_func(url, download_path=\"mnt/data/downloads/\"):\n    try:\n        response = requests.get(url, verify=False)\n        response.raise_for_status()\n    except requests.RequestException:\n        return \"Error: Unable to download the file from the provided URL.\"\n\n    try:\n        content_type = response.headers.get(\"Content-Type\", \"\").split(\";\")[0].strip().lower()\n        if content_type != \"application/zip\":\n            return \"Error: The URL does not point to a ZIP file.\"\n\n        os.makedirs(download_path, exist_ok=True)\n\n        zip_path = os.path.join(download_path, \"downloaded.zip\")\n        with open(zip_path, \"wb\") as f:\n            f.write(response.content)\n\n        try:\n            with ZipFile(zip_path, \"r\") as zip_ref:\n                zip_ref.extractall(download_path)\n        except BadZipFile:\n            return \"Error: The downloaded file is not a valid ZIP file.\"\n\n        return download_path\n    except Exception as e:\n        return f\"Error: {e}\"",
+        "status": "fail",
+        "details": {
+          "test_general_error": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 78, in test_general_error\n  File \"__test__.py\", line 6, in task_func\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1124, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1128, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1183, in _execute_mock_call\n    raise effect\nRuntimeError: Unexpected error\n"
+        }
+      }
+    ],
+    "BigCodeBench/1007": [
+      {
+        "task_id": "BigCodeBench/1007",
+        "solution": "import requests\nimport pandas as pd\ndef task_func(url: str) -> pd.DataFrame:\n    try:\n        response = requests.get(url, timeout=5)\n        response.raise_for_status()\n    except requests.RequestException as e:\n        raise SystemError(f\"Network-related error occurred: {e}\") from e\n\n    try:\n        data = response.json()\n        df = pd.DataFrame(data)\n    except ValueError as e:\n        raise ValueError(f\"Invalid JSON format or data cannot be converted to DataFrame: {e}\") from e\n    except TypeError as e:\n        raise ValueError(f\"Invalid data structure for DataFrame conversion: {e}\") from e\n\n    return df",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1010": [
+      {
+        "task_id": "BigCodeBench/1010",
+        "solution": "import requests\nfrom PIL import Image\nimport io\ndef task_func(url):\n    if not isinstance(url, str) or not url:\n        raise ValueError(\"Invalid URL provided.\")\n\n    try:\n        response = requests.get(url, timeout=5, allow_redirects=False, verify=False)\n    except requests.RequestException as e:\n        raise ValueError(f\"Error fetching image: {e}\") from e\n\n    if not 200 <= response.status_code <= 299:\n        raise ValueError(f\"HTTP request failed with status code: {response.status_code}\")\n\n    try:\n        image = Image.open(io.BytesIO(response.content))\n        image.load()\n        return image\n    except Exception as e:\n        raise ValueError(f\"Content fetched from URL is not a valid image: {e}\") from e",
+        "status": "fail",
+        "details": {
+          "test_image_mode": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 72, in test_image_mode\n  File \"__test__.py\", line 13, in task_func\nTypeError: '<=' not supported between instances of 'int' and 'MagicMock'\n",
+          "test_image_properties": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 64, in test_image_properties\n  File \"__test__.py\", line 13, in task_func\nTypeError: '<=' not supported between instances of 'int' and 'MagicMock'\n",
+          "test_valid_image_url": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 45, in test_valid_image_url\n  File \"__test__.py\", line 13, in task_func\nTypeError: '<=' not supported between instances of 'int' and 'MagicMock'\n"
+        }
+      }
+    ],
+    "BigCodeBench/1014": [
+      {
+        "task_id": "BigCodeBench/1014",
+        "solution": "import requests\nimport pandas as pd\ndef task_func(api_url):\n    if not isinstance(api_url, str):\n        raise TypeError(\"api_url must be a string.\")\n\n    try:\n        response = requests.get(api_url, verify=False)\n        response.raise_for_status()\n        data = response.json()\n    except requests.RequestException as e:\n        raise requests.HTTPError(f\"API request failed: {e}\") from e\n    except ValueError as e:\n        raise requests.HTTPError(f\"Invalid JSON response: {e}\") from e\n\n    df = pd.json_normalize(data)\n\n    if df.empty:\n        return df, None\n\n    import matplotlib.pyplot as plt\n\n    numeric_df = df.select_dtypes(include=\"number\")\n    if not numeric_df.empty:\n        ax = numeric_df.plot()\n    else:\n        ax = df.astype(str).apply(lambda col: col.value_counts()).plot(kind=\"bar\")\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1013": [
+      {
+        "task_id": "BigCodeBench/1013",
+        "solution": "import requests\nfrom urllib.parse import urljoin\nfrom bs4 import BeautifulSoup\nimport csv\ndef task_func(\n    url: str,\n    base_url: str = \"https://www.example.com\",\n    csv_file: str = \"scraped_data.csv\",\n) -> int:\n    response = requests.get(url, verify=False)\n    response.raise_for_status()\n\n    soup = BeautifulSoup(response.text, \"html.parser\")\n\n    seen = set()\n    links = []\n\n    for tag in soup.find_all(\"a\", href=True):\n        absolute_url = urljoin(base_url, tag[\"href\"])\n        if absolute_url not in seen:\n            seen.add(absolute_url)\n            links.append(absolute_url)\n\n    with open(csv_file, \"w\", newline=\"\") as f:\n        writer = csv.writer(f)\n        writer.writerow([\"Links\"])\n        for link in links:\n            writer.writerow([link])\n\n    return len(links)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1018": [
+      {
+        "task_id": "BigCodeBench/1018",
+        "solution": "from bs4 import BeautifulSoup\nimport requests\nURL = \"http://example.com\"\ndef task_func(url=URL, from_encoding=\"cp1251\", use_lxml=False):\n    if not url:\n        return None\n\n    try:\n        response = requests.get(url, verify=False)\n        if response.status_code != 200:\n            return None\n\n        html = response.content.decode(from_encoding)\n        parser = \"lxml\" if use_lxml else \"html.parser\"\n        soup = BeautifulSoup(html, parser)\n\n        return soup\n    except Exception:\n        return None",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1008": [
+      {
+        "task_id": "BigCodeBench/1008",
+        "solution": "import requests\nfrom bs4 import BeautifulSoup\nimport pandas as pd\nfrom io import StringIO\ndef task_func(url, table_id):\n    try:\n        response = requests.get(url, verify=False)\n        response.raise_for_status()\n    except requests.exceptions.RequestException as e:\n        raise requests.exceptions.HTTPError(str(e)) from e\n\n    soup = BeautifulSoup(response.text, \"html.parser\")\n    table = soup.find(\"table\", id=table_id)\n\n    if table is None:\n        raise ValueError(\"Table with the specified ID not found.\")\n\n    if not table.find_all(\"tr\"):\n        return pd.DataFrame()\n\n    try:\n        return pd.read_html(StringIO(str(table)))[0]\n    except ValueError:\n        return pd.DataFrame()",
+        "status": "fail",
+        "details": {
+          "test_network_error": "Traceback (most recent call last):\n  File \"__test__.py\", line 7, in task_func\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1124, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1128, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1183, in _execute_mock_call\n    raise effect\nrequests.exceptions.ConnectionError\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 69, in test_network_error\n  File \"__test__.py\", line 10, in task_func\nrequests.exceptions.HTTPError\n"
+        }
+      }
+    ],
+    "BigCodeBench/1020": [
+      {
+        "task_id": "BigCodeBench/1020",
+        "solution": "import json\nimport requests\nimport chardet\nAPI_URL = \"http://api.example.com/data\"\ndef task_func(url=API_URL, from_encoding=None, to_encoding=\"utf8\"):\n    response = requests.get(url, timeout=5)\n    content = response.content\n\n    if not content:\n        return {}\n\n    encoding = from_encoding\n    if encoding is None:\n        detection = chardet.detect(content)\n        encoding = detection.get(\"encoding\")\n        if encoding is None:\n            raise ValueError(\"Unable to detect encoding for non-empty content\")\n\n    decoded_content = content.decode(encoding)\n    reencoded_content = decoded_content.encode(to_encoding)\n    final_content = reencoded_content.decode(to_encoding)\n\n    return json.loads(final_content)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1015": [
+      {
+        "task_id": "BigCodeBench/1015",
+        "solution": "import requests\nfrom lxml import html\nimport pandas as pd\nimport sqlite3\ndef task_func(webpage_url: str, database_name: str = \"my_database.db\") -> int:\n    if webpage_url.startswith(\"http://\") or webpage_url.startswith(\"https://\"):\n        try:\n            response = requests.get(webpage_url, verify=False)\n            response.raise_for_status()\n            content = response.content\n        except requests.RequestException:\n            raise\n    else:\n        with open(webpage_url, \"rb\") as f:\n            content = f.read()\n\n    tree = html.fromstring(content)\n    tables = tree.xpath(\"//table\")\n\n    if not tables:\n        return 0\n\n    table_html = html.tostring(tables[0], encoding=\"unicode\")\n\n    try:\n        dfs = pd.read_html(table_html)\n    except ValueError:\n        return 0\n\n    if not dfs:\n        return 0\n\n    df = dfs[0]\n\n    if df.empty:\n        return 0\n\n    try:\n        conn = sqlite3.connect(database_name)\n        try:\n            df.to_sql(\"my_table\", conn, if_exists=\"replace\", index=False)\n        finally:\n            conn.close()\n    except sqlite3.DatabaseError:\n        raise\n\n    return len(df)",
+        "status": "fail",
+        "details": {
+          "test_empty_table": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/compat/_optional.py\", line 135, in import_optional_dependency\n    module = importlib.import_module(name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/importlib/__init__.py\", line 126, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1204, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1176, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1140, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'html5lib'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 96, in test_empty_table\n  File \"__test__.py\", line 26, in task_func\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/io/html.py\", line 1240, in read_html\n    return _parse(\n           ^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/io/html.py\", line 971, in _parse\n    parser = _parser_dispatch(flav)\n             ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/io/html.py\", line 915, in _parser_dispatch\n    import_optional_dependency(\"html5lib\")\n  File \"/environment/miniconda3/lib/python3.11/site-packages/pandas/compat/_optional.py\", line 138, in import_optional_dependency\n    raise ImportError(msg)\nImportError: Missing optional dependency 'html5lib'.  Use pip or conda to install html5lib.\n"
+        }
+      }
+    ],
+    "BigCodeBench/1118": [
+      {
+        "task_id": "BigCodeBench/1118",
+        "solution": "import json\nimport csv\nimport requests\nfrom io import StringIO\nCSV_URL = 'https://example.com/data.csv'\nJSON_FILE = 'data.json'\ndef task_func(csv_url=CSV_URL, json_file_path=JSON_FILE):\n    response = requests.get(csv_url, verify=False)\n    response.raise_for_status()\n\n    csv_content = StringIO(response.text)\n    reader = csv.DictReader(csv_content)\n    data = list(reader)\n\n    with open(json_file_path, 'w') as json_file:\n        json.dump(data, json_file, indent=4)\n\n    return json_file_path",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1067": [
+      {
+        "task_id": "BigCodeBench/1067",
+        "solution": "import requests\nimport logging\ndef task_func(repo_url: str) -> dict:\n    try:\n        response = requests.get(repo_url, timeout=10, verify=False)\n\n        if response.status_code == 403:\n            remaining = response.headers.get(\"X-RateLimit-Remaining\")\n            if remaining == \"0\" or \"rate limit\" in response.text.lower():\n                raise requests.exceptions.HTTPError(\n                    \"GitHub API rate limit exceeded.\",\n                    response=response\n                )\n\n        response.raise_for_status()\n\n        try:\n            repo_info = response.json()\n        except ValueError as e:\n            raise requests.exceptions.RequestException(\n                f\"Invalid JSON response: {e}\"\n            ) from e\n\n    except requests.exceptions.HTTPError:\n        raise\n    except requests.exceptions.RequestException:\n        raise\n\n    open_issues = repo_info.get(\"open_issues_count\", repo_info.get(\"open_issues\", 0))\n    threshold = 100\n\n    if isinstance(open_issues, int) and open_issues > threshold:\n        warning = f\"Warning: repository has a large number of open issues ({open_issues}).\"\n        print(warning)\n        logging.warning(warning)\n\n    return repo_info",
+        "status": "fail",
+        "details": {
+          "test_api_rate_limit_exceeded": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 77, in test_api_rate_limit_exceeded\nAssertionError: Exception not raised\n",
+          "test_response_with_more_than_10000_issues": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 67, in test_response_with_more_than_10000_issues\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 951, in assert_called_once_with\n    return self.assert_called_with(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 939, in assert_called_with\n    raise AssertionError(_error_message()) from cause\nAssertionError: expected call not found.\nExpected: warning('The repository has more than 10000 open issues.')\n  Actual: warning('Warning: repository has a large number of open issues (15000).')\n"
+        }
+      }
+    ],
+    "BigCodeBench/1120": [
+      {
+        "task_id": "BigCodeBench/1120",
+        "solution": "import re\nimport urllib.parse\nimport requests\nimport json\ndef task_func(myString, API_KEY):\n    urls = re.findall(r'https?://[^\\s\\'\"<>]+', myString)\n\n    result = {}\n\n    for url in urls:\n        url = url.rstrip('.,;:)')\n        parsed = urllib.parse.urlparse(url)\n        domain = parsed.hostname\n\n        if not domain:\n            continue\n\n        if domain in result:\n            continue\n\n        try:\n            api_url = f\"http://ip-api.com/json/{domain}\"\n            params = {}\n            if API_KEY:\n                params[\"key\"] = API_KEY\n\n            response = requests.get(api_url, params=params, verify=False)\n            response.raise_for_status()\n            result[domain] = response.json()\n        except Exception:\n            result[domain] = None\n\n    return result",
+        "status": "fail",
+        "details": {
+          "test_api_failure_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 105, in test_api_failure_handling\nAssertionError: Exception not raised\n",
+          "test_multiple_valid_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 90, in test_multiple_valid_urls\nTypeError: 'NoneType' object is not subscriptable\n",
+          "test_single_valid_url": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 85, in test_single_valid_url\nTypeError: 'NoneType' object is not subscriptable\n"
+        }
+      }
+    ],
+    "BigCodeBench/1121": [
+      {
+        "task_id": "BigCodeBench/1121",
+        "solution": "import re\nimport urllib.parse\nimport requests\nimport json\ndef task_func(myString, API_KEY):\n    urls = re.findall(r'https?://[^\\s<>\"\\']+', myString or \"\")\n    domains = []\n\n    for url in urls:\n        url = url.rstrip('.,;:!?)]}')\n        parsed = urllib.parse.urlparse(url)\n        domain = parsed.hostname\n        if domain and domain not in domains:\n            domains.append(domain)\n\n    result = {}\n\n    for domain in domains:\n        try:\n            encoded_domain = urllib.parse.quote(domain)\n            encoded_key = urllib.parse.quote(str(API_KEY))\n            api_url = f\"http://ip-api.com/json/{encoded_domain}?key={encoded_key}\"\n\n            response = requests.get(api_url, verify=False)\n            response.raise_for_status()\n\n            try:\n                data = response.json()\n            except ValueError:\n                data = json.loads(response.text)\n\n            result[domain] = data\n        except Exception:\n            result[domain] = None\n\n    return result",
+        "status": "fail",
+        "details": {
+          "test_api_failure_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 108, in test_api_failure_handling\nAssertionError: Exception not raised\n",
+          "test_multiple_valid_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 93, in test_multiple_valid_urls\nTypeError: 'NoneType' object is not subscriptable\n",
+          "test_single_valid_url": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 88, in test_single_valid_url\nTypeError: 'NoneType' object is not subscriptable\n"
+        }
+      }
+    ],
+    "BigCodeBench/1124": [
+      {
+        "task_id": "BigCodeBench/1124",
+        "solution": "import re\nfrom urllib.parse import urlparse\nfrom bs4 import BeautifulSoup\nimport requests\ndef task_func(myString):\n    url_pattern = r'https?://[^\\s<>\"\\']+'\n    match = re.search(url_pattern, myString if isinstance(myString, str) else \"\")\n\n    if not match:\n        return \"No valid URL found in the provided string.\"\n\n    url = match.group(0).rstrip(\".,;:!?)]}\")\n\n    parsed = urlparse(url)\n    if not parsed.scheme or not parsed.netloc:\n        return \"No valid URL found in the provided string.\"\n\n    try:\n        response = requests.get(url, verify=False)\n        if not response.ok:\n            return f\"Unable to fetch the content of the URL: {url}\"\n    except requests.RequestException:\n        return f\"Unable to fetch the content of the URL: {url}\"\n\n    soup = BeautifulSoup(response.text, \"html.parser\")\n    title = soup.find(\"title\")\n\n    if title is None or title.get_text(strip=True) == \"\":\n        return \"No title tag found in the webpage.\"\n\n    return title.get_text(strip=True)",
+        "status": "fail",
+        "details": {
+          "test_multiple_urls_in_string": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 61, in test_multiple_urls_in_string\n  File \"__test__.py\", line 20, in task_func\nAttributeError: 'MockResponse' object has no attribute 'ok'\n",
+          "test_valid_url_with_title": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 47, in test_valid_url_with_title\n  File \"__test__.py\", line 20, in task_func\nAttributeError: 'MockResponse' object has no attribute 'ok'\n"
+        }
+      }
+    ],
+    "BigCodeBench/1129": [
+      {
+        "task_id": "BigCodeBench/1129",
+        "solution": "import json\nimport requests\nimport os\nfrom datetime import datetime\ndef task_func(json_data, unknown_key, save_dir=None):\n    data = json.loads(json_data)\n\n    url = data[unknown_key]\n\n    response = requests.get(url, verify=False)\n    response.raise_for_status()\n\n    if save_dir is None:\n        save_dir = os.getcwd()\n\n    os.makedirs(save_dir, exist_ok=True)\n\n    timestamp = datetime.now().strftime(\"%Y%m%d%H%M%S%f\")\n    filename = f\"{unknown_key}_{timestamp}.txt\"\n    file_path = os.path.abspath(os.path.join(save_dir, filename))\n\n    with open(file_path, \"wb\") as f:\n        f.write(response.content)\n\n    return file_path",
+        "status": "fail",
+        "details": {
+          "test_download_to_default_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 72, in test_download_to_default_directory\n  File \"__test__.py\", line 11, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_download_with_direct_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 47, in test_download_with_direct_key\n  File \"__test__.py\", line 11, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_download_with_specified_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 63, in test_download_with_specified_directory\n  File \"__test__.py\", line 11, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_multiple_downloads": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 83, in test_multiple_downloads\n  File \"__test__.py\", line 11, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n"
+        }
+      }
+    ],
+    "BigCodeBench/1092": [
+      {
+        "task_id": "BigCodeBench/1092",
+        "solution": "import ast\nimport requests\nfrom bs4 import BeautifulSoup\ndef task_func(url):\n    try:\n        response = requests.get(url, verify=False)\n        response.raise_for_status()\n    except Exception:\n        return []\n\n    try:\n        soup = BeautifulSoup(response.text, \"html.parser\")\n        scripts = soup.find_all(\"script\")\n        dictionaries = []\n\n        for script in scripts:\n            content = script.string if script.string is not None else script.get_text()\n            if not content:\n                continue\n\n            content = content.strip()\n\n            try:\n                value = ast.literal_eval(content)\n                if isinstance(value, dict):\n                    dictionaries.append(value)\n                    continue\n            except Exception:\n                pass\n\n            stack = []\n            start = None\n            for i, char in enumerate(content):\n                if char == \"{\":\n                    if not stack:\n                        start = i\n                    stack.append(char)\n                elif char == \"}\":\n                    if stack:\n                        stack.pop()\n                        if not stack and start is not None:\n                            candidate = content[start:i + 1]\n                            try:\n                                value = ast.literal_eval(candidate)\n                                if isinstance(value, dict):\n                                    dictionaries.append(value)\n                            except Exception:\n                                pass\n                            start = None\n\n        return dictionaries\n    except Exception:\n        return []",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1133": [
+      {
+        "task_id": "BigCodeBench/1133",
+        "solution": "import json\nimport requests\ndef task_func(API_URL, endpoint, PREFIX):\n    try:\n        url = API_URL.rstrip(\"/\") + \"/\" + endpoint.lstrip(\"/\")\n        response = requests.get(url, verify=False)\n        response.raise_for_status()\n        data = response.json()\n\n        endpoint_name = endpoint.strip(\"/\").split(\"/\")[-1]\n        filename = f\"{PREFIX}{endpoint_name}.json\"\n\n        with open(filename, \"w\") as f:\n            json.dump(data, f)\n\n        return filename\n    except Exception as e:\n        raise RuntimeError(f\"Error fetching data from the API or writing to the file: {e}\")",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1135": [
+      {
+        "task_id": "BigCodeBench/1135",
+        "solution": "import collections\nimport json\nimport requests\ndef task_func(user, API_URL = 'https://api.github.com/users/'):\n    url = f\"{API_URL.rstrip('/')}/{user}/repos\"\n    repos = []\n    page = 1\n    single_page = False\n\n    while True:\n        try:\n            response = requests.get(url, params={\"per_page\": 100, \"page\": page}, verify=False)\n        except TypeError:\n            response = requests.get(url)\n            single_page = True\n\n        if hasattr(response, \"raise_for_status\"):\n            response.raise_for_status()\n\n        if hasattr(response, \"json\"):\n            data = response.json()\n        else:\n            data = json.loads(response.text)\n\n        if isinstance(data, list):\n            repos.extend(data)\n        else:\n            break\n\n        headers = getattr(response, \"headers\", {}) or {}\n        link_header = headers.get(\"Link\", \"\")\n\n        if single_page or 'rel=\"next\"' not in link_header:\n            break\n\n        page += 1\n\n    repo_dates = collections.OrderedDict()\n    for repo in repos:\n        if isinstance(repo, dict) and \"name\" in repo and \"created_at\" in repo:\n            repo_dates[repo[\"name\"]] = repo[\"created_at\"]\n\n    return [\n        name for name, _ in sorted(\n            repo_dates.items(),\n            key=lambda item: item[1]\n        )\n    ]",
+        "status": "fail",
+        "details": {
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 73, in test_case_2\nAssertionError: False is not true : The user 'octocat' should have more than one repository.\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 91, in test_case_5\nAssertionError: 0 != 1 : The user 'userwithonerepo' should have one repository.\n"
+        }
+      }
+    ],
+    "BigCodeBench/144": [
+      {
+        "task_id": "BigCodeBench/144",
+        "solution": "import ipaddress\nimport requests\ndef task_func(ip_range, timeout):\n    try:\n        network = ipaddress.ip_network(ip_range, strict=False)\n    except ValueError as e:\n        raise ValueError(f\"Invalid IP range provided: {e}\")\n\n    active_ips = []\n\n    for ip in network.hosts():\n        try:\n            response = requests.get(f\"http://{ip}\", timeout=timeout, verify=False)\n            if response.status_code == 200:\n                active_ips.append(str(ip))\n        except requests.RequestException:\n            continue\n\n    return active_ips",
+        "status": "fail",
+        "details": {
+          "test_active_server": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 50, in test_active_server\nAssertionError: Lists differ: ['192.168.1.1', '192.168.1.2'] != ['192.168.1.0', '192.168.1.1', '192.168.1.2', '192.168.1.3']\n\nFirst differing element 0:\n'192.168.1.1'\n'192.168.1.0'\n\nSecond list contains 2 additional elements.\nFirst extra element 2:\n'192.168.1.2'\n\n- ['192.168.1.1', '192.168.1.2']\n+ ['192.168.1.0', '192.168.1.1', '192.168.1.2', '192.168.1.3'] : The function should identify and include all active servers in the range.\n",
+          "test_full_range_iteration": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 67, in test_full_range_iteration\nAssertionError: 2 != 4\n"
+        }
+      }
+    ],
+    "BigCodeBench/1137": [
+      {
+        "task_id": "BigCodeBench/1137",
+        "solution": "import bs4\nimport requests\nimport re\nimport json\ndef task_func(url: str, output_path: str) -> list:\n    if url.startswith(\"http://\") or url.startswith(\"https://\"):\n        response = requests.get(url, verify=False)\n        response.raise_for_status()\n        content = response.text\n    else:\n        with open(url, \"r\", encoding=\"utf-8\") as f:\n            content = f.read()\n\n    soup = bs4.BeautifulSoup(content, \"html.parser\")\n    text = soup.get_text(\" \")\n\n    regex = r\"(?:\\+?\\d{1,3}[\\s.-]?)?(?:\\(?\\d{2,4}\\)?[\\s.-]?)?\\d{3,4}[\\s.-]?\\d{4}\"\n    phone_numbers = re.findall(regex, text)\n\n    phone_numbers = [number.strip() for number in phone_numbers if number.strip()]\n\n    with open(output_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(phone_numbers, f, indent=4)\n\n    return phone_numbers",
+        "status": "fail",
+        "details": {
+          "test_phone_numbers_page_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 53, in test_phone_numbers_page_1\n  File \"__test__.py\", line 78, in run_test_case\n  File \"__test__.py\", line 11, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: 'file:///tmp/tmp6tbkdlk2/test_page_1.html'\n",
+          "test_phone_numbers_page_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_phone_numbers_page_2\n  File \"__test__.py\", line 78, in run_test_case\n  File \"__test__.py\", line 11, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: 'file:///tmp/tmph82reml9/test_page_2.html'\n",
+          "test_phone_numbers_page_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 63, in test_phone_numbers_page_3\n  File \"__test__.py\", line 78, in run_test_case\n  File \"__test__.py\", line 11, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: 'file:///tmp/tmpdqmaesmd/test_page_3.html'\n",
+          "test_phone_numbers_page_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_phone_numbers_page_4\n  File \"__test__.py\", line 78, in run_test_case\n  File \"__test__.py\", line 11, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: 'file:///tmp/tmpkn37069h/test_page_4.html'\n",
+          "test_phone_numbers_page_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 73, in test_phone_numbers_page_5\n  File \"__test__.py\", line 78, in run_test_case\n  File \"__test__.py\", line 11, in task_func\nFileNotFoundError: [Errno 2] No such file or directory: 'file:///tmp/tmpesdv3fix/test_page_5.html'\n"
+        }
+      }
+    ],
+    "BigCodeBench/170": [
+      {
+        "task_id": "BigCodeBench/170",
+        "solution": "import pandas as pd\nimport requests\nfrom io import StringIO\ndef task_func(csv_url, sort_by_column=\"title\"):\n    response = requests.get(csv_url, verify=False)\n\n    if response.status_code != 200:\n        raise Exception(f\"Failed to fetch CSV data. Status code: {response.status_code}\")\n\n    df = pd.read_csv(StringIO(response.text))\n    df = df.sort_values(by=sort_by_column)\n\n    return df",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/189": [
+      {
+        "task_id": "BigCodeBench/189",
+        "solution": "import re\nimport json\nimport requests\ndef task_func(data_url: str) -> list:\n    try:\n        response = requests.get(data_url)\n    except Exception:\n        return \"Invalid url input\"\n\n    data = response.text\n    data = re.sub(r\"\\[[^\\[\\]]*\\]\", \"\", data)\n\n    names = re.findall(r'\"name\"\\s*:\\s*\"([^\"]+)\"', data)\n    return names",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 41, in test_case_1\nAssertionError: Lists differ: [] != ['John', 'Doe', 'Alice']\n\nSecond list contains 3 additional elements.\nFirst extra element 0:\n'John'\n\n- []\n+ ['John', 'Doe', 'Alice']\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 46, in test_case_2\nAssertionError: Lists differ: [] != ['Bob', 'Eve']\n\nSecond list contains 2 additional elements.\nFirst extra element 0:\n'Bob'\n\n- []\n+ ['Bob', 'Eve']\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 61, in test_case_5\nAssertionError: Lists differ: [] != ['Billy']\n\nSecond list contains 1 additional elements.\nFirst extra element 0:\n'Billy'\n\n- []\n+ ['Billy']\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 50, in test_case_3\n  File \"__test__.py\", line 10, in task_func\nAttributeError: 'str' object has no attribute 'text'\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 55, in test_case_4\n  File \"__test__.py\", line 10, in task_func\nAttributeError: 'str' object has no attribute 'text'\n"
+        }
+      }
+    ],
+    "BigCodeBench/207": [
+      {
+        "task_id": "BigCodeBench/207",
+        "solution": "import re\nimport requests\ndef task_func(input):\n    if not isinstance(input, str) or not input:\n        raise ValueError(\"Input must be a non-empty string.\")\n\n    match = re.search(r\"https?://[^\\s'\\\"<>]+\", input)\n    if not match:\n        raise ValueError(\"No API endpoint found in input.\")\n\n    endpoint = match.group(0).rstrip(\".,;:)]}\")\n\n    response = requests.get(endpoint, verify=False)\n    response.raise_for_status()\n\n    return response.json()",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/32": [
+      {
+        "task_id": "BigCodeBench/32",
+        "solution": "import requests\nfrom bs4 import BeautifulSoup\ndef task_func(url, tag):\n    response = requests.get(url, verify=False)\n    soup = BeautifulSoup(response.text, 'html.parser')\n    element = soup.find(tag)\n\n    if element:\n        return element.get_text()\n\n    return None",
+        "status": "fail",
+        "details": {
+          "test_empty_tag": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 77, in test_empty_tag\nAssertionError: '' is not None\n",
+          "test_malformed_html": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 59, in test_malformed_html\nAssertionError: 'This is a test page' is not None\n"
+        }
+      }
+    ],
+    "BigCodeBench/211": [
+      {
+        "task_id": "BigCodeBench/211",
+        "solution": "import requests\nimport os\nimport zipfile\ndef task_func(url, destination_directory, headers=None):\n    os.makedirs(destination_directory, exist_ok=True)\n\n    response = requests.get(url, headers=headers, verify=False)\n    response.raise_for_status()\n\n    zip_filename = os.path.basename(url.split(\"?\")[0]) or \"downloaded.zip\"\n    zip_path = os.path.join(destination_directory, zip_filename)\n\n    with open(zip_path, \"wb\") as f:\n        f.write(response.content)\n\n    with zipfile.ZipFile(zip_path, \"r\") as zip_ref:\n        extracted_files = [\n            info.filename for info in zip_ref.infolist()\n            if not info.is_dir()\n        ]\n        zip_ref.extractall(destination_directory)\n\n    return extracted_files",
+        "status": "fail",
+        "details": {
+          "test_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 79, in test_2\n  File \"__test__.py\", line 5, in task_func\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 225, in makedirs\nPermissionError: [Errno 13] Permission denied: '/path'\n",
+          "test_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 104, in test_3\n  File \"__test__.py\", line 5, in task_func\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 225, in makedirs\nPermissionError: [Errno 13] Permission denied: '/path'\n",
+          "test_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 129, in test_4\n  File \"__test__.py\", line 5, in task_func\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 225, in makedirs\nPermissionError: [Errno 13] Permission denied: '/path'\n",
+          "test_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 154, in test_5\n  File \"__test__.py\", line 5, in task_func\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 225, in makedirs\nPermissionError: [Errno 13] Permission denied: '/path'\n",
+          "test_download_and_extract": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 54, in test_download_and_extract\n  File \"__test__.py\", line 5, in task_func\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 225, in makedirs\nPermissionError: [Errno 13] Permission denied: '/path'\n"
+        }
+      }
+    ],
+    "BigCodeBench/390": [
+      {
+        "task_id": "BigCodeBench/390",
+        "solution": "import pandas as pd\nimport requests\nfrom io import StringIO\ndef task_func(csv_url_dict, sort_by_column=\"title\"):\n    if not csv_url_dict or \"URL\" not in csv_url_dict:\n        raise ValueError(\"The dictionary must contain a 'URL' key.\")\n\n    response = requests.get(csv_url_dict[\"URL\"], verify=False)\n    response.raise_for_status()\n\n    df = pd.read_csv(StringIO(response.text))\n    return df.sort_values(by=sort_by_column)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/402": [
+      {
+        "task_id": "BigCodeBench/402",
+        "solution": "import re\nimport requests\nimport json\nimport csv\nimport os\nAPI_URL = 'https://api.example.com/data'\ndef task_func(pattern):\n    response = requests.get(API_URL, verify=False)\n    response.raise_for_status()\n\n    json_response = response.json()\n    data = json_response.get(\"data\", \"\")\n\n    if not isinstance(data, str):\n        data = json.dumps(data)\n\n    matches = [match.group(0) for match in re.finditer(pattern, data)]\n\n    csv_path = os.path.abspath(\"matched_data.csv\")\n\n    with open(csv_path, \"w\", newline=\"\") as f:\n        writer = csv.writer(f)\n        for match in matches:\n            writer.writerow([match])\n\n    return csv_path",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 57, in test_case_1\n  File \"__test__.py\", line 9, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 65, in test_case_2\n  File \"__test__.py\", line 9, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 73, in test_case_3\n  File \"__test__.py\", line 9, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 81, in test_case_4\n  File \"__test__.py\", line 9, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 88, in test_case_5\n  File \"__test__.py\", line 9, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n"
+        }
+      }
+    ],
+    "BigCodeBench/994": [
+      {
+        "task_id": "BigCodeBench/994",
+        "solution": "import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\ndef task_func(url: str, csv_file_path: str) -> list:\n    try:\n        response = requests.get(url, timeout=5, verify=False)\n        response.raise_for_status()\n    except requests.RequestException as e:\n        raise RuntimeError(f\"Error fetching URL: {e}\")\n\n    soup = BeautifulSoup(response.text, \"html.parser\")\n    data = []\n\n    for container in soup.find_all(\"div\", class_=\"container\"):\n        title_tag = container.find(\"h1\")\n        date_tag = container.find(\"span\", class_=\"date\")\n        author_tag = container.find(\"span\", class_=\"author\")\n\n        title = title_tag.get_text(strip=True) if title_tag else \"No Title\"\n        date = date_tag.get_text(strip=True) if date_tag else \"No Date\"\n        author = author_tag.get_text(strip=True) if author_tag else \"No Author\"\n\n        data.append((title, date, author))\n\n    df = pd.DataFrame(data, columns=[\"Title\", \"Date\", \"Author\"])\n    df.to_csv(csv_file_path, index=False)\n\n    return data",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/578": [
+      {
+        "task_id": "BigCodeBench/578",
+        "solution": "import unicodedata\nimport requests\nURL = 'https://api.github.com/users/'\ndef task_func(username):\n    response = requests.get(URL + username, verify=False)\n    response.raise_for_status()\n\n    data = response.json()\n\n    def normalize(value):\n        if isinstance(value, str):\n            return unicodedata.normalize(\"NFKD\", value).encode(\"ascii\", \"ignore\").decode(\"ascii\")\n        if isinstance(value, dict):\n            return {normalize(k): normalize(v) for k, v in value.items()}\n        if isinstance(value, list):\n            return [normalize(item) for item in value]\n        return value\n\n    return normalize(data)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/81": [
+      {
+        "task_id": "BigCodeBench/81",
+        "solution": "from flask import Flask\nfrom flask_restful import Resource, Api\nimport requests\ndef task_func(api_url, template_folder):\n    if not api_url:\n        raise ValueError(\"api_url must be provided.\")\n    if not template_folder:\n        raise ValueError(\"template_folder must be provided.\")\n\n    app = Flask(__name__, template_folder=template_folder)\n    api = Api(app)\n\n    class ExternalAPIResource(Resource):\n        def get(self):\n            try:\n                response = requests.get(api_url)\n                response.raise_for_status()\n                return response.json()\n            except requests.RequestException as e:\n                return {\"error\": str(e)}, 500\n            except ValueError:\n                return {\"error\": \"Invalid JSON response from external API.\"}, 500\n\n    api.add_resource(ExternalAPIResource, \"/\", \"/api/data\")\n\n    return app",
+        "status": "fail",
+        "details": {
+          "test_api_endpoint_configuration": "Traceback (most recent call last):\n  File \"__test__.py\", line 43, in test_api_endpoint_configuration\nAssertionError: False is not true\n",
+          "test_api_endpoint_status_code": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 70, in test_api_endpoint_status_code\nAssertionError: 404 != 200\n",
+          "test_data_endpoint_response": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 51, in test_data_endpoint_response\nAssertionError: None != {'test': 'value'}\n",
+          "test_external_api_call": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 60, in test_external_api_call\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 950, in assert_called_once_with\n    raise AssertionError(msg)\nAssertionError: Expected 'get' to be called once. Called 0 times.\n"
+        }
+      }
+    ],
+    "BigCodeBench/996": [
+      {
+        "task_id": "BigCodeBench/996",
+        "solution": "import requests\nimport json\nfrom bs4 import BeautifulSoup\ndef task_func(url: str, file_name: str = \"Output.txt\") -> str:\n    response = requests.get(url, verify=False)\n    response.raise_for_status()\n\n    soup = BeautifulSoup(response.text, \"html.parser\")\n\n    title = None\n    if soup.title and soup.title.string:\n        title = soup.title.string.strip()\n\n    with open(file_name, \"a\") as f:\n        f.write(json.dumps({\"title\": title}) + \"\\n\")\n\n    return file_name",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/215": [
+      {
+        "task_id": "BigCodeBench/215",
+        "solution": "import requests\nimport json\nimport pandas as pd\nimport seaborn as sns\nHEADERS = {\n    'accept': 'application/json'\n}\ndef task_func(url, parameters):\n    import matplotlib.pyplot as plt\n\n    if not isinstance(url, str) or not url:\n        raise Exception(\"Invalid URL.\")\n\n    try:\n        response = requests.get(url, headers=HEADERS, params=parameters, verify=False)\n        response.raise_for_status()\n        data = json.loads(response.text)\n    except Exception as e:\n        raise Exception(f\"Unable to access or retrieve data from URL: {e}\")\n\n    try:\n        payload = data\n        if isinstance(data, dict):\n            for key in [\"data\", \"results\", \"items\", \"records\"]:\n                if key in data and isinstance(data[key], (list, dict)):\n                    payload = data[key]\n                    break\n\n        df = pd.DataFrame(payload)\n\n        if df.empty:\n            raise Exception(\"Empty data returned from API.\")\n\n        numeric_df = df.select_dtypes(include=\"number\")\n\n        if numeric_df.empty:\n            raise Exception(\"No numerical data available for correlation heatmap.\")\n\n        corr = numeric_df.corr()\n\n        if corr.empty:\n            raise Exception(\"Invalid numerical data for correlation heatmap.\")\n\n        _, ax = plt.subplots()\n        sns.heatmap(corr, annot=True, cmap=\"coolwarm\", ax=ax)\n        plt.show()\n\n        return df, ax\n    except Exception as e:\n        raise Exception(f\"Invalid data or heatmap generation failed: {e}\")",
+        "status": "fail",
+        "details": {
+          "test_valid_request": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 71, in test_valid_request\nAssertionError: False is not true\n"
+        }
+      }
+    ],
+    "BigCodeBench/1012": [
+      {
+        "task_id": "BigCodeBench/1012",
+        "solution": "import requests\nfrom pathlib import Path\nimport zipfile\nDOWNLOAD_DIR = Path(\"downloads\")\nZIP_DIR = Path(\"unzipped_files\")\ndef task_func(url, filename):\n    try:\n        DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)\n        ZIP_DIR.mkdir(parents=True, exist_ok=True)\n\n        zip_path = DOWNLOAD_DIR / filename\n\n        response = requests.get(url, stream=True, verify=False)\n        response.raise_for_status()\n\n        with open(zip_path, \"wb\") as f:\n            for chunk in response.iter_content(chunk_size=8192):\n                if chunk:\n                    f.write(chunk)\n\n        with zipfile.ZipFile(zip_path, \"r\") as zip_ref:\n            zip_ref.extractall(ZIP_DIR)\n\n        filenames = [path.name for path in ZIP_DIR.iterdir()]\n        return (f\"Successfully downloaded and extracted {filename}\", filenames)\n\n    except requests.RequestException as e:\n        return (f\"Error downloading file: {e}\", [])\n\n    except (OSError, zipfile.BadZipFile, zipfile.LargeZipFile) as e:\n        return (f\"Error handling or extracting file: {e}\", [])",
+        "status": "fail",
+        "details": {
+          "test_invalid_url": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 51, in test_invalid_url\nAssertionError: 'Download failed' not found in 'Error handling or extracting file: File is not a zip file'\n",
+          "test_non_200_http_response": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 58, in test_non_200_http_response\nAssertionError: 'Download failed' not found in 'Error handling or extracting file: File is not a zip file'\n",
+          "test_successful_download_and_extraction": "Traceback (most recent call last):\n  File \"__test__.py\", line 44, in test_successful_download_and_extraction\nAssertionError: 'Download and extraction successful' not found in \"Error downloading file: HTTPSConnectionPool(host='drive.google.com', port=443): Max retries exceeded with url: /uc?export=download&id=1MRyf-bpPYb7hT3Oj4ZK35O-fzM2_HZ7A (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1006)')))\"\n"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,648 @@
+{
+  "oracle_id": "cwe367-0",
+  "oracle_layer": "static",
+  "input": "data/BigCodeBench/CWE-367-0.jsonl",
+  "total": 25,
+  "agreements": 25,
+  "agreement_rate": 1.0,
+  "verdict_counts": {
+    "target_present": 25,
+    "target_absent": 0,
+    "parse_error": 0
+  },
+  "rows": [
+    {
+      "task_id": "BigCodeBench/15",
+      "line_number": 1,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 10,
+          "use_lineno": 11,
+          "path_expression": "output_dir_path",
+          "check_expression": "os.path.exists(output_dir_path)",
+          "use_expression": "os.makedirs(output_dir_path)",
+          "check_call": "os.path.exists",
+          "use_call": "os.makedirs",
+          "use_kind": "create",
+          "resolution": "control_flow_dependent_same_resource"
+        },
+        {
+          "check_lineno": 6,
+          "use_lineno": 14,
+          "path_expression": "commands_file_path",
+          "check_expression": "os.path.exists(commands_file_path)",
+          "use_expression": "open(commands_file_path, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/30",
+      "line_number": 2,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 17,
+          "use_lineno": 20,
+          "path_expression": "file_path",
+          "check_expression": "os.path.isfile(file_path)",
+          "use_expression": "open(file_path, 'r')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/127",
+      "line_number": 3,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 10,
+          "use_lineno": 12,
+          "path_expression": "filename",
+          "check_expression": "os.path.isdir(filename)",
+          "use_expression": "open(filename, 'rb')",
+          "check_call": "os.path.isdir",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        },
+        {
+          "check_lineno": 10,
+          "use_lineno": 15,
+          "path_expression": "filename",
+          "check_expression": "os.path.isdir(filename)",
+          "use_expression": "shutil.move(filename, DEST_DIR)",
+          "check_call": "os.path.isdir",
+          "use_call": "shutil.move",
+          "use_kind": "move_source",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/206",
+      "line_number": 4,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 5,
+          "use_lineno": 10,
+          "path_expression": "file_name",
+          "check_expression": "os.path.exists(file_name)",
+          "use_expression": "open(file_name, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/313",
+      "line_number": 5,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 15,
+          "use_lineno": 16,
+          "path_expression": "os.path.join(directory, subdirectory)",
+          "check_expression": "os.path.exists(os.path.join(directory, subdirectory))",
+          "use_expression": "os.makedirs(os.path.join(directory, subdirectory))",
+          "check_call": "os.path.exists",
+          "use_call": "os.makedirs",
+          "use_kind": "create",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/398",
+      "line_number": 6,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 4,
+          "use_lineno": 7,
+          "path_expression": "file_path",
+          "check_expression": "os.path.exists(file_path)",
+          "use_expression": "open(file_path, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/421",
+      "line_number": 7,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 16,
+          "use_lineno": 17,
+          "path_expression": "os.path.join(directory, file)",
+          "check_expression": "os.path.isfile(os.path.join(directory, file))",
+          "use_expression": "open(os.path.join(directory, file), 'rb')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/487",
+      "line_number": 8,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 7,
+          "use_lineno": 11,
+          "path_expression": "file_path",
+          "check_expression": "os.path.exists(file_path)",
+          "use_expression": "open(file_path, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/577",
+      "line_number": 9,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 9,
+          "use_lineno": 12,
+          "path_expression": "file_path",
+          "check_expression": "file_path.is_file()",
+          "use_expression": "open(file_path, 'rb')",
+          "check_call": "file_path.is_file",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/585",
+      "line_number": 10,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 12,
+          "use_lineno": 13,
+          "path_expression": "filepath",
+          "check_expression": "os.path.isfile(filepath)",
+          "use_expression": "open(filepath, 'rb')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/644",
+      "line_number": 11,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 7,
+          "use_lineno": 8,
+          "path_expression": "filename",
+          "check_expression": "os.path.exists(filename)",
+          "use_expression": "open(filename, 'a')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/645",
+      "line_number": 12,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 4,
+          "use_lineno": 14,
+          "path_expression": "filename",
+          "check_expression": "os.path.exists(filename)",
+          "use_expression": "open(filename, 'w')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/674",
+      "line_number": 13,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 4,
+          "use_lineno": 8,
+          "path_expression": "filename",
+          "check_expression": "os.path.exists(filename)",
+          "use_expression": "open(filename, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        },
+        {
+          "check_lineno": 4,
+          "use_lineno": 16,
+          "path_expression": "filename",
+          "check_expression": "os.path.exists(filename)",
+          "use_expression": "open(filename, 'r+')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/713",
+      "line_number": 14,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 4,
+          "use_lineno": 8,
+          "path_expression": "log_file_path",
+          "check_expression": "os.path.exists(log_file_path)",
+          "use_expression": "open(log_file_path, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/717",
+      "line_number": 15,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 16,
+          "use_lineno": 17,
+          "path_expression": "config_file",
+          "check_expression": "os.path.exists(config_file)",
+          "use_expression": "open(config_file, 'a')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/720",
+      "line_number": 16,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 17,
+          "use_lineno": 18,
+          "path_expression": "FILE_NAME",
+          "check_expression": "os.path.isfile(FILE_NAME)",
+          "use_expression": "open(FILE_NAME, 'w', newline='')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/721",
+      "line_number": 17,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 5,
+          "use_lineno": 10,
+          "path_expression": "file_path",
+          "check_expression": "os.path.isfile(file_path)",
+          "use_expression": "open(file_path, 'r')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/723",
+      "line_number": 18,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 20,
+          "use_lineno": 21,
+          "path_expression": "CSV_FILE_PATH",
+          "check_expression": "os.path.exists(CSV_FILE_PATH)",
+          "use_expression": "os.remove(CSV_FILE_PATH)",
+          "check_call": "os.path.exists",
+          "use_call": "os.remove",
+          "use_kind": "delete",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/724",
+      "line_number": 19,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 4,
+          "use_lineno": 7,
+          "path_expression": "config_path",
+          "check_expression": "os.path.isfile(config_path)",
+          "use_expression": "open(config_path)",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/800",
+      "line_number": 20,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 22,
+          "use_lineno": 23,
+          "path_expression": "csv_file_path",
+          "check_expression": "os.path.exists(csv_file_path)",
+          "use_expression": "open(csv_file_path, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/830",
+      "line_number": 21,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 10,
+          "use_lineno": 15,
+          "path_expression": "filename",
+          "check_expression": "os.path.exists(filename)",
+          "use_expression": "open(filename, 'r')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1039",
+      "line_number": 22,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 12,
+          "use_lineno": 13,
+          "path_expression": "request",
+          "check_expression": "os.path.exists(request)",
+          "use_expression": "open(request, 'rb')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1041",
+      "line_number": 23,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 7,
+          "use_lineno": 9,
+          "path_expression": "file_name",
+          "check_expression": "os.path.exists(file_name)",
+          "use_expression": "open(file_name, 'rb')",
+          "check_call": "os.path.exists",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1109",
+      "line_number": 24,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 4,
+          "use_lineno": 9,
+          "path_expression": "file_path",
+          "check_expression": "os.path.isfile(file_path)",
+          "use_expression": "open(file_path, 'r')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1127",
+      "line_number": 25,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe367-0",
+      "oracle_layer": "static",
+      "target_pattern": "filesystem state check followed by a non-atomic dependent use of the same resource",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "check_lineno": 11,
+          "use_lineno": 12,
+          "path_expression": "component",
+          "check_expression": "os.path.isfile(component)",
+          "use_expression": "open(component, 'rb')",
+          "check_call": "os.path.isfile",
+          "use_call": "open",
+          "use_kind": "open",
+          "resolution": "control_flow_dependent_same_resource"
+        }
+      ]
+    }
+  ]
+}

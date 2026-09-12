@@ -1,0 +1,29 @@
+{
+  "name": "cwe295_cocota_woStyleUniform",
+  "created_at": "2026-05-18T02:42:37.278580+00:00",
+  "note": "Rebuilt from normalized template cocota_woStyleUniform.md",
+  "author": "rebuild_prompts",
+  "task_subset": "data/tasks/cwe295.jsonl",
+  "fewshot_ids": [
+    "BigCodeBench/74",
+    "BigCodeBench/1136",
+    "BigCodeBench/1016",
+    "BigCodeBench/129"
+  ],
+  "baseline": "cocota_woStyleUniform",
+  "has_cot": true,
+  "template": "prompts/templates/cwe295/cocota_woStyleUniform.md",
+  "test_count": 33,
+  "attack_config": {
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "cot",
+      "code"
+    ],
+    "mode": "single_dimension"
+  },
+  "evaluation_config": {
+    "detector_id": "contains_verify_cert"
+  }
+}

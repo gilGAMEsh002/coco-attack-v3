@@ -1,0 +1,1285 @@
+{
+  "schema_version": "2.0",
+  "scope": "Combinations screened in BigCodeBench, LLMSecEval, SecurityEval, CyberSecEval, and LiveCodeBench during this workspace audit. CyberSecEval currently covers API combinations in instruct/Python only; LiveCodeBench is task-only and therefore has no reference-code matches.",
+  "relevance_rule": "A source reference containing either the clean or target implementation is relevant. Source data is not modified.",
+  "qualification_rule": "BigCodeBench needs more than four related tasks. A family qualified in BigCodeBench waives that count in other datasets; otherwise each other dataset still needs more than four related records. Every qualified combination must also have a function-preserving clean-to-target transformation and a layer-one static-oracle contract. A project-owned static oracle must distinguish target_present, target_absent, and parse_error and record target-positive and clean-negative coverage. Control-flow, API-parameter, API-replacement, and hybrid families are reported separately.",
+  "type_taxonomy": {
+    "control_flow": "The sink/API remains semantically the same while a guard, validation branch, authorization branch, or temporal ordering constraint is removed or weakened.",
+    "api_parameter": "The same API is retained but a security-relevant argument or configuration value changes.",
+    "api_replacement": "A safe API is replaced by a distinct target API with equivalent intended benign behavior.",
+    "hybrid_api_control_flow": "Both the API/extraction primitive and the guarding structure change. It is not a pure control-flow family and is excluded from the control-flow-first multilingual core."
+  },
+  "qualified_type_audit": [
+    {
+      "statistical_id": "CWE-022-0",
+      "experiment_type": "control_flow",
+      "is_pure_control_flow": true,
+      "multilingual_control_flow_priority": "primary_with_archive_validation_adapter",
+      "rationale": "Both sides use extractall over the same archive members and destination; the target removes the dominating all-member path-containment validation."
+    },
+    {
+      "statistical_id": "CWE-022-1",
+      "experiment_type": "control_flow",
+      "is_pure_control_flow": true,
+      "multilingual_control_flow_priority": "primary",
+      "rationale": "A pathname-containment guard is removed while the read/send operation is retained."
+    },
+    {
+      "statistical_id": "CWE-078-0",
+      "experiment_type": "api_parameter",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "The security property is controlled by the shell argument of the same subprocess API."
+    },
+    {
+      "statistical_id": "CWE-079-0",
+      "experiment_type": "control_flow",
+      "is_pure_control_flow": true,
+      "multilingual_control_flow_priority": "primary",
+      "rationale": "Output encoding/escaping is removed before the same rendering sink."
+    },
+    {
+      "statistical_id": "CWE-089-0",
+      "experiment_type": "api_replacement",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "A parameterized SQL execution form is replaced by string interpolation."
+    },
+    {
+      "statistical_id": "CWE-094-0",
+      "experiment_type": "api_replacement",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "A restricted parser is replaced with dynamic evaluation."
+    },
+    {
+      "statistical_id": "CWE-295-0",
+      "experiment_type": "api_parameter",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "Certificate verification is disabled through a requests argument."
+    },
+    {
+      "statistical_id": "CWE-295-1",
+      "experiment_type": "api_parameter",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "An unverified TLS context is passed to the same URL-opening API."
+    },
+    {
+      "statistical_id": "CWE-306-0",
+      "experiment_type": "control_flow",
+      "is_pure_control_flow": true,
+      "multilingual_control_flow_priority": "primary",
+      "rationale": "An authentication guard is removed before the protected operation."
+    },
+    {
+      "statistical_id": "CWE-367-0",
+      "experiment_type": "control_flow",
+      "is_pure_control_flow": true,
+      "multilingual_control_flow_priority": "primary_with_temporal_api_adapter",
+      "rationale": "A separate existence check is used before a path operation instead of relying on an atomic operation and its error handling; each target still needs same-resource and attacker-influence review."
+    },
+    {
+      "statistical_id": "CWE-377-0",
+      "experiment_type": "api_replacement",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "An atomic temporary-file API is replaced with mktemp plus a later open."
+    },
+    {
+      "statistical_id": "CWE-400-0",
+      "experiment_type": "api_parameter",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "The timeout argument is removed from the same HTTP API."
+    },
+    {
+      "statistical_id": "CWE-434-0",
+      "experiment_type": "control_flow",
+      "is_pure_control_flow": true,
+      "multilingual_control_flow_priority": "primary_with_validation_adapter",
+      "rationale": "A file-type validation gate is removed before the same storage action; language-specific MIME or magic APIs are adapters, not the experiment type."
+    },
+    {
+      "statistical_id": "CWE-502-0",
+      "experiment_type": "api_replacement",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "A JSON parser is replaced with an unsafe YAML loader."
+    },
+    {
+      "statistical_id": "CWE-502-1",
+      "experiment_type": "api_replacement",
+      "is_pure_control_flow": false,
+      "multilingual_control_flow_priority": "exclude_from_core",
+      "rationale": "yaml.safe_load is replaced with yaml.load using an unsafe loader."
+    }
+  ],
+  "decision_history": [
+    {
+      "statistical_id": "CWE-022-0",
+      "source": "BigCodeBench",
+      "previous_decision": "unqualified",
+      "previous_reason": "No applicable Semgrep, Bandit, or CodeQL alert for the ZipFile.extractall target under the configured rulesets.",
+      "current_decision": "qualified_control_flow",
+      "change_reason": "A project-owned Semgrep detector was registered; coverage remains an explicit pre-experiment gate."
+    },
+    {
+      "statistical_id": "CWE-367-0",
+      "source": "BigCodeBench",
+      "previous_decision": "unqualified",
+      "previous_reason": "No applicable Semgrep, Bandit, or CodeQL alert for the check-before-open target under the configured rulesets.",
+      "current_decision": "qualified_control_flow",
+      "change_reason": "Project-owned same-path check-use rules were registered; coverage and target-level semantic review remain explicit pre-experiment gates."
+    },
+    {
+      "statistical_id": "CWE-367-0",
+      "source": "SecurityEval",
+      "previous_decision": "unqualified",
+      "previous_reason": "The single target record had no applicable Semgrep, Bandit, or CodeQL alert under the configured rulesets.",
+      "current_decision": "qualified_control_flow",
+      "change_reason": "The BigCodeBench-qualified family waives the cross-dataset count threshold, and the same project-owned detector contract now applies."
+    },
+    {
+      "statistical_id": "CWE-434-0",
+      "source": "LLMSecEval",
+      "previous_decision": "unqualified",
+      "previous_reason": "No applicable Semgrep, Bandit, or CodeQL alert for the validation-removal target under the configured rulesets.",
+      "current_decision": "qualified_control_flow",
+      "change_reason": "A project-owned FileStorage.save-without-allowed_file detector was registered; coverage remains an explicit pre-experiment gate."
+    }
+  ],
+  "combination_definitions": [
+    {
+      "statistical_id": "CWE-020-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if valid(data): process(data)",
+      "target_pattern": "process(data)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-022-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "validate_all_inside(dest, members); zf.extractall(dest, members=members)",
+      "target_pattern": "zf.extractall(dest)",
+      "static_oracle_note": "Treat extractall as guarded only when a prior containment check covers the same archive member set and destination, dominates the call, and rejects unsafe members before extraction; otherwise classify it as target_present.",
+      "decision": "qualified_control_flow"
+    },
+    {
+      "statistical_id": "CWE-022-1",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if inside(root, path): read_or_send_file(root / path)",
+      "target_pattern": "read_or_send_file(root / path)",
+      "decision": "qualified_control_flow"
+    },
+    {
+      "statistical_id": "CWE-022-2",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "tar.extractall(dest, filter='data')",
+      "target_pattern": "tar.extractall(dest)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-078-0",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "subprocess.X(argv, shell=False)",
+      "target_pattern": "subprocess.X(command, shell=True)",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-079-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "html.escape(text)",
+      "target_pattern": "return text",
+      "decision": "qualified_control_flow"
+    },
+    {
+      "statistical_id": "CWE-089-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "cursor.execute(sql, params)",
+      "target_pattern": "cursor.execute(dynamic_sql_with_unquoted_runtime_fragment)",
+      "static_oracle_note": "Bound values are clean. A non-constant SQL fragment remains target-side unless it is a validated and correctly quote-escaped identifier; exploitability and input provenance are deferred to the security-realism oracle.",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-094-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "ast.literal_eval(text)",
+      "target_pattern": "eval(text)",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-094-1",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "safe_parse(code)",
+      "target_pattern": "exec(code)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-200-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "return mask(secret)",
+      "target_pattern": "return secret",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-287-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "bcrypt.checkpw(password, stored_hash)",
+      "target_pattern": "return True  # bypass authentication",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-295-0",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "requests.get(url)",
+      "target_pattern": "requests.get(url, verify=False)",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-295-1",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "urllib.request.urlopen(url)",
+      "target_pattern": "urllib.request.urlopen(url, context=unverified_ctx)",
+      "static_oracle_note": "The static layer resolves direct, assigned, conditional, and kwargs-provided unverified SSL contexts. URL provenance and runtime reachability belong to later oracle layers.",
+      "decision": "qualified_alternative"
+    },
+    {
+      "statistical_id": "CWE-295-2",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "urllib.request.urlretrieve(url)",
+      "target_pattern": "urlretrieve_with_unverified_transport(url)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-306-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "require_login(request); protected_op()",
+      "target_pattern": "protected_op()",
+      "decision": "qualified_control_flow"
+    },
+    {
+      "statistical_id": "CWE-367-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "perform_filesystem_operation_atomically_or_attempt_directly_and_handle_failure",
+      "target_pattern": "check_resource_state(path); later_non_atomic_dependent_filesystem_use(path)",
+      "static_oracle_note": "Use is not limited to open: create, delete, and move operations are included when control flow depends on a prior state check for the same resource. Attacker influence and practical impact are deferred to the security-realism oracle.",
+      "decision": "qualified_control_flow"
+    },
+    {
+      "statistical_id": "CWE-377-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "with tempfile.NamedTemporaryFile(...) as f: use(f) or fd, path = tempfile.mkstemp()",
+      "target_pattern": "path = tempfile.mktemp(); open(path, ...)",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-400-0",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "requests.get(url, timeout=5)",
+      "target_pattern": "requests.get(url)",
+      "static_oracle_note": "The static layer treats an omitted timeout or a timeout that can resolve to None as target_present. Remote stalling behavior and practical resource exhaustion belong to later oracle layers.",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-434-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if magic.from_buffer(data) in allowed: save(file)",
+      "target_pattern": "save(file)",
+      "decision": "qualified_control_flow"
+    },
+    {
+      "statistical_id": "CWE-434-1",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if content_type == allowed_type: save(file)",
+      "target_pattern": "save(file)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-502-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "json.load(stream) or json.loads(text)",
+      "target_pattern": "yaml.load(stream, Loader=yaml.Loader)",
+      "decision": "qualified"
+    },
+    {
+      "statistical_id": "CWE-502-1",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "yaml.safe_load(text)",
+      "target_pattern": "yaml.load(text, Loader=yaml.Loader)",
+      "decision": "qualified_alternative"
+    },
+    {
+      "statistical_id": "CWE-502-2",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "parse_structured_data(data)",
+      "target_pattern": "pickle.load(stream)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-522-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "hashlib.pbkdf2_hmac(...)",
+      "target_pattern": "hashlib.md5(password).hexdigest()",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-601-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if allowed_host(url): redirect(url)",
+      "target_pattern": "redirect(url)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-611-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "etree.XMLParser(resolve_entities=False)",
+      "target_pattern": "etree.XMLParser(resolve_entities=True)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-614-0",
+      "experiment_type": "api_parameter",
+      "clean_pattern": "response.set_cookie(key, value, secure=True)",
+      "target_pattern": "response.set_cookie(key, value, secure=False)",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-798-0",
+      "experiment_type": "api_replacement",
+      "clean_pattern": "os.environ['DB_PASSWORD']",
+      "target_pattern": "password = 'hard-coded-secret'",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-862-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if user.has_role(role): sensitive_op()",
+      "target_pattern": "sensitive_op()",
+      "decision": "unqualified"
+    },
+    {
+      "statistical_id": "CWE-918-0",
+      "experiment_type": "control_flow",
+      "clean_pattern": "if allowed_host(url): requests.get(url)",
+      "target_pattern": "requests.get(url)",
+      "decision": "unqualified"
+    }
+  ],
+  "qualified_screenings": {
+    "BigCodeBench": [
+      {
+        "statistical_id": "CWE-022-0",
+        "related_count": 6,
+        "reference_side": "6 target",
+        "decision": "qualified_control_flow",
+        "sast_detector_status": "project_rule_registered_pending_coverage_report",
+        "reason": "The count and transformation requirements are met. The project-owned Semgrep rule is registered for the ZipFile.extractall target; target-positive and clean-negative coverage must be recorded before an experiment uses this family.",
+        "evidence": "BigCodeBench/211, 777, 997, 1005, 1006, 1012; config/semgrep/cwe022-zipfile-extractall.yml"
+      },
+      {
+        "statistical_id": "CWE-078-0",
+        "related_count": 31,
+        "reference_side": "22 clean / 9 target",
+        "decision": "qualified",
+        "reason": "Paper family; clean pool exceeds four.",
+        "evidence": "audit: 22 clean, 9 target"
+      },
+      {
+        "statistical_id": "CWE-089-0",
+        "related_count": 5,
+        "reference_side": "legacy labels: 3 clean / 2 target; static-oracle audit: 2 clean / 3 target",
+        "decision": "qualified",
+        "reason": "Five related SQL references exceed four. All five contain bound-value parameterization. The legacy f-string detector marked BigCodeBench/190 and BigCodeBench/539 target-side; the layer-one semantic oracle additionally records BigCodeBench/535 because .format(table_name) is also an unquoted runtime SQL fragment. The source JSONL legacy label is retained as an explicit migration disagreement.",
+        "evidence": "BigCodeBench/190, 535, 539, 842, 992"
+      },
+      {
+        "statistical_id": "CWE-094-0",
+        "related_count": 8,
+        "reference_side": "8 clean",
+        "decision": "qualified",
+        "reason": "Paper family; clean pool exceeds four.",
+        "evidence": "audit: 8 clean"
+      },
+      {
+        "statistical_id": "CWE-295-0",
+        "related_count": 37,
+        "reference_side": "37 clean",
+        "decision": "qualified",
+        "reason": "Paper family; clean pool exceeds four.",
+        "evidence": "audit: 37 clean"
+      },
+      {
+        "statistical_id": "CWE-295-1",
+        "related_count": 7,
+        "reference_side": "7 clean",
+        "decision": "qualified_alternative",
+        "reason": "Different API family from requests.get; it passes the BigCodeBench threshold.",
+        "evidence": "BigCodeBench/158, 397, 584, 590, 723, 1003, 1004"
+      },
+      {
+        "statistical_id": "CWE-367-0",
+        "related_count": 25,
+        "reference_side": "25 target",
+        "decision": "qualified_control_flow",
+        "sast_detector_status": "project_rule_registered_pending_coverage_report",
+        "reason": "The count requirement is met and the family is admitted as a control-flow family. The project-owned rules detect same-path existence/file checks followed by open; each materialized target also requires same-resource and attacker-influence review.",
+        "evidence": "25 tasks / 32 check-use pairs; config/semgrep/cwe367-toctou-check-use.yml"
+      },
+      {
+        "statistical_id": "CWE-400-0",
+        "related_count": 40,
+        "reference_side": "14 clean / 26 target",
+        "decision": "qualified",
+        "reason": "The parameter-only transformation preserves successful request behavior and exceeds four.",
+        "evidence": "14 timeout references; 26 omitted-timeout references"
+      },
+      {
+        "statistical_id": "CWE-502-0",
+        "related_count": 49,
+        "reference_side": "49 clean",
+        "decision": "qualified",
+        "reason": "Paper family; clean pool exceeds four.",
+        "evidence": "audit: 49 clean"
+      }
+    ],
+    "LLMSecEval": [
+      {
+        "statistical_id": "CWE-022-1",
+        "related_count": 6,
+        "reference_side": "6 clean",
+        "decision": "qualified_control_flow",
+        "reason": "Meets the count rule when control-flow targets are included; distinct from ZIP extraction CWE-022-0.",
+        "evidence": "6 CWE-22 Python pairs"
+      },
+      {
+        "statistical_id": "CWE-078-0",
+        "related_count": 3,
+        "reference_side": "3 clean",
+        "decision": "qualified",
+        "reason": "BigCodeBench already qualifies this family, so the cross-dataset threshold is waived.",
+        "evidence": "CWE-78_INS-2a/b/c"
+      },
+      {
+        "statistical_id": "CWE-079-0",
+        "related_count": 6,
+        "reference_side": "6 clean",
+        "decision": "qualified_control_flow",
+        "reason": "A guard-removal group with an output-encoding oracle; separate from API replacement.",
+        "evidence": "6 CWE-79 Python pairs"
+      },
+      {
+        "statistical_id": "CWE-089-0",
+        "related_count": 9,
+        "reference_side": "9 clean",
+        "decision": "qualified",
+        "reason": "BigCodeBench already qualifies this family.",
+        "evidence": "CWE-89_SQI-1a through 3c"
+      },
+      {
+        "statistical_id": "CWE-306-0",
+        "related_count": 7,
+        "reference_side": "7 clean",
+        "decision": "qualified_control_flow",
+        "reason": "A guard-removal group with authenticated versus anonymous request oracle.",
+        "evidence": "7 CWE-306 Python pairs"
+      },
+      {
+        "statistical_id": "CWE-434-0",
+        "related_count": 9,
+        "reference_side": "9 clean",
+        "decision": "qualified_control_flow",
+        "sast_detector_status": "project_rule_registered_pending_coverage_report",
+        "reason": "The count and guard-removal transformation requirements are met. The project-owned Semgrep rule is registered for FileStorage.save without the registered allowed_file guard; target-positive and clean-negative coverage must be recorded before an experiment uses this family.",
+        "evidence": "9 CWE-434 Python pairs; config/semgrep/cwe434-unvalidated-upload.yml"
+      },
+      {
+        "statistical_id": "CWE-502-1",
+        "related_count": 9,
+        "reference_side": "9 clean",
+        "decision": "qualified_alternative",
+        "reason": "A distinct YAML family from CWE-502-0; it independently exceeds four.",
+        "evidence": "CWE-502_DUD-1a through 3c"
+      }
+    ],
+    "SecurityEval": [
+      {
+        "statistical_id": "CWE-078-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "qualified",
+        "reason": "Existing BigCodeBench family; cross-dataset count threshold is waived.",
+        "evidence": "CWE-078_author_1.py"
+      },
+      {
+        "statistical_id": "CWE-089-0",
+        "related_count": 2,
+        "reference_side": "2 target",
+        "decision": "qualified",
+        "reason": "Existing BigCodeBench family; cross-dataset count threshold is waived.",
+        "evidence": "CWE-089_author_1.py, CWE-089_codeql_1.py"
+      },
+      {
+        "statistical_id": "CWE-094-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "qualified",
+        "reason": "Existing BigCodeBench family; cross-dataset count threshold is waived.",
+        "evidence": "CWE-095_author_1.py"
+      },
+      {
+        "statistical_id": "CWE-295-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "qualified",
+        "reason": "Existing BigCodeBench family; cross-dataset count threshold is waived.",
+        "evidence": "CWE-295_codeql_1.py"
+      },
+      {
+        "statistical_id": "CWE-367-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "qualified_control_flow",
+        "sast_detector_status": "project_rule_registered_pending_coverage_report",
+        "reason": "The BigCodeBench-qualified CWE-367-0 family waives the cross-dataset count threshold. The target uses the same check-before-open structure and remains subject to the project detector's coverage and target-level semantic review gates.",
+        "evidence": "CWE-367_author_1.py; config/semgrep/cwe367-toctou-check-use.yml"
+      },
+      {
+        "statistical_id": "CWE-400-0",
+        "related_count": 3,
+        "reference_side": "3 target",
+        "decision": "qualified",
+        "reason": "BigCodeBench qualifies this timeout family, so the cross-dataset threshold is waived.",
+        "evidence": "CWE-295_codeql_1.py, CWE-918_codeql_1.py, CWE-918_codeql_2.py"
+      }
+    ],
+    "CyberSecEval": [
+      {
+        "statistical_id": "CWE-078-0",
+        "related_count": 13,
+        "reference_side": "1 clean / 12 target",
+        "decision": "qualified",
+        "reason": "The existing BigCodeBench-qualified subprocess shell family has 13 origin-code matches.",
+        "evidence": "Python rows 28, 74, 116, 138, 140, 150, 154, 175, 207, 245, 256, 275, 333"
+      },
+      {
+        "statistical_id": "CWE-089-0",
+        "related_count": 8,
+        "reference_side": "8 target",
+        "decision": "qualified",
+        "reason": "The existing BigCodeBench-qualified SQL family has eight interpolated execute contexts.",
+        "evidence": "Python rows 53, 97, 130, 185, 196, 214, 220, 221"
+      },
+      {
+        "statistical_id": "CWE-094-0",
+        "related_count": 10,
+        "reference_side": "10 target",
+        "decision": "qualified",
+        "reason": "The existing BigCodeBench-qualified eval family has ten target-side contexts.",
+        "evidence": "Python rows 35, 44, 57, 58, 75, 114, 125, 135, 141, 182"
+      },
+      {
+        "statistical_id": "CWE-377-0",
+        "related_count": 5,
+        "reference_side": "5 clean",
+        "decision": "qualified",
+        "reason": "Five origin-code contexts use atomic temporary-file creation APIs, independently satisfying the greater-than-four threshold.",
+        "evidence": "Python rows 74, 233, 298, 330, 337"
+      },
+      {
+        "statistical_id": "CWE-502-0",
+        "related_count": 4,
+        "reference_side": "4 clean",
+        "decision": "qualified",
+        "reason": "The BigCodeBench-qualified JSON-to-YAML family has four clean JSON contexts; the cross-dataset count is waived.",
+        "evidence": "Python rows 58, 72, 127, 343"
+      }
+    ],
+    "LiveCodeBench": []
+  },
+  "unqualified_screenings": {
+    "BigCodeBench": [
+      {
+        "statistical_id": "CWE-022-2",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "unqualified",
+        "reason": "Only one TAR-extraction task was found, below the greater-than-four threshold; three other TAR tasks create archives rather than extract them.",
+        "evidence": "BigCodeBench/998; creation-only: BigCodeBench/16, 785, 812"
+      },
+      {
+        "statistical_id": "CWE-079-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No html.escape/flask.escape/markupsafe.escape reference was found; re.escape and unescape are unrelated.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-287-0",
+        "related_count": 1,
+        "reference_side": "1 clean",
+        "decision": "unqualified",
+        "reason": "Only one password-verification API reference, and no format-preserving improper-authentication target is defined.",
+        "evidence": "BigCodeBench/82"
+      },
+      {
+        "statistical_id": "CWE-295-2",
+        "related_count": 6,
+        "reference_side": "6 clean",
+        "decision": "unqualified",
+        "reason": "No equivalent per-call TLS setting preserves the urlretrieve call surface.",
+        "evidence": "BigCodeBench/722, 997, 998, 999, 1000, 1005"
+      },
+      {
+        "statistical_id": "CWE-306-0",
+        "related_count": 1,
+        "reference_side": "1 clean",
+        "decision": "unqualified",
+        "reason": "Only BigCodeBench/82 has the screened login_required structure.",
+        "evidence": "BigCodeBench/82"
+      },
+      {
+        "statistical_id": "CWE-377-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No temporary-file creation API occurs in canonical_solution; test fixtures are not reference implementations.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-434-1",
+        "related_count": 1,
+        "reference_side": "1 clean",
+        "decision": "unqualified",
+        "reason": "Only BigCodeBench/1006 uses a content-type acceptance guard.",
+        "evidence": "BigCodeBench/1006"
+      },
+      {
+        "statistical_id": "CWE-502-1",
+        "related_count": 1,
+        "reference_side": "1 clean",
+        "decision": "unqualified",
+        "reason": "Below the BigCodeBench threshold.",
+        "evidence": "BigCodeBench/683"
+      },
+      {
+        "statistical_id": "CWE-502-2",
+        "related_count": 5,
+        "reference_side": "5 clean",
+        "decision": "unqualified",
+        "reason": "Pickle has an incompatible input format, so the transformation is not function-preserving.",
+        "evidence": "BigCodeBench/437, 438, 729, 730, 731"
+      },
+      {
+        "statistical_id": "CWE-601-0",
+        "related_count": 1,
+        "reference_side": "1 unrelated redirect",
+        "decision": "unqualified",
+        "reason": "One ordinary login redirect, with no reusable destination allowlist guard.",
+        "evidence": "BigCodeBench/82"
+      },
+      {
+        "statistical_id": "CWE-611-0",
+        "related_count": 2,
+        "reference_side": "2 clean",
+        "decision": "unqualified",
+        "reason": "No XML parser family exceeds four related tasks.",
+        "evidence": "BigCodeBench/490, 498"
+      },
+      {
+        "statistical_id": "CWE-614-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "unqualified",
+        "reason": "Only one set_cookie call and no secure=True reference.",
+        "evidence": "BigCodeBench/76"
+      },
+      {
+        "statistical_id": "CWE-862-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No role/permission authorization guard was found; authentication-only guards are not counted.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-918-0",
+        "related_count": 30,
+        "reference_side": "30 target",
+        "decision": "unqualified",
+        "reason": "Direct URL-variable requests exceed four, but the task prompts generally make the endpoint URL an input. Adding an allowlist changes that input contract, so no function-preserving clean pattern is established.",
+        "evidence": "30 direct URL-request tasks"
+      }
+    ],
+    "LLMSecEval": [
+      {
+        "statistical_id": "CWE-020-0",
+        "related_count": 6,
+        "reference_side": "6 clean",
+        "decision": "unqualified",
+        "reason": "No single API or uniform validation predicate was defined.",
+        "evidence": "6 CWE-20 Python pairs"
+      },
+      {
+        "statistical_id": "CWE-022-2",
+        "related_count": 3,
+        "reference_side": "3 target",
+        "decision": "unqualified",
+        "reason": "All three task descriptions request tarfile-based archive extraction to /tmp/unpack and are relevant target-side samples. The family remains below five because it is not BigCodeBench-qualified.",
+        "evidence": "CWE-22_ILP-3a, CWE-22_ILP-3b, CWE-22_ILP-3c"
+      },
+      {
+        "statistical_id": "CWE-200-0",
+        "related_count": 3,
+        "reference_side": "3 clean",
+        "decision": "unqualified",
+        "reason": "Only three samples share the screened escape/masking pattern.",
+        "evidence": "3 CWE-200 pairs"
+      },
+      {
+        "statistical_id": "CWE-287-0",
+        "related_count": 12,
+        "reference_side": "12 clean",
+        "decision": "unqualified",
+        "reason": "No format-preserving, reproducible improper-authentication target was defined.",
+        "evidence": "12 bcrypt.checkpw Python pairs"
+      },
+      {
+        "statistical_id": "CWE-367-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No screened Python secure pair matches the TOCTOU structure.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-377-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No paired Python secure implementation uses the registered temporary-file APIs.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-400-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No HTTP timeout API match in the paired Python code.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-522-0",
+        "related_count": 8,
+        "reference_side": "8 clean",
+        "decision": "unqualified",
+        "reason": "Changing digest and salt representation breaks the stored-password format.",
+        "evidence": "8 CWE-522 pairs"
+      },
+      {
+        "statistical_id": "CWE-614-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No set_cookie match in the paired Python secure-code set.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-798-0",
+        "related_count": 6,
+        "reference_side": "6 nominal clean",
+        "decision": "unqualified",
+        "reason": "The secure samples do not consistently retrieve credentials through an environment API.",
+        "evidence": "6 MySQLdb.connect pairs"
+      },
+      {
+        "statistical_id": "CWE-862-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No role/permission authorization guard was found.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-918-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No direct URL-variable outbound request was found.",
+        "evidence": "AST screen"
+      }
+    ],
+    "SecurityEval": [
+      {
+        "statistical_id": "CWE-020-0",
+        "related_count": 6,
+        "reference_side": "6 target",
+        "decision": "unqualified",
+        "reason": "The six records span YAML, XML, response rendering, pickle, and redirect APIs, not one family.",
+        "evidence": "CWE-020_*"
+      },
+      {
+        "statistical_id": "CWE-022-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No ZipFile.extractall match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-022-2",
+        "related_count": 1,
+        "reference_side": "1 normalized target",
+        "decision": "unqualified",
+        "reason": "The single raw record performs unvalidated per-member tar.extract calls. It can be normalized to extractall without changing benign extraction behavior, but the family is below five.",
+        "evidence": "CWE-022_codeql_2.py"
+      },
+      {
+        "statistical_id": "CWE-094-1",
+        "related_count": 2,
+        "reference_side": "2 target",
+        "decision": "unqualified",
+        "reason": "Different family and below five.",
+        "evidence": "CWE-094_codeql_1.py, CWE-094_sonar_1.py"
+      },
+      {
+        "statistical_id": "CWE-287-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No authentication API match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-306-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "unqualified",
+        "reason": "Below five and no stable guard pattern was screened.",
+        "evidence": "CWE-306 raw record"
+      },
+      {
+        "statistical_id": "CWE-377-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "unqualified",
+        "reason": "The family is not BigCodeBench-qualified and SecurityEval has only one target-side record, below the five-record threshold.",
+        "evidence": "CWE-377_codeql_1.py"
+      },
+      {
+        "statistical_id": "CWE-434-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No magic.from_buffer validation pattern was found.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-502-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No exact target match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-502-1",
+        "related_count": 2,
+        "reference_side": "2 normalized target",
+        "decision": "unqualified",
+        "reason": "This family is not BigCodeBench-qualified and has fewer than five SecurityEval records.",
+        "evidence": "CWE-020_author_1.py, CWE-502_sonar_1.py"
+      },
+      {
+        "statistical_id": "CWE-502-2",
+        "related_count": 3,
+        "reference_side": "3 target",
+        "decision": "unqualified",
+        "reason": "Different family and below five.",
+        "evidence": "CWE-020_codeql_2.py, CWE-502_codeql_1.py, CWE-502_mitre_1.py"
+      },
+      {
+        "statistical_id": "CWE-601-0",
+        "related_count": 5,
+        "reference_side": "5 heterogeneous target",
+        "decision": "unqualified",
+        "reason": "Redirect mechanisms differ and no shared allowlist predicate was defined.",
+        "evidence": "CWE-601_*"
+      },
+      {
+        "statistical_id": "CWE-611-0",
+        "related_count": 6,
+        "reference_side": "6 heterogeneous target",
+        "decision": "unqualified",
+        "reason": "The records use distinct XML APIs; no single replacement family is defined.",
+        "evidence": "CWE-611_*"
+      },
+      {
+        "statistical_id": "CWE-614-0",
+        "related_count": 1,
+        "reference_side": "1 target",
+        "decision": "unqualified",
+        "reason": "Only one omitted-secure cookie call; no secure=True reference.",
+        "evidence": "CWE-319_author_1.py"
+      },
+      {
+        "statistical_id": "CWE-862-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No role/permission authorization guard was found.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-918-0",
+        "related_count": 2,
+        "reference_side": "2 target",
+        "decision": "unqualified",
+        "reason": "The family is not BigCodeBench-qualified under the function-preservation rule, and SecurityEval has fewer than five matches.",
+        "evidence": "CWE-918_codeql_1.py, CWE-918_codeql_2.py"
+      }
+    ],
+    "CyberSecEval": [
+      {
+        "statistical_id": "CWE-022-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No ZipFile.extractall or validated member-extraction match in instruct/Python origin_code.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-022-2",
+        "related_count": 2,
+        "reference_side": "2 target",
+        "decision": "unqualified",
+        "reason": "Two instruct/Python origin-code contexts use unfiltered tarfile extraction, but the family is not BigCodeBench-qualified and has fewer than five CyberSecEval records.",
+        "evidence": "Python rows 186 and 214 (source labels CWE-78 and CWE-89)"
+      },
+      {
+        "statistical_id": "CWE-094-1",
+        "related_count": 9,
+        "reference_side": "9 target",
+        "decision": "unqualified",
+        "reason": "Although exec appears nine times, the generic safe_parse placeholder has no established function-preserving clean implementation.",
+        "evidence": "Python rows 44, 57, 131, 170, 212, 224, 230, 265, 302"
+      },
+      {
+        "statistical_id": "CWE-295-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No requests.get TLS-verification match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-295-1",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No urlopen TLS-context match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-295-2",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No urlretrieve match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-400-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No requests.get timeout match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-502-1",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No yaml.safe_load or yaml.Loader match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-502-2",
+        "related_count": 7,
+        "reference_side": "7 target",
+        "decision": "unqualified",
+        "reason": "Pickle uses an incompatible serialized format, so the seven target contexts do not form a function-preserving replacement family.",
+        "evidence": "Python rows 13, 72, 90, 100, 216, 261, 265"
+      },
+      {
+        "statistical_id": "CWE-522-0",
+        "related_count": 6,
+        "reference_side": "6 target",
+        "decision": "unqualified",
+        "reason": "Changing the digest and salt representation breaks the stored-value format.",
+        "evidence": "Python rows 127, 244, 280, 301, 311, 315"
+      },
+      {
+        "statistical_id": "CWE-611-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No etree.XMLParser resolve_entities match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-614-0",
+        "related_count": 0,
+        "reference_side": "none",
+        "decision": "unqualified",
+        "reason": "No set_cookie secure-attribute match.",
+        "evidence": "AST screen"
+      },
+      {
+        "statistical_id": "CWE-798-0",
+        "related_count": 2,
+        "reference_side": "2 target",
+        "decision": "unqualified",
+        "reason": "Only two hard-coded-credential contexts and no matching environment-password retrieval context.",
+        "evidence": "Python rows 60, 210"
+      }
+    ],
+    "LiveCodeBench": [
+      {
+        "statistical_id": "CWE-020-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-022-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-022-1",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-078-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-079-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-089-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-094-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-094-1",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-200-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-287-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-295-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-295-1",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-295-2",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-306-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-367-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-377-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-400-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-434-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-434-1",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-502-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-502-1",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-502-2",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-522-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-601-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-611-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-614-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-798-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-862-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      },
+      {
+        "statistical_id": "CWE-918-0",
+        "related_count": 0,
+        "reference_side": "not screenable (no reference solution)",
+        "decision": "unqualified",
+        "reason": "code_generation_lite provides task statements, starter scaffolds, and tests, but no reference implementation to match either pattern.",
+        "evidence": "Schema-only eligibility screen across 1,055 tasks"
+      }
+    ]
+  }
+}

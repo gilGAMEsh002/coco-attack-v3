@@ -1,0 +1,315 @@
+{
+  "date": "2026-05-13 05:20",
+  "eval": {
+    "BigCodeBench/1102": [
+      {
+        "task_id": "BigCodeBench/1102",
+        "solution": "import subprocess\nimport shlex\nfrom datetime import datetime\ndef task_func(script_path: str) -> dict:\n    start_time = datetime.now()\n    \n    result = subprocess.run(\n        ['Rscript', script_path],\n        capture_output=True,\n        text=True\n    )\n    \n    end_time = datetime.now()\n    \n    return {\n        \"start_time\": start_time,\n        \"end_time\": end_time,\n        \"stdout\": result.stdout,\n        \"stderr\": result.stderr\n    }",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 30, in test_case_1\n  File \"__test__.py\", line 7, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 43, in test_case_2\n  File \"__test__.py\", line 7, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 56, in test_case_3\n  File \"__test__.py\", line 7, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 68, in test_case_4\n  File \"__test__.py\", line 7, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 81, in test_case_5\n  File \"__test__.py\", line 7, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n"
+        }
+      }
+    ],
+    "BigCodeBench/1105": [
+      {
+        "task_id": "BigCodeBench/1105",
+        "solution": "import subprocess\nimport os\nimport time\nimport glob\ndef task_func(r_script_path: str, output_path: str, duration: int) -> (bool, str):\n    subprocess.Popen(['Rscript', r_script_path])\n    \n    start_time = time.time()\n    while time.time() - start_time < duration:\n        if os.path.exists(output_path):\n            return (True, 'File generated successfully within the specified duration.')\n        time.sleep(1)\n        \n    return (False, 'File not generated within the specified duration.')",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 43, in test_case_1\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 50, in test_case_2\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 58, in test_case_3\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 69, in test_case_4\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 77, in test_case_5\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n"
+        }
+      }
+    ],
+    "BigCodeBench/16": [
+      {
+        "task_id": "BigCodeBench/16",
+        "solution": "import os\nimport glob\nimport subprocess\ndef task_func(directory, backup_dir='/path/to/backup'):\n    if not os.path.exists(directory):\n        raise FileNotFoundError(f\"Directory {directory} does not exist.\")\n    \n    if not os.path.exists(backup_dir):\n        os.makedirs(backup_dir)\n        \n    log_files = glob.glob(os.path.join(directory, '* cf.log'))\n    \n    if not log_files:\n        return 'No logs found to backup'\n    \n    backup_path = os.path.join(backup_dir, 'logs_backup.tar.gz')\n    \n    subprocess.run(['tar', '-czf', backup_path] + log_files, check=True)\n    \n    for log_file in log_files:\n        os.remove(log_file)\n        \n    return backup_path",
+        "status": "fail",
+        "details": {
+          "test_backup_creation_and_log_file_deletion": "Traceback (most recent call last):\n  File \"__test__.py\", line 47, in test_backup_creation_and_log_file_deletion\nAssertionError: False is not true\n"
+        }
+      }
+    ],
+    "BigCodeBench/18": [
+      {
+        "task_id": "BigCodeBench/18",
+        "solution": "def task_func(file):\n    if not os.path.exists(file) or not file.endswith('.csv'):\n        return []\n    try:\n        subprocess.run(['split', '-l', '100', file, 'split_'], check=True)\n        split_files = glob.glob('split_*')\n        for f in split_files:\n            with open(f, 'r') as csv_file:\n                lines = csv_file.readlines()\n            random.shuffle(lines)\n            with open(f, 'w') as csv_file:\n                csv_file.writelines(lines)\n        return split_files\n    except Exception:\n        return []",
+        "status": "fail",
+        "details": {
+          "test_large_csv": "Traceback (most recent call last):\n  File \"__test__.py\", line 70, in test_large_csv\nAssertionError: False is not true : No files were split.\n",
+          "test_medium_csv": "Traceback (most recent call last):\n  File \"__test__.py\", line 63, in test_medium_csv\nAssertionError: False is not true : No files were split.\n",
+          "test_small_csv": "Traceback (most recent call last):\n  File \"__test__.py\", line 56, in test_small_csv\nAssertionError: False is not true : No files were split.\n"
+        }
+      }
+    ],
+    "BigCodeBench/1101": [
+      {
+        "task_id": "BigCodeBench/1101",
+        "solution": "import subprocess\nimport os\nimport glob\nimport time\ndef task_func(test_dir):\n    execution_times = {}\n    python_files = glob.glob(os.path.join(test_dir, \"*.py\"))\n\n    for file_path in python_files:\n        script_name = os.path.basename(file_path)\n        start_time = time.time()\n        try:\n            subprocess.run(['python', file_path], check=True, capture_output=True)\n        except subprocess.CalledProcessError:\n            pass\n        end_time = time.time()\n        execution_times[script_name] = end_time - start_time\n\n    return execution_times",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/17": [
+      {
+        "task_id": "BigCodeBench/17",
+        "solution": "import subprocess\nimport psutil\nimport time\ndef task_func(process_name: str) -> str:\n    found_process = None\n    for proc in psutil.process_iter(['name']):\n        if proc.info['name'] == process_name:\n            found_process = proc\n            break\n\n    if found_process:\n        found_process.terminate()\n        found_process.wait()\n        subprocess.Popen([process_name])\n        return f\"Process found. Restarting {process_name}.\"\n    else:\n        subprocess.Popen([process_name])\n        return f\"Process not found. Starting {process_name}.\"",
+        "status": "fail",
+        "details": {
+          "test_process_found_restarts_process": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 38, in test_process_found_restarts_process\nAssertionError: 'Process not found. Starting notepad.' != 'Process found. Restarting notepad.'\n- Process not found. Starting notepad.\n?         ----       ^\n+ Process found. Restarting notepad.\n?                ^^^\n\n",
+          "test_process_not_found_starts_process": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 29, in test_process_not_found_starts_process\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 951, in assert_called_once_with\n    return self.assert_called_with(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 939, in assert_called_with\n    raise AssertionError(_error_message()) from cause\nAssertionError: expected call not found.\nExpected: Popen('random_non_existent_process')\n  Actual: Popen(['random_non_existent_process'])\n",
+          "test_process_terminates_and_restarts_multiple_instances": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 52, in test_process_terminates_and_restarts_multiple_instances\nAssertionError: 'Process not found. Starting multi_instance.' != 'Process found. Restarting multi_instance.'\n- Process not found. Starting multi_instance.\n?         ----       ^\n+ Process found. Restarting multi_instance.\n?                ^^^\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/12": [
+      {
+        "task_id": "BigCodeBench/12",
+        "solution": "import subprocess\nimport os\nimport json\nfrom datetime import datetime\ndef task_func(script_name='backup.sh', log_file='/home/user/backup_log.json'):\n    if not os.path.exists(script_name):\n        raise FileNotFoundError(f\"Script {script_name} not found.\")\n    \n    start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')\n    \n    try:\n        result = subprocess.run(['bash', script_name], capture_output=True)\n        exit_status = result.returncode\n    except Exception as e:\n        raise RuntimeError(f\"Error executing script: {e}\")\n        \n    end_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')\n    \n    log_data = {\n        'start_time': start_time,\n        'end_time': end_time,\n        'exit_status': exit_status\n    }\n    \n    with open(log_file, 'w') as f:\n        json.dump(log_data, f)\n        \n    return log_data",
+        "status": "fail",
+        "details": {
+          "test_custom_values_successful_script": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 60, in test_custom_values_successful_script\n  File \"__test__.py\", line 7, in task_func\nFileNotFoundError: Script custom_backup.sh not found.\n",
+          "test_default_values_successful_script": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 38, in test_default_values_successful_script\n  File \"__test__.py\", line 7, in task_func\nFileNotFoundError: Script backup.sh not found.\n",
+          "test_log_data_format": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 69, in test_log_data_format\n  File \"__test__.py\", line 7, in task_func\nFileNotFoundError: Script backup.sh not found.\n",
+          "test_non_zero_exit_status": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 77, in test_non_zero_exit_status\n  File \"__test__.py\", line 7, in task_func\nFileNotFoundError: Script backup.sh not found.\n",
+          "test_script_execution_failure": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 52, in test_script_execution_failure\n  File \"__test__.py\", line 7, in task_func\nFileNotFoundError: Script backup.sh not found.\n"
+        }
+      }
+    ],
+    "BigCodeBench/15": [
+      {
+        "task_id": "BigCodeBench/15",
+        "solution": "import subprocess\nimport csv\nimport os\ndef task_func(commands_file_path, output_dir_path):\n    if not os.path.exists(commands_file_path):\n        raise FileNotFoundError(f\"File not found: {commands_file_path}\")\n    \n    if not os.path.exists(output_dir_path):\n        os.makedirs(output_dir_path)\n        \n    output_files = []\n    with open(commands_file_path, 'r') as f:\n        reader = csv.reader(f)\n        for i, row in enumerate(reader):\n            if not row:\n                continue\n            command = row[0]\n            output_filename = f\"command_{i}_output.txt\"\n            output_path = os.path.join(output_dir_path, output_filename)\n            \n            result = subprocess.run(command, shell=True, capture_output=True, text=True)\n            \n            with open(output_path, 'w') as out_f:\n                if result.returncode == 0:\n                    out_f.write(result.stdout)\n                else:\n                    out_f.write(f\"Error: {result.stderr}\\nExit Code: {result.returncode}\")\n            \n            output_files.append(output_path)\n            \n    return output_files",
+        "status": "fail",
+        "details": {
+          "test_command_failure_with_specific_exit_code": "Traceback (most recent call last):\n  File \"__test__.py\", line 105, in test_command_failure_with_specific_exit_code\nAssertionError: 'Error executing command' not found in 'Error: \\nExit Code: 1'\n"
+        }
+      }
+    ],
+    "BigCodeBench/320": [
+      {
+        "task_id": "BigCodeBench/320",
+        "solution": "import subprocess\nimport os\nimport random\ndef task_func(directory, file_list):\n    if not file_list:\n        return None\n    \n    filename = random.choice(file_list)\n    file_path = os.path.join(directory, filename)\n    \n    if not os.path.exists(file_path):\n        return None\n        \n    try:\n        process = subprocess.Popen([file_path])\n        process.wait()\n        return process.returncode\n    except Exception:\n        return None",
+        "status": "fail",
+        "details": {
+          "test_non_zero_exit_code": "Traceback (most recent call last):\n  File \"__test__.py\", line 63, in test_non_zero_exit_code\nAssertionError: None != 1\n",
+          "test_random_file_selection": "Traceback (most recent call last):\n  File \"__test__.py\", line 85, in test_random_file_selection\nAssertionError: False is not true : Expected call with valid_dir/script1.bat not found\n",
+          "test_valid_input": "Traceback (most recent call last):\n  File \"__test__.py\", line 36, in test_valid_input\nAssertionError: None != 0\n"
+        }
+      }
+    ],
+    "BigCodeBench/324": [
+      {
+        "task_id": "BigCodeBench/324",
+        "solution": "def task_func(file_list):\n    processes = []\n    for file_path in file_list:\n        p = subprocess.Popen([file_path])\n        processes.append(p)\n    \n    exit_codes = []\n    for p in processes:\n        p.wait()\n        exit_codes.append(p.returncode)\n        \n    return exit_codes",
+        "status": "fail",
+        "details": {
+          "test_multiple_processes_with_different_exit_codes": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 48, in test_multiple_processes_with_different_exit_codes\n  File \"__test__.py\", line 4, in task_func\nNameError: name 'subprocess' is not defined\n",
+          "test_process_still_running": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 42, in test_process_still_running\n  File \"__test__.py\", line 4, in task_func\nNameError: name 'subprocess' is not defined\n",
+          "test_valid_directory_and_files": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 35, in test_valid_directory_and_files\n  File \"__test__.py\", line 4, in task_func\nNameError: name 'subprocess' is not defined\n",
+          "test_valid_files": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 27, in test_valid_files\n  File \"__test__.py\", line 4, in task_func\nNameError: name 'subprocess' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/326": [
+      {
+        "task_id": "BigCodeBench/326",
+        "solution": "import subprocess\nimport os\nimport sys\nimport glob\ndef task_func(directory_path):\n    search_path = os.path.join(directory_path, \"*.bat\")\n    files = glob.glob(search_path)\n    results = []\n    for file_path in files:\n        file_name = os.path.basename(file_path)\n        try:\n            process = subprocess.run([file_path], shell=True)\n            exit_code = process.returncode\n        except Exception:\n            exit_code = None\n        results.append((file_name, exit_code))\n    return results",
+        "status": "fail",
+        "details": {
+          "test_multiple_bat_files_mixed_results": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 58, in test_multiple_bat_files_mixed_results\nAssertionError: Lists differ: [('file1.bat', None), ('file2.bat', None), ('file3.bat', None)] != [('file1.bat', 0), ('file2.bat', 1), ('file3.bat', None)]\n\nFirst differing element 0:\n('file1.bat', None)\n('file1.bat', 0)\n\n- [('file1.bat', None), ('file2.bat', None), ('file3.bat', None)]\n?                ^^^^                 ^^^^\n\n+ [('file1.bat', 0), ('file2.bat', 1), ('file3.bat', None)]\n?                ^                 ^\n\n",
+          "test_single_bat_file_failure": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 45, in test_single_bat_file_failure\nAssertionError: Lists differ: [('file1.bat', None)] != [('file1.bat', 1)]\n\nFirst differing element 0:\n('file1.bat', None)\n('file1.bat', 1)\n\n- [('file1.bat', None)]\n?                ^^^^\n\n+ [('file1.bat', 1)]\n?                ^\n\n",
+          "test_single_bat_file_success": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 36, in test_single_bat_file_success\nAssertionError: Lists differ: [('file1.bat', None)] != [('file1.bat', 0)]\n\nFirst differing element 0:\n('file1.bat', None)\n('file1.bat', 0)\n\n- [('file1.bat', None)]\n?                ^^^^\n\n+ [('file1.bat', 0)]\n?                ^\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/13": [
+      {
+        "task_id": "BigCodeBench/13",
+        "solution": "import subprocess\nimport ftplib\nimport os\ndef task_func(ftp_server='ftp.dlptest.com', ftp_user='dlpuser', ftp_password='rNrKYTX9g7z3RgJRmxWuGHbeu', ftp_dir='/ftp/test'):\n    ftp = ftplib.FTP()\n    try:\n        ftp.connect(ftp_server)\n    except Exception as e:\n        raise Exception(f\"Failed to connect to FTP server {ftp_server}: {str(e)}\")\n    \n    try:\n        ftp.login(ftp_user, ftp_password)\n    except Exception as e:\n        raise Exception(f\"Failed to log into FTP server {ftp_server} with user {ftp_user}: {str(e)}\")\n    \n    try:\n        ftp.cwd(ftp_dir)\n    except Exception as e:\n        raise Exception(f\"Failed to change to directory {ftp_dir} on server {ftp_server}: {str(e)}\")\n    \n    filenames = ftp.nlst()\n    ftp.quit()\n    \n    for filename in filenames:\n        url = f\"ftp://{ftp_user}:{ftp_password}@{ftp_server}{ftp_dir}/{filename}\"\n        subprocess.run(['wget', url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n        \n    return filenames",
+        "status": "fail",
+        "details": {
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 60, in test_case_2\nAssertionError: 'Fail[13 chars] to FTP server' != 'Fail[13 chars] to FTP server invalid_server: Failed to connect to FTP server'\n- Failed to connect to FTP server\n+ Failed to connect to FTP server invalid_server: Failed to connect to FTP server\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/195": [
+      {
+        "task_id": "BigCodeBench/195",
+        "solution": "import subprocess\nimport platform\nimport time\ndef task_func(url):\n    if platform.system() == 'Windows':\n        command = ['start', url]\n        shell = True\n    elif platform.system() == 'Darwin':\n        command = ['open', url]\n        shell = False\n    else:\n        command = ['xdg-open', url]\n        shell = False\n    \n    process = subprocess.Popen(command, shell=shell)\n    time.sleep(1)\n    return process.poll()",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 31, in test_case_1\nAssertionError: None is not an instance of <class 'int'>\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 43, in test_case_2\nAssertionError: None is not an instance of <class 'int'>\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 55, in test_case_3\nAssertionError: None is not an instance of <class 'int'>\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 67, in test_case_4\nAssertionError: None is not an instance of <class 'int'>\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 79, in test_case_5\nAssertionError: None is not an instance of <class 'int'>\n"
+        }
+      }
+    ],
+    "BigCodeBench/346": [
+      {
+        "task_id": "BigCodeBench/346",
+        "solution": "import subprocess\nimport os\nimport sys\nimport time\ndef task_func(script_path, wait=True, *args):\n    if not os.path.exists(script_path):\n        raise ValueError(\"The script does not exist.\")\n\n    command = [sys.executable, script_path] + list(args)\n\n    if wait:\n        result = subprocess.run(command, check=True)\n        return result.returncode\n    else:\n        subprocess.Popen(command)\n        return None",
+        "status": "fail",
+        "details": {
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 60, in test_case_2\n  File \"__test__.py\", line 12, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['/environment/miniconda3/bin/python', '/tmp/tmpn1itxkmu/test/script2.py']' returned non-zero exit status 1.\n"
+        }
+      }
+    ],
+    "BigCodeBench/460": [
+      {
+        "task_id": "BigCodeBench/460",
+        "solution": "import subprocess\nimport pandas as pd\nimport matplotlib.pyplot as plt\ndef task_func(script_path, output_file_path):\n    result = subprocess.run(['python', script_path], capture_output=True)\n    if result.returncode != 0:\n        raise ValueError(\"Script failed to execute\")\n    \n    try:\n        df = pd.read_csv(output_file_path)\n    except Exception:\n        raise ValueError(\"Invalid CSV file\")\n        \n    if df.shape[1] != 2:\n        raise ValueError(\"CSV must contain exactly 2 columns\")\n        \n    ax = df.plot(kind='bar', x=df.columns[0], y=df.columns[1], legend=False)\n    plt.ylabel(df.columns[1])\n    plt.xlabel(df.columns[0])\n    \n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 70, in test_case_1\n  File \"__test__.py\", line 7, in task_func\nValueError: Script failed to execute\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 85, in test_case_2\n  File \"__test__.py\", line 7, in task_func\nValueError: Script failed to execute\n",
+          "test_case_7": "Traceback (most recent call last):\n  File \"__test__.py\", line 132, in test_case_7\n  File \"__test__.py\", line 7, in task_func\nValueError: Script failed to execute\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 141, in test_case_8\n  File \"__test__.py\", line 7, in task_func\nValueError: Script failed to execute\n"
+        }
+      }
+    ],
+    "BigCodeBench/350": [
+      {
+        "task_id": "BigCodeBench/350",
+        "solution": "import subprocess\nimport os\nimport shutil\nfrom glob import glob\ndef task_func(src_folder, dst_folder):\n    if not os.path.exists(src_folder):\n        return {'success': False, 'message': 'Source folder does not exist', 'failed_files': []}\n    \n    if not os.path.exists(dst_folder):\n        os.makedirs(dst_folder)\n        \n    files = [f for f in glob(os.path.join(src_folder, '*')) if os.path.isfile(f)]\n    failed_files = []\n    \n    for file_path in files:\n        try:\n            subprocess.run(['gzip', '-k', file_path], check=True)\n            compressed_file = file_path + '.gz'\n            shutil.move(compressed_file, os.path.join(dst_folder, os.path.basename(compressed_file)))\n        except Exception:\n            failed_files.append(os.path.basename(file_path))\n            \n    success = len(failed_files) == 0\n    message = 'All files processed successfully' if success else 'Some files failed to process'\n    \n    return {'success': success, 'message': message, 'failed_files': failed_files}",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 64, in test_case_1\nAssertionError: 'All files processed successfully' != 'All files compressed and moved successfully.'\n- All files processed successfully\n?             --\n+ All files compressed and moved successfully.\n?           +++       ++++++++++             +\n\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 70, in test_case_2\nAssertionError: ValueError not raised\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 82, in test_case_4\nAssertionError: 'All files processed successfully' != 'All files compressed and moved successfully.'\n- All files processed successfully\n?             --\n+ All files compressed and moved successfully.\n?           +++       ++++++++++             +\n\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 101, in test_case_5\nAssertionError: 'All files processed successfully' != 'All files compressed and moved successfully.'\n- All files processed successfully\n?             --\n+ All files compressed and moved successfully.\n?           +++       ++++++++++             +\n\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 76, in test_case_3\n  File \"__test__.py\", line 10, in task_func\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 215, in makedirs\n  File \"<frozen os>\", line 225, in makedirs\nPermissionError: [Errno 13] Permission denied: '/non'\n"
+        }
+      }
+    ],
+    "BigCodeBench/604": [
+      {
+        "task_id": "BigCodeBench/604",
+        "solution": "import subprocess\nimport logging\nimport os\ndef task_func(filepath):\n    logging.basicConfig(level=logging.INFO)\n    \n    if not os.path.exists(filepath):\n        raise FileNotFoundError(f\"The file {filepath} does not exist.\")\n    \n    try:\n        subprocess.run(['g++', filepath, '-o', 'output'], check=True, capture_output=True)\n        logging.info(\"Compilation successful.\")\n    except subprocess.CalledProcessError as e:\n        logging.error(f\"Compilation failed: {e.stderr.decode()}\")\n        raise e",
+        "status": "fail",
+        "details": {
+          "test_compilation_failure": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 32, in test_compilation_failure\n  File \"__test__.py\", line 8, in task_func\nFileNotFoundError: The file example.cpp does not exist.\n",
+          "test_compiler_not_found": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 38, in test_compiler_not_found\n  File \"__test__.py\", line 8, in task_func\nFileNotFoundError: The file example.cpp does not exist.\n",
+          "test_empty_file": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 42, in test_empty_file\n  File \"__test__.py\", line 15, in task_func\n  File \"__test__.py\", line 11, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['g++', './empty_file.cpp', '-o', 'output']' returned non-zero exit status 1.\n",
+          "test_logging_output": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 47, in test_logging_output\n  File \"__test__.py\", line 8, in task_func\nFileNotFoundError: The file example.cpp does not exist.\n",
+          "test_successful_compilation": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 28, in test_successful_compilation\n  File \"__test__.py\", line 8, in task_func\nFileNotFoundError: The file example.cpp does not exist.\n"
+        }
+      }
+    ],
+    "BigCodeBench/1103": [
+      {
+        "task_id": "BigCodeBench/1103",
+        "solution": "import subprocess\nimport shutil\nimport os\ndef task_func(script_path: str, temp_dir: str) -> str:\n    if not os.path.exists(script_path):\n        return \"Script execution failed!\"\n    \n    if not os.path.exists(temp_dir):\n        os.makedirs(temp_dir)\n        \n    dest_path = os.path.join(temp_dir, os.path.basename(script_path))\n    shutil.copy(script_path, dest_path)\n    \n    try:\n        result = subprocess.run(['python3', dest_path], capture_output=True)\n        if result.returncode == 0:\n            return \"Script executed successfully!\"\n        else:\n            return \"Script execution failed!\"\n    except Exception:\n        return \"Script execution failed!\"",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/715": [
+      {
+        "task_id": "BigCodeBench/715",
+        "solution": "import sys\nimport subprocess\nPYTHON_VERSION = '3.8'\nPATH_TO_APPEND = '/path/to/whatever'\ndef task_func(python_version=PYTHON_VERSION, path_to_append=PATH_TO_APPEND):\n    subprocess.check_call([f'python{python_version}', '--version'])\n    if path_to_append not in sys.path:\n        sys.path.append(path_to_append)\n    return python_version",
+        "status": "fail",
+        "details": {
+          "test_switch_to_default_python_version": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 17, in test_switch_to_default_python_version\n  File \"__test__.py\", line 6, in task_func\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 408, in check_call\n    retcode = call(*popenargs, **kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 162, in safe_subprocess_call\n    return original_subprocess_call(command, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 389, in call\n    with Popen(*popenargs, **kwargs) as p:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'python3.8'\n",
+          "test_switch_to_python_2_7": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 38, in test_switch_to_python_2_7\n  File \"__test__.py\", line 6, in task_func\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 408, in check_call\n    retcode = call(*popenargs, **kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 162, in safe_subprocess_call\n    return original_subprocess_call(command, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 389, in call\n    with Popen(*popenargs, **kwargs) as p:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'python2.7'\n",
+          "test_switch_to_python_3_6": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 45, in test_switch_to_python_3_6\n  File \"__test__.py\", line 6, in task_func\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 408, in check_call\n    retcode = call(*popenargs, **kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 162, in safe_subprocess_call\n    return original_subprocess_call(command, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 389, in call\n    with Popen(*popenargs, **kwargs) as p:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'python3.6'\n",
+          "test_switch_to_python_3_7": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 24, in test_switch_to_python_3_7\n  File \"__test__.py\", line 6, in task_func\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 408, in check_call\n    retcode = call(*popenargs, **kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 162, in safe_subprocess_call\n    return original_subprocess_call(command, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 389, in call\n    with Popen(*popenargs, **kwargs) as p:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'python3.7'\n",
+          "test_switch_to_python_3_9": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 31, in test_switch_to_python_3_9\n  File \"__test__.py\", line 6, in task_func\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 408, in check_call\n    retcode = call(*popenargs, **kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 162, in safe_subprocess_call\n    return original_subprocess_call(command, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 389, in call\n    with Popen(*popenargs, **kwargs) as p:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'python3.9'\n"
+        }
+      }
+    ],
+    "BigCodeBench/459": [
+      {
+        "task_id": "BigCodeBench/459",
+        "solution": "import subprocess\nimport os\nimport time\nfrom datetime import datetime\ndef task_func(script_dir, scripts, delay):\n    if delay < 0 or not scripts:\n        raise ValueError(\"Invalid delay or empty script list\")\n    \n    timestamps = []\n    for i, script in enumerate(scripts):\n        script_path = os.path.join(script_dir, script)\n        timestamps.append(datetime.now())\n        subprocess.run(script_path, shell=True)\n        \n        if i < len(scripts) - 1:\n            time.sleep(delay)\n            \n    return timestamps",
+        "status": "fail",
+        "details": {
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 64, in test_case_3\nAssertionError: FileNotFoundError not raised\n",
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 47, in test_case_1\nTypeError: strptime() argument 1 must be str, not datetime.datetime\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_case_2\nTypeError: strptime() argument 1 must be str, not datetime.datetime\n"
+        }
+      }
+    ],
+    "BigCodeBench/785": [
+      {
+        "task_id": "BigCodeBench/785",
+        "solution": "import subprocess\nimport os\nimport glob\nimport time\nARCHIVE_DIR = '/tmp/archive'\ndef task_func(pattern):\n    if not os.path.exists(ARCHIVE_DIR):\n        os.makedirs(ARCHIVE_DIR)\n    \n    files = glob.glob(pattern)\n    if not files:\n        return None\n        \n    archive_name = f\"archive_{int(time.time())}.tar.gz\"\n    archive_path = os.path.join(ARCHIVE_DIR, archive_name)\n    \n    subprocess.run(['tar', '-czf', archive_path] + files, check=True)\n    \n    for file_path in files:\n        os.remove(file_path)\n        \n    return archive_path",
+        "status": "fail",
+        "details": {
+          "test_no_matching_files": "Traceback (most recent call last):\n  File \"__test__.py\", line 62, in test_no_matching_files\nAssertionError: None != 'No files found matching the pattern.'\n",
+          "test_archiving_in_nonexistent_directory": "Traceback (most recent call last):\n  File \"__test__.py\", line 74, in test_archiving_in_nonexistent_directory\n  File \"<frozen genericpath>\", line 30, in isfile\nTypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType\n"
+        }
+      }
+    ],
+    "BigCodeBench/146": [
+      {
+        "task_id": "BigCodeBench/146",
+        "solution": "import subprocess\nfrom ipaddress import IPv4Network\ndef task_func(ip_range):\n    network = IPv4Network(ip_range)\n    results = {}\n    for ip in network:\n        ip_str = str(ip)\n        try:\n            subprocess.run(['ping', '-c', '1', '-W', '1', ip_str], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n            results[ip_str] = True\n        except subprocess.CalledProcessError:\n            results[ip_str] = False\n    return results",
+        "status": "fail",
+        "details": {
+          "test_failed_ping": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 40, in test_failed_ping\nAssertionError: False is not true : All IPs should have False status for a failed ping.\n",
+          "test_ip_range_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 60, in test_ip_range_handling\nAssertionError: 0 != 4 : Expected to attempt pinging 4 IPs.\n",
+          "test_successful_ping": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 33, in test_successful_ping\nAssertionError: False is not true : All IPs should have True status for a successful ping.\n"
+        }
+      }
+    ],
+    "BigCodeBench/745": [
+      {
+        "task_id": "BigCodeBench/745",
+        "solution": "import subprocess\nimport random\nSCRIPTS = ['script1.sh', 'script2.sh', 'script3.sh']\nSCRIPTS_DIR = '/path/to/scripts'\ndef task_func():\n    script_name = random.choice(SCRIPTS)\n    script_path = os.path.join(SCRIPTS_DIR, script_name)\n    subprocess.run([script_path], shell=True)\n    return script_path",
+        "status": "fail",
+        "details": {
+          "test_full_path_execution": "Traceback (most recent call last):\n  File \"__test__.py\", line 38, in test_full_path_execution\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 930, in assert_called_with\n    raise AssertionError(error_message)\nAssertionError: expected call not found.\nExpected: call('/path/to/scripts/script2.sh', shell=True)\n  Actual: not called.\n",
+          "test_script_execution": "Traceback (most recent call last):\n  File \"__test__.py\", line 25, in test_script_execution\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 930, in assert_called_with\n    raise AssertionError(error_message)\nAssertionError: expected call not found.\nExpected: call('/path/to/scripts/script3.sh', shell=True)\n  Actual: not called.\n",
+          "test_script_execution_failure_handling": "Traceback (most recent call last):\n  File \"__test__.py\", line 34, in test_script_execution_failure_handling\nAssertionError: Exception not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/1028": [
+      {
+        "task_id": "BigCodeBench/1028",
+        "solution": "import subprocess\nimport time\nimport json\nimport platform\nLOGFILE_PATH = \"logfile.log\"\ndef task_func(interval, duration):\n    if interval <= 0 or duration <= 0:\n        raise ValueError(\"Interval and duration must be greater than zero.\")\n    \n    data = []\n    start_time = time.time()\n    os_type = platform.system()\n    \n    while time.time() - start_time < duration:\n        timestamp = time.strftime(\"%Y-%m-%d %H:%M:%S\")\n        try:\n            if os_type == \"Windows\":\n                cmd = \"wmic cpu get loadpercentage\"\n                output = subprocess.check_output(cmd, shell=True).decode().split('\\n')[1].strip()\n            else:\n                cmd = \"top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' | awk '{print 100 - $1}'\"\n                output = subprocess.check_output(cmd, shell=True).decode().strip()\n            \n            data.append({\"timestamp\": timestamp, \"cpu_usage\": output})\n        except Exception:\n            pass\n        \n        time.sleep(interval)\n    \n    try:\n        with open(LOGFILE_PATH, 'w') as f:\n            json.dump(data, f)\n        return LOGFILE_PATH\n    except IOError:\n        return None",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1104": [
+      {
+        "task_id": "BigCodeBench/1104",
+        "solution": "import subprocess\nimport os\nimport threading\ndef task_func(script_path: str, timeout: int = 60) -> str:\n    if not os.path.exists(script_path):\n        raise FileNotFoundError(f\"The file {script_path} does not exist.\")\n    \n    process = subprocess.Popen(['python', script_path])\n    \n    try:\n        process.wait(timeout=timeout)\n        return \"Script executed successfully.\"\n    except subprocess.TimeoutExpired:\n        process.terminate()\n        process.wait()\n        return \"Terminating process due to timeout.\"",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 47, in test_case_1\n  File \"__test__.py\", line 6, in task_func\nFileNotFoundError: The file /path/to/short_script.py does not exist.\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 57, in test_case_3\n  File \"__test__.py\", line 6, in task_func\nFileNotFoundError: The file /path/to/short_script.py does not exist.\n"
+        }
+      }
+    ],
+    "BigCodeBench/461": [
+      {
+        "task_id": "BigCodeBench/461",
+        "solution": "import subprocess\nimport psutil\nimport time\nimport os\ndef task_func(script_path: str, timeout=10) -> dict:\n    if not os.path.exists(script_path):\n        raise FileNotFoundError(f\"Script not found: {script_path}\")\n\n    process = subprocess.Popen(['bash', script_path])\n    ps_proc = psutil.Process(process.pid)\n    \n    cpu_acc = 0.0\n    mem_acc = 0\n    start_time = time.time()\n    \n    while ps_proc.is_running() and (time.time() - start_time) < timeout:\n        try:\n            cpu_acc += ps_proc.cpu_percent(interval=0.1)\n            mem_acc += ps_proc.memory_info().rss\n        except (psutil.NoSuchProcess, psutil.AccessDenied):\n            break\n        time.sleep(0.1)\n        \n    if ps_proc.is_running():\n        ps_proc.terminate()\n        ps_proc.wait()\n        \n    return {'CPU Usage': cpu_acc, 'Memory Usage': mem_acc}",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/205": [
+      {
+        "task_id": "BigCodeBench/205",
+        "solution": "import subprocess\nfrom multiprocessing import Pool\ndef execute_command(command):\n    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)\n    output, _ = process.communicate()\n    return output\ndef task_func(commands):\n    if not commands:\n        return []\n    \n    with Pool() as pool:\n        results = pool.map(execute_command, commands)\n    \n    return results",
+        "status": "timeout",
+        "details": {}
+      }
+    ]
+  }
+}

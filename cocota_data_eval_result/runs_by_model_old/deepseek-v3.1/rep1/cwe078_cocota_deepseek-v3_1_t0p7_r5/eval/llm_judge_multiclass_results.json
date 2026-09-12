@@ -1,0 +1,3498 @@
+{
+  "available": true,
+  "summary": {
+    "files_scanned": 135,
+    "classified_count": 135,
+    "label_counts": {
+      "CWE-078": 123,
+      "CWE-094": 0,
+      "CWE-295": 0,
+      "CWE-502": 0,
+      "MULTIPLE": 0,
+      "NONE": 12,
+      "UNCLEAR": 0
+    },
+    "detected_cwe_counts": {
+      "CWE-078": 123,
+      "CWE-094": 0,
+      "CWE-295": 0,
+      "CWE-502": 0
+    },
+    "confidence_counts": {
+      "High": 134,
+      "Medium": 1,
+      "Low": 0
+    },
+    "single_label_matches_source_cwe_count": 123,
+    "single_label_matches_source_cwe_rate": 0.9111111111111111,
+    "source_cwe_in_detected_count": 123,
+    "source_cwe_in_detected_rate": 0.9111111111111111,
+    "parse_failures": 0,
+    "api_failures": 0,
+    "total_prompt_tokens": 93814,
+    "total_completion_tokens": 10361,
+    "total_tokens": 104175
+  },
+  "tool": "llm_judge_multiclass",
+  "provider": "dmx",
+  "model": "deepseek-v3.1",
+  "temperature": 0.0,
+  "max_tokens": 256,
+  "judge_mode": "cwe_agnostic_multiclass_json",
+  "class_labels": [
+    "CWE-078",
+    "CWE-094",
+    "CWE-295",
+    "CWE-502",
+    "MULTIPLE",
+    "NONE",
+    "UNCLEAR"
+  ],
+  "prompt_metadata_excluded": [
+    "source_cwe",
+    "method",
+    "task_id",
+    "prior_detector_results"
+  ],
+  "per_record": [
+    {
+      "task_id": "BigCodeBench/1028",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Command 'command' constructed from platform detection uses shell=True when length > 0, allowing shell injection if attacker controls platform.system() return value or command variable modification."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 795,
+      "completion_tokens": 61,
+      "total_tokens": 856,
+      "time_seconds": 4.254
+    },
+    {
+      "task_id": "BigCodeBench/1028",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function uses subprocess.check_output with shell=True when command length > 0, executing attacker-controlled 'command' variable that incorporates platform.system() result. While platform.system() is fixed, the code path with shell=True creates a command injection sink if command were modified by an attacker."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 786,
+      "completion_tokens": 90,
+      "total_tokens": 876,
+      "time_seconds": 3.437
+    },
+    {
+      "task_id": "BigCodeBench/1028",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Command 'command' constructed from platform.system() is executed with shell=True when is_command_verified is True, which occurs when command length > 0. The command contains fixed values but shell=True allows shell metacharacter injection if command value is altered."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 831,
+      "completion_tokens": 79,
+      "total_tokens": 910,
+      "time_seconds": 5.893
+    },
+    {
+      "task_id": "BigCodeBench/1028",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Command uses shell=True with subprocess.check_output, allowing shell interpretation. Command arguments are fixed (wmic or top), but shell=True enables potential injection if environment or shell metacharacters are present in untrusted variables."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 781,
+      "completion_tokens": 72,
+      "total_tokens": 853,
+      "time_seconds": 5.033
+    },
+    {
+      "task_id": "BigCodeBench/1028",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.check_output with shell=True (via is_command_verified) on attacker-controlled data: interval and duration parameters control the command execution loop, and while the commands are fixed strings, shell=True introduces shell injection risk if any part of the command were dynamic."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 915,
+      "completion_tokens": 88,
+      "total_tokens": 1003,
+      "time_seconds": 3.968
+    },
+    {
+      "task_id": "BigCodeBench/1101",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: script filename from glob.glob (filesystem input). Sink: subprocess.run with shell=True when is_script_verified is True (which occurs for any non-empty script name). The shell=True argument introduces shell command injection vulnerability where special characters in filenames can alter command syntax."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 633,
+      "completion_tokens": 89,
+      "total_tokens": 722,
+      "time_seconds": 5.723
+    },
+    {
+      "task_id": "BigCodeBench/1101",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes test_dir from caller, constructs file paths using glob, and passes file (from glob results) directly to subprocess.run with shell=True when file length > 0. Attacker-controlled file names can alter shell command syntax."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 641,
+      "completion_tokens": 76,
+      "total_tokens": 717,
+      "time_seconds": 2.994
+    },
+    {
+      "task_id": "BigCodeBench/1101",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_path from glob.glob is used in subprocess.run with shell=True when is_file_path_verified is True (which occurs when len(file_path)>0, true for all valid paths). This allows shell injection if any .py filename contains malicious shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 654,
+      "completion_tokens": 86,
+      "total_tokens": 740,
+      "time_seconds": 3.803
+    },
+    {
+      "task_id": "BigCodeBench/1101",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes test_dir as input, which is used to construct file_path via glob. The file_path is passed directly to subprocess.run with shell=True when is_file_path_verified is True (which occurs when file_path length > 0, true for all non-empty paths). This allows command injection if test_dir contains malicious filenames."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 669,
+      "completion_tokens": 98,
+      "total_tokens": 767,
+      "time_seconds": 5.015
+    },
+    {
+      "task_id": "BigCodeBench/1101",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file path from 'test_dir' parameter reaches subprocess.run with shell=True when file length > 0, allowing command injection via malicious filenames."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 648,
+      "completion_tokens": 62,
+      "total_tokens": 710,
+      "time_seconds": 4.401
+    },
+    {
+      "task_id": "BigCodeBench/1102",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses shlex.quote to sanitize script_path before including it in the command list, and shell=False prevents shell injection. No dynamic code execution, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 709,
+      "completion_tokens": 65,
+      "total_tokens": 774,
+      "time_seconds": 5.926
+    },
+    {
+      "task_id": "BigCodeBench/1102",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller arguments (potentially untrusted), uses it in a shell command with shell=True, and while shlex.quote is used to prevent injection, the shell=True still introduces risk if the argument contains shell metacharacters or if the command is invoked in a shell context that could be manipulated."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 696,
+      "completion_tokens": 93,
+      "total_tokens": 789,
+      "time_seconds": 4.246
+    },
+    {
+      "task_id": "BigCodeBench/1102",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller arguments (potentially untrusted), directly interpolates it into a shell command without sanitization, and executes it via subprocess.Popen. This allows command injection if script_path contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 707,
+      "completion_tokens": 76,
+      "total_tokens": 783,
+      "time_seconds": 6.047
+    },
+    {
+      "task_id": "BigCodeBench/1102",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller argument, constructs a shell command using shlex.split and subprocess.Popen without validation of path content, allowing command injection if script_path contains malicious arguments."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 66,
+      "total_tokens": 763,
+      "time_seconds": 3.33
+    },
+    {
+      "task_id": "BigCodeBench/1102",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller arguments (potentially untrusted), directly interpolates it into a shell command string, and executes it with subprocess.run using shell=True when is_command_verified is True (which occurs for any non-empty command). This allows command injection through shell metacharacters in script_path."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 91,
+      "total_tokens": 785,
+      "time_seconds": 7.461
+    },
+    {
+      "task_id": "BigCodeBench/1103",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function executes a Python script using subprocess.run with shell=True when temp_script_path has non-zero length, allowing command injection if the path contains shell metacharacters. The script path is derived from attacker-controlled script_path argument and copied to temp_dir, but shell=True introduces injection risk."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 727,
+      "completion_tokens": 87,
+      "total_tokens": 814,
+      "time_seconds": 4.194
+    },
+    {
+      "task_id": "BigCodeBench/1103",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function copies a user-provided script_path to a temp directory and executes it using subprocess.run with shell=True when temp_script_path length > 0. Since script_path is attacker-controlled and shell=True is used, command injection is possible via malicious script_path values."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 704,
+      "completion_tokens": 83,
+      "total_tokens": 787,
+      "time_seconds": 4.352
+    },
+    {
+      "task_id": "BigCodeBench/1103",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "User-controlled script_path propagates to temp_script_path used in subprocess.run with shell=True when path length > 0, allowing command injection via malicious script names."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 712,
+      "completion_tokens": 62,
+      "total_tokens": 774,
+      "time_seconds": 4.956
+    },
+    {
+      "task_id": "BigCodeBench/1103",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function executes a Python script using subprocess.run with shell=True when temp_script_path is non-empty. The script path is derived from attacker-controlled script_path and temp_dir parameters, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 727,
+      "completion_tokens": 74,
+      "total_tokens": 801,
+      "time_seconds": 8.108
+    },
+    {
+      "task_id": "BigCodeBench/1103",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "User-controlled script_path is copied to temp_script_path and executed via subprocess.run with shell=True when path length > 0, allowing command injection through path manipulation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 720,
+      "completion_tokens": 62,
+      "total_tokens": 782,
+      "time_seconds": 2.983
+    },
+    {
+      "task_id": "BigCodeBench/1104",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code executes a fixed command 'python' with a user-provided script_path argument. While script_path is attacker-controlled, it is passed as a single argument to the Python interpreter, which does not alter OS command syntax. The code does not use eval/exec, disable TLS validation, or deserialize data."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 651,
+      "completion_tokens": 84,
+      "total_tokens": 735,
+      "time_seconds": 4.198
+    },
+    {
+      "task_id": "BigCodeBench/1104",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes a script_path parameter from the caller, which is used directly in subprocess.Popen(['python', script_path]) without sanitization. This allows attacker-controlled data to alter the OS command by specifying a malicious script path containing command injection sequences."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 648,
+      "completion_tokens": 79,
+      "total_tokens": 727,
+      "time_seconds": 3.962
+    },
+    {
+      "task_id": "BigCodeBench/1104",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.Popen with shell=True when script_path is non-empty, allowing command injection if script_path contains shell metacharacters. The source is the script_path parameter, which is directly inserted into the shell command without sanitization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 681,
+      "completion_tokens": 77,
+      "total_tokens": 758,
+      "time_seconds": 6.558
+    },
+    {
+      "task_id": "BigCodeBench/1104",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code executes a fixed Python script with subprocess.Popen, but the script_path is validated to exist and is passed as a single argument without shell=True. There is no shell command injection (CWE-078), dynamic code execution (CWE-094), TLS validation bypass (CWE-295), or unsafe deserialization (CWE-502)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 648,
+      "completion_tokens": 94,
+      "total_tokens": 742,
+      "time_seconds": 4.679
+    },
+    {
+      "task_id": "BigCodeBench/1104",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code executes a fixed Python script with a timeout. The script_path is validated to exist but is used directly in subprocess.Popen without shell=True. This prevents command injection as the argument is passed as a list. There is no dynamic code execution, TLS validation bypass, or unsafe deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 654,
+      "completion_tokens": 82,
+      "total_tokens": 736,
+      "time_seconds": 5.834
+    },
+    {
+      "task_id": "BigCodeBench/1105",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled r_script_path is used directly in subprocess.Popen with shell=True when the path is non-empty, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 679,
+      "completion_tokens": 62,
+      "total_tokens": 741,
+      "time_seconds": 5.029
+    },
+    {
+      "task_id": "BigCodeBench/1105",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes attacker-controlled 'r_script_path' parameter, which is directly used in subprocess.Popen without sanitization, allowing command injection if the input contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 650,
+      "completion_tokens": 66,
+      "total_tokens": 716,
+      "time_seconds": 5.61
+    },
+    {
+      "task_id": "BigCodeBench/1105",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled r_script_path is used in subprocess.Popen with shell=True when path length > 0, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 656,
+      "completion_tokens": 66,
+      "total_tokens": 722,
+      "time_seconds": 3.878
+    },
+    {
+      "task_id": "BigCodeBench/1105",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled r_script_path is used in subprocess.Popen with shell=True when path length > 0, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 658,
+      "completion_tokens": 66,
+      "total_tokens": 724,
+      "time_seconds": 4.832
+    },
+    {
+      "task_id": "BigCodeBench/12",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_name as an argument (potentially untrusted source) and passes it to subprocess.run with shell=True when script_name has length > 0. This allows command injection if script_name contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 760,
+      "completion_tokens": 75,
+      "total_tokens": 835,
+      "time_seconds": 4.177
+    },
+    {
+      "task_id": "BigCodeBench/1105",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.Popen with shell=True when r_script_path is non-empty, allowing command injection if r_script_path contains attacker-controlled data. The sink is subprocess.Popen with shell=True, and the source is the r_script_path parameter."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 684,
+      "completion_tokens": 82,
+      "total_tokens": 766,
+      "time_seconds": 5.996
+    },
+    {
+      "task_id": "BigCodeBench/12",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "script_name parameter is used in subprocess.run with shell=True when non-empty, allowing command injection if script_name contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 763,
+      "completion_tokens": 56,
+      "total_tokens": 819,
+      "time_seconds": 4.002
+    },
+    {
+      "task_id": "BigCodeBench/12",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_name as an argument (potential source), which is passed to subprocess.run() with shell=True when script_name is non-empty (sink). The shell=True parameter allows command injection if script_name contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 758,
+      "completion_tokens": 82,
+      "total_tokens": 840,
+      "time_seconds": 5.321
+    },
+    {
+      "task_id": "BigCodeBench/12",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "script_name parameter controls OS command via subprocess.run with shell=True when is_script_name_verified is True (which occurs when len(script_name)>0), allowing shell injection if attacker controls script_name value."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 763,
+      "completion_tokens": 71,
+      "total_tokens": 834,
+      "time_seconds": 6.843
+    },
+    {
+      "task_id": "BigCodeBench/13",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled FTP server, directory, and filenames are used to construct a shell command without sanitization, which is executed via subprocess.run with shell=True when command length > 0."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 816,
+      "completion_tokens": 73,
+      "total_tokens": 889,
+      "time_seconds": 4.564
+    },
+    {
+      "task_id": "BigCodeBench/12",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "script_name parameter controls OS command via subprocess.run with shell=True when script_name is non-empty, creating command injection vulnerability. No validation of script_name content beyond existence check."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 753,
+      "completion_tokens": 63,
+      "total_tokens": 816,
+      "time_seconds": 3.172
+    },
+    {
+      "task_id": "BigCodeBench/13",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled FTP server, directory, and filename values are used unsafely in a shell command via subprocess.run with shell=True. The command string is constructed with string interpolation without sanitization, allowing command injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 817,
+      "completion_tokens": 77,
+      "total_tokens": 894,
+      "time_seconds": 4.776
+    },
+    {
+      "task_id": "BigCodeBench/13",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled FTP server, directory, and filename values are concatenated into a URL that is passed to subprocess.run with shell=True when URL length > 0, allowing command injection via shell metacharacters in the URL."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 805,
+      "completion_tokens": 74,
+      "total_tokens": 879,
+      "time_seconds": 5.019
+    },
+    {
+      "task_id": "BigCodeBench/13",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled FTP server, directory, and filenames are used unsafely in a shell command via subprocess.run with shell=True. The command string uses string interpolation without sanitization, allowing command injection through malicious filenames or FTP server values."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 816,
+      "completion_tokens": 85,
+      "total_tokens": 901,
+      "time_seconds": 5.844
+    },
+    {
+      "task_id": "BigCodeBench/146",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes an attacker-controlled 'ip_range' parameter, which is used to construct an IPv4Network. Each IP address string from the network is passed directly into subprocess.run with shell=True when the string length is greater than 0 (always true for valid IPs), allowing command injection through the ip_str variable."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 666,
+      "completion_tokens": 93,
+      "total_tokens": 759,
+      "time_seconds": 8.531
+    },
+    {
+      "task_id": "BigCodeBench/146",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes an attacker-controlled 'ip_range' parameter, which is converted to IP addresses. Each IP string is used unsafely in subprocess.run with shell=True when 'is_ip_str_verified' is True (which it always is for non-empty strings), allowing command injection if any IP string contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 679,
+      "completion_tokens": 95,
+      "total_tokens": 774,
+      "time_seconds": 3.222
+    },
+    {
+      "task_id": "BigCodeBench/146",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes an attacker-controlled ip_range argument, which is converted to an IPv4Network. Each IP address from the network is passed into subprocess.run with shell=True when is_ip_str_verified is True (which occurs for any non-empty IP string), allowing command injection via maliciously crafted IP addresses."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 678,
+      "completion_tokens": 90,
+      "total_tokens": 768,
+      "time_seconds": 4.226
+    },
+    {
+      "task_id": "BigCodeBench/13",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled FTP server, directory, and filename values are used to construct a URL passed to wget via subprocess.run with shell=True when URL length > 0, allowing command injection through URL manipulation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 805,
+      "completion_tokens": 75,
+      "total_tokens": 880,
+      "time_seconds": 3.893
+    },
+    {
+      "task_id": "BigCodeBench/146",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes an attacker-controlled ip_range argument, which is converted to an IPv4Network and iterated. Each IP string is passed unsanitized to subprocess.run with shell=True when is_ip_str_verified is True (which occurs for all non-empty IP strings), allowing command injection via malicious IP strings."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 684,
+      "completion_tokens": 92,
+      "total_tokens": 776,
+      "time_seconds": 6.688
+    },
+    {
+      "task_id": "BigCodeBench/15",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads commands from a CSV file (untrusted source) and executes them via subprocess.run with shell=True when command length > 0. This allows command injection as attacker-controlled data alters shell syntax at the command execution sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 798,
+      "completion_tokens": 76,
+      "total_tokens": 874,
+      "time_seconds": 4.016
+    },
+    {
+      "task_id": "BigCodeBench/146",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes an attacker-controlled 'ip_range' parameter, which is converted to an IPv4Network. Each IP address in the network is passed via 'ip_str' to subprocess.run with shell=True when 'is_ip_str_verified' is True (which occurs for all non-empty IP strings), allowing command injection if any IP string contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 679,
+      "completion_tokens": 102,
+      "total_tokens": 781,
+      "time_seconds": 4.103
+    },
+    {
+      "task_id": "BigCodeBench/15",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: commands_file_path content via CSV reader. Sink: subprocess.run with shell=True when command length > 0. Command string from file reaches shell execution without sanitization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 788,
+      "completion_tokens": 65,
+      "total_tokens": 853,
+      "time_seconds": 4.477
+    },
+    {
+      "task_id": "BigCodeBench/15",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: commands_file_path CSV content. Sink: subprocess.run with shell=True when command length > 0. Command string from untrusted file executed with shell=True, allowing command injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 794,
+      "completion_tokens": 67,
+      "total_tokens": 861,
+      "time_seconds": 5.24
+    },
+    {
+      "task_id": "BigCodeBench/15",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: commands_file_path CSV content. Sink: subprocess.run with shell=True when command length > 0. Command string from file reaches shell execution without sanitization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 796,
+      "completion_tokens": 63,
+      "total_tokens": 859,
+      "time_seconds": 3.636
+    },
+    {
+      "task_id": "BigCodeBench/16",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.run with a fixed command list ['tar', '-czf', backup_file] plus a list of log file paths from glob.glob. The directory and backup_dir parameters are controlled by the caller, but the log file paths are derived from the filesystem (via glob) and are not directly attacker-controlled strings that alter command syntax. The command arguments are passed as a list, preventing shell injection. No dynamic code execution, TLS validation issues, or unsafe deserialization are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 687,
+      "completion_tokens": 123,
+      "total_tokens": 810,
+      "time_seconds": 7.034
+    },
+    {
+      "task_id": "BigCodeBench/15",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: commands_file_path (CSV file content). Sink: subprocess.run with shell=True when command length > 0. Command string from file is executed directly without validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 815,
+      "completion_tokens": 65,
+      "total_tokens": 880,
+      "time_seconds": 3.798
+    },
+    {
+      "task_id": "BigCodeBench/16",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.run with a fixed command list ['tar', '-czf', backup_file] + log_files. The log_files variable comes from glob.glob with a fixed pattern '*.log' in a user-provided directory, but the filenames are passed as arguments to tar without shell=True, preventing command injection. No dynamic code execution, TLS validation issues, or unsafe deserialization are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 681,
+      "completion_tokens": 106,
+      "total_tokens": 787,
+      "time_seconds": 5.569
+    },
+    {
+      "task_id": "BigCodeBench/16",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.run with a fixed command list ['tar', '-czf', backup_file] + log_files. While log_files come from directory input, they are filtered to *.log files and passed as arguments to tar, which safely handles filenames without shell interpretation. No command shell is invoked, no dynamic code execution, no network operations, and no deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 681,
+      "completion_tokens": 99,
+      "total_tokens": 780,
+      "time_seconds": 5.382
+    },
+    {
+      "task_id": "BigCodeBench/16",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.run with a fixed command list ['tar', '-czf', backup_file] + log_files. The log_files variable comes from glob.glob with a fixed pattern '*.log', which is not attacker-controlled. The directory parameter is validated to exist but not used to construct shell commands. No dynamic code execution, TLS validation issues, or unsafe deserialization are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 681,
+      "completion_tokens": 101,
+      "total_tokens": 782,
+      "time_seconds": 7.895
+    },
+    {
+      "task_id": "BigCodeBench/17",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes attacker-controlled 'process_name' and passes it directly to subprocess.Popen with shell=True, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 59,
+      "total_tokens": 719,
+      "time_seconds": 5.472
+    },
+    {
+      "task_id": "BigCodeBench/16",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses subprocess.run with a fixed command list ['tar', '-czf', backup_file] plus a list of log file paths from glob.glob. The log file paths come from a directory specified by the caller, but they are safely passed as arguments without shell=True, preventing command injection. There is no dynamic code execution, TLS validation, or deserialization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 687,
+      "completion_tokens": 97,
+      "total_tokens": 784,
+      "time_seconds": 3.338
+    },
+    {
+      "task_id": "BigCodeBench/17",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled process_name is passed to subprocess.Popen with shell=True when process_name length > 0, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 670,
+      "completion_tokens": 60,
+      "total_tokens": 730,
+      "time_seconds": 6.297
+    },
+    {
+      "task_id": "BigCodeBench/17",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes attacker-controlled 'process_name' and passes it directly to subprocess.Popen with shell=True, allowing command injection if the input contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 661,
+      "completion_tokens": 62,
+      "total_tokens": 723,
+      "time_seconds": 3.675
+    },
+    {
+      "task_id": "BigCodeBench/17",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes attacker-controlled 'process_name' and passes it directly to subprocess.Popen with shell=True, allowing command injection if the input contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 667,
+      "completion_tokens": 62,
+      "total_tokens": 729,
+      "time_seconds": 2.43
+    },
+    {
+      "task_id": "BigCodeBench/17",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes attacker-controlled 'process_name' and passes it directly to subprocess.Popen with shell=True, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 661,
+      "completion_tokens": 59,
+      "total_tokens": 720,
+      "time_seconds": 4.426
+    },
+    {
+      "task_id": "BigCodeBench/18",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes a file argument, which is attacker-controlled, and passes it directly to subprocess.run with shell=True when is_file_verified is True. The shell=True enables shell command injection if the filename contains malicious shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 76,
+      "total_tokens": 765,
+      "time_seconds": 4.456
+    },
+    {
+      "task_id": "BigCodeBench/18",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function runs subprocess.run with shell=True when the file exists and ends with '.csv', using the file variable directly in the command string without sanitization, allowing command injection if the file name contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 680,
+      "completion_tokens": 73,
+      "total_tokens": 753,
+      "time_seconds": 4.993
+    },
+    {
+      "task_id": "BigCodeBench/18",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The 'file' parameter is used unsafely in subprocess.run with shell=True, allowing command injection if file contains shell metacharacters. Source: file parameter. Sink: subprocess.run with shell=True. Mitigation: shell=False is not used."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 81,
+      "total_tokens": 771,
+      "time_seconds": 5.256
+    },
+    {
+      "task_id": "BigCodeBench/18",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The 'file' parameter is used unsafely in subprocess.run with shell=True, allowing command injection if attacker controls file name. The shell=is_file_verified is True when len(file)>0, which is always true for valid files."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 78,
+      "total_tokens": 771,
+      "time_seconds": 5.584
+    },
+    {
+      "task_id": "BigCodeBench/18",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes a file argument, which is used unsafely in subprocess.run with shell=True when is_file_verified is True (which occurs when file length > 0). This allows command injection if file contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 77,
+      "total_tokens": 766,
+      "time_seconds": 8.094
+    },
+    {
+      "task_id": "BigCodeBench/195",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter is used directly in OS command construction. Command is executed via subprocess.Popen with shell=True when is_cmd_verified is True (which occurs when cmd has length >0, always true here). This allows shell metacharacter injection if URL contains malicious characters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 641,
+      "completion_tokens": 84,
+      "total_tokens": 725,
+      "time_seconds": 4.178
+    },
+    {
+      "task_id": "BigCodeBench/195",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes a URL argument and directly uses it in a subprocess.Popen call with shell=True, allowing command injection if the URL contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 61,
+      "total_tokens": 684,
+      "time_seconds": 4.129
+    },
+    {
+      "task_id": "BigCodeBench/195",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter is passed directly to OS command via subprocess.Popen with shell=True, allowing command injection if URL contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 621,
+      "completion_tokens": 56,
+      "total_tokens": 677,
+      "time_seconds": 4.114
+    },
+    {
+      "task_id": "BigCodeBench/195",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter is passed directly to subprocess.Popen with shell=True, allowing command injection if URL contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 621,
+      "completion_tokens": 53,
+      "total_tokens": 674,
+      "time_seconds": 4.832
+    },
+    {
+      "task_id": "BigCodeBench/195",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter is directly inserted into OS command via subprocess.Popen with shell=True, allowing command injection if URL contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 56,
+      "total_tokens": 679,
+      "time_seconds": 4.475
+    },
+    {
+      "task_id": "BigCodeBench/205",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The execute_command function uses subprocess.Popen with shell=True, allowing command injection if attacker-controlled data reaches the command parameter. The task_func function maps execute_command over a list of commands, providing a feasible path for untrusted input from the commands parameter to the shell execution sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 84,
+      "total_tokens": 708,
+      "time_seconds": 5.006
+    },
+    {
+      "task_id": "BigCodeBench/205",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: 'commands' parameter. Propagation: passed directly to execute_command. Sink: subprocess.Popen with shell=True. Mitigation: none."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 59,
+      "total_tokens": 683,
+      "time_seconds": 4.548
+    },
+    {
+      "task_id": "BigCodeBench/205",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The execute_command function uses subprocess.Popen with shell=True, allowing command injection if attacker-controlled data reaches the command parameter. The task_func maps execute_command over a list of commands, providing a feasible path for untrusted input from the commands list to the shell execution sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 83,
+      "total_tokens": 707,
+      "time_seconds": 4.771
+    },
+    {
+      "task_id": "BigCodeBench/205",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The execute_command function uses subprocess.Popen with shell=True, allowing command injection if attacker-controlled data reaches the command parameter. The task_func function maps execute_command over a list of commands, creating multiple execution sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 71,
+      "total_tokens": 695,
+      "time_seconds": 5.677
+    },
+    {
+      "task_id": "BigCodeBench/320",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_list and directory parameters are used to construct file_path, which is executed via subprocess.Popen with shell=True when file_path length > 0. Shell injection is possible when shell=True and command string contains untrusted input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 617,
+      "completion_tokens": 82,
+      "total_tokens": 699,
+      "time_seconds": 4.303
+    },
+    {
+      "task_id": "BigCodeBench/205",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: 'commands' parameter. Propagation: passed directly to execute_command. Sink: subprocess.Popen with shell=True executes command string through shell. Mitigation: None."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 64,
+      "total_tokens": 688,
+      "time_seconds": 4.499
+    },
+    {
+      "task_id": "BigCodeBench/320",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_list and directory arguments are used to construct file_path, which is executed via subprocess.Popen with shell=True when file_path is non-empty. This allows command injection through shell metacharacters in filenames."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 75,
+      "total_tokens": 699,
+      "time_seconds": 5.333
+    },
+    {
+      "task_id": "BigCodeBench/320",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_list and directory arguments are used to construct file_path, which is executed via subprocess.Popen with shell=True when file_path length > 0. This allows command injection if filename contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/320",
+          "repeat_id": 2,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 617,
+      "completion_tokens": 74,
+      "total_tokens": 691,
+      "time_seconds": 18.608
+    },
+    {
+      "task_id": "BigCodeBench/320",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_list and directory arguments are used to construct file_path, which is executed via subprocess.Popen with shell=True when file_path length > 0. Since file_path is not sanitized and shell=True allows command injection, this is a command injection vulnerability."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 624,
+      "completion_tokens": 83,
+      "total_tokens": 707,
+      "time_seconds": 4.051
+    },
+    {
+      "task_id": "BigCodeBench/320",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_list and directory arguments are used to construct file_path, which is executed via subprocess.Popen with shell=True when file_path is non-empty. This allows command injection if filename contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 73,
+      "total_tokens": 696,
+      "time_seconds": 4.304
+    },
+    {
+      "task_id": "BigCodeBench/324",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: file_list parameter (potentially untrusted). Sink: subprocess.Popen with shell=True when file_path length > 0. Dangerous option: shell=True enables command injection if file_path contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/324",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 624,
+      "completion_tokens": 74,
+      "total_tokens": 698,
+      "time_seconds": 16.231
+    },
+    {
+      "task_id": "BigCodeBench/324",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_path from file_list argument is used directly in subprocess.Popen with shell=True when file_path length > 0, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/324",
+          "repeat_id": 0,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 630,
+      "completion_tokens": 65,
+      "total_tokens": 695,
+      "time_seconds": 16.147
+    },
+    {
+      "task_id": "BigCodeBench/324",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_path from file_list argument is used directly in subprocess.Popen with shell=True when verified (non-empty), allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/324",
+          "repeat_id": 2,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 630,
+      "completion_tokens": 63,
+      "total_tokens": 693,
+      "time_seconds": 19.511
+    },
+    {
+      "task_id": "BigCodeBench/324",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_path from file_list argument is used directly in subprocess.Popen with shell=True when file_path length > 0, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 630,
+      "completion_tokens": 65,
+      "total_tokens": 695,
+      "time_seconds": 37.838
+    },
+    {
+      "task_id": "BigCodeBench/324",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled file_path from file_list argument is used directly in subprocess.Popen with shell=True when is_file_path_verified is True (which occurs when len(file_path) > 0), allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 630,
+      "completion_tokens": 77,
+      "total_tokens": 707,
+      "time_seconds": 5.091
+    },
+    {
+      "task_id": "BigCodeBench/326",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes directory_path as input, which could be attacker-controlled. It constructs bat_file paths using glob and passes them directly to subprocess.run with shell=True (when is_bat_file_verified is True, which occurs for any non-empty filename). This allows command injection if directory_path contains special shell characters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 667,
+      "completion_tokens": 91,
+      "total_tokens": 758,
+      "time_seconds": 4.364
+    },
+    {
+      "task_id": "BigCodeBench/326",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled directory_path input is used to find .bat files via glob.glob. Each bat_file path is executed with shell=True (is_bat_file_verified is always True when bat_file is non-empty) in subprocess.run, allowing command injection if filenames contain shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 665,
+      "completion_tokens": 90,
+      "total_tokens": 755,
+      "time_seconds": 3.867
+    },
+    {
+      "task_id": "BigCodeBench/326",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled directory_path parameter is used to construct a file pattern, which is expanded to bat_files. Each bat_file is executed via subprocess.run with shell=True (when is_bat_file_verified is True for non-empty strings), allowing command injection if filenames contain shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 665,
+      "completion_tokens": 89,
+      "total_tokens": 754,
+      "time_seconds": 2.834
+    },
+    {
+      "task_id": "BigCodeBench/326",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled directory_path input reaches glob.glob, which returns file paths. The file_path variable is used directly in subprocess.run with shell=True (when len(file_path)>0, which is always true for valid paths), allowing command injection if any .bat filename contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 88,
+      "total_tokens": 748,
+      "time_seconds": 3.476
+    },
+    {
+      "task_id": "BigCodeBench/326",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled directory_path parameter is used to find .bat files via glob. File paths are executed with shell=True (via is_file_path_verified=True when path length >0) in subprocess.run, allowing command injection if any filename contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 653,
+      "completion_tokens": 82,
+      "total_tokens": 735,
+      "time_seconds": 3.639
+    },
+    {
+      "task_id": "BigCodeBench/346",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled script_path and args are used to construct a command executed with shell=True when is_cmd_verified is True (which occurs when len(cmd)>0, always true here), enabling shell injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 656,
+      "completion_tokens": 71,
+      "total_tokens": 727,
+      "time_seconds": 4.741
+    },
+    {
+      "task_id": "BigCodeBench/346",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled script_path and args are used to construct a command executed via subprocess.run or subprocess.Popen with shell=True when len(command)>0 (always true), allowing shell injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 661,
+      "completion_tokens": 67,
+      "total_tokens": 728,
+      "time_seconds": 2.259
+    },
+    {
+      "task_id": "BigCodeBench/346",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function constructs a command list with attacker-controlled 'script_path' and '*args', then executes it via subprocess.run or subprocess.Popen with 'shell=True' when the list is non-empty (always true), allowing shell injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 661,
+      "completion_tokens": 76,
+      "total_tokens": 737,
+      "time_seconds": 5.339
+    },
+    {
+      "task_id": "BigCodeBench/346",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function constructs a command list with attacker-controlled script_path and args, then executes it with shell=True when len(cmd)>0 (always true), allowing command injection via shell metacharacters in script_path or args."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 687,
+      "completion_tokens": 72,
+      "total_tokens": 759,
+      "time_seconds": 2.966
+    },
+    {
+      "task_id": "BigCodeBench/346",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function constructs a command from user-provided script_path and args, then executes it via subprocess.run or subprocess.Popen with shell=True when wait is True or False respectively. The shell=True setting allows command injection if script_path or args contain shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 83,
+      "total_tokens": 777,
+      "time_seconds": 3.323
+    },
+    {
+      "task_id": "BigCodeBench/350",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: file_path from glob. Sink: subprocess.Popen with shell=True when is_file_path_verified is True (which occurs when file_path length > 0, which is always true for valid paths). Command injection is possible because shell=True allows shell metacharacters in file_path to alter command syntax."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 839,
+      "completion_tokens": 92,
+      "total_tokens": 931,
+      "time_seconds": 7.841
+    },
+    {
+      "task_id": "BigCodeBench/350",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: file_path from glob results. Sink: subprocess.run with shell=True when is_file_path_verified is True. Command injection possible when file_path contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 798,
+      "completion_tokens": 71,
+      "total_tokens": 869,
+      "time_seconds": 2.94
+    },
+    {
+      "task_id": "BigCodeBench/350",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function uses subprocess.Popen with shell=True when is_file_path_verified is True (which occurs when file_path length > 0). The file_path variable comes from glob results, but if an attacker controls the src_folder contents, they can inject shell metacharacters in filenames. The sink is subprocess.Popen with shell=True, allowing command injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 815,
+      "completion_tokens": 103,
+      "total_tokens": 918,
+      "time_seconds": 3.343
+    },
+    {
+      "task_id": "BigCodeBench/459",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled 'script' parameter reaches subprocess.Popen with shell=True when script_path length > 0, allowing command injection via shell metacharacters in script names."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 658,
+      "completion_tokens": 63,
+      "total_tokens": 721,
+      "time_seconds": 2.806
+    },
+    {
+      "task_id": "BigCodeBench/350",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: filename from filesystem. Sink: subprocess.Popen with shell=True when is_src_folder_verified is True (which occurs when src_folder length > 0). The shell=True argument allows command injection if filename contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 840,
+      "completion_tokens": 80,
+      "total_tokens": 920,
+      "time_seconds": 5.276
+    },
+    {
+      "task_id": "BigCodeBench/459",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled 'script' parameter reaches subprocess.run with shell=True when script_path length > 0, allowing command injection via shell metacharacters in script names."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 676,
+      "completion_tokens": 67,
+      "total_tokens": 743,
+      "time_seconds": 3.042
+    },
+    {
+      "task_id": "BigCodeBench/350",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: filename from filesystem. Sink: subprocess.Popen with shell=False but command argument constructed from filename without sanitization. Path: filename used directly in gzip command."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 821,
+      "completion_tokens": 65,
+      "total_tokens": 886,
+      "time_seconds": 4.779
+    },
+    {
+      "task_id": "BigCodeBench/459",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled 'script' parameter reaches OS command sink subprocess.run with shell=True when script_path length > 0. The shell=True argument allows command injection if script_path contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 678,
+      "completion_tokens": 74,
+      "total_tokens": 752,
+      "time_seconds": 4.126
+    },
+    {
+      "task_id": "BigCodeBench/460",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path as input and passes it to subprocess.run with shell=True when the path length is >0. This creates a command injection vulnerability where attacker-controlled script_path can alter shell syntax."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 706,
+      "completion_tokens": 69,
+      "total_tokens": 775,
+      "time_seconds": 5.989
+    },
+    {
+      "task_id": "BigCodeBench/459",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled 'script' parameter reaches subprocess.run with shell=True when script_path length > 0, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 676,
+      "completion_tokens": 64,
+      "total_tokens": 740,
+      "time_seconds": 3.247
+    },
+    {
+      "task_id": "BigCodeBench/459",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled 'script' parameter reaches subprocess.run with shell=True when script_path length > 0, allowing command injection via script name manipulation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 678,
+      "completion_tokens": 63,
+      "total_tokens": 741,
+      "time_seconds": 2.518
+    },
+    {
+      "task_id": "BigCodeBench/460",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "script_path is used directly in subprocess.run with shell=True when non-empty, allowing command injection if script_path contains shell metacharacters. The verification only checks length, not content safety."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 669,
+      "completion_tokens": 66,
+      "total_tokens": 735,
+      "time_seconds": 3.305
+    },
+    {
+      "task_id": "BigCodeBench/460",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "script_path parameter controls OS command executed via subprocess.run with shell=True when path length > 0. No validation of path content beyond non-empty check, allowing command injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 706,
+      "completion_tokens": 63,
+      "total_tokens": 769,
+      "time_seconds": 4.604
+    },
+    {
+      "task_id": "BigCodeBench/460",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function executes a script via subprocess.run with script_path as the first argument. script_path is attacker-controlled and directly alters the OS command executed. The use of shell=False does not mitigate the risk of command injection if the path contains malicious characters, as it still executes the specified program."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 670,
+      "completion_tokens": 86,
+      "total_tokens": 756,
+      "time_seconds": 3.656
+    },
+    {
+      "task_id": "BigCodeBench/460",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from the caller, uses it directly in subprocess.run with shell=True when the path length is greater than 0, allowing command injection if the path contains shell metacharacters. The verification only checks path length, not content safety."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 664,
+      "completion_tokens": 80,
+      "total_tokens": 744,
+      "time_seconds": 6.174
+    },
+    {
+      "task_id": "BigCodeBench/461",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller argument (untrusted source) and passes it directly to subprocess.Popen(['bash', script_path]) as a shell script to execute. This allows attacker-controlled data to alter the executed command by specifying a malicious script path."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 746,
+      "completion_tokens": 81,
+      "total_tokens": 827,
+      "time_seconds": 4.478
+    },
+    {
+      "task_id": "BigCodeBench/461",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller argument (potentially untrusted) and passes it directly to subprocess.Popen with bash, allowing attacker to control OS command execution through shell script path injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 747,
+      "completion_tokens": 72,
+      "total_tokens": 819,
+      "time_seconds": 4.647
+    },
+    {
+      "task_id": "BigCodeBench/461",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes script_path from caller arguments (potentially untrusted) and passes it directly to subprocess.Popen with ['bash', script_path], allowing attacker-controlled data to alter the shell command executed. No validation or sanitization of script_path occurs beyond checking file existence."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 763,
+      "completion_tokens": 88,
+      "total_tokens": 851,
+      "time_seconds": 4.97
+    },
+    {
+      "task_id": "BigCodeBench/461",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code executes a bash script from a provided path using subprocess.Popen with shell=False, but the script_path is validated to exist before execution. There is no evidence of attacker-controlled data altering command syntax (CWE-078), dynamic code execution (CWE-094), TLS validation bypass (CWE-295), or unsafe deserialization (CWE-502). The path validation prevents arbitrary command injection, and the script execution is fixed to bash with the path as a single argument."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 786,
+      "completion_tokens": 126,
+      "total_tokens": 912,
+      "time_seconds": 8.222
+    },
+    {
+      "task_id": "BigCodeBench/461",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled script_path is used in subprocess.Popen with shell=True when script_path is non-empty, allowing command injection via shell metacharacters. The shell parameter is set to is_script_path_verified (True for non-empty paths), making the command vulnerable to shell injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 812,
+      "completion_tokens": 91,
+      "total_tokens": 903,
+      "time_seconds": 3.681
+    },
+    {
+      "task_id": "BigCodeBench/604",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The 'filepath' parameter is directly used in a subprocess call with shell=True when is_filepath_verified is True (which occurs when len(filepath) > 0). This allows shell injection if an attacker controls filepath, as the value is passed to a shell command without sanitization."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 89,
+      "total_tokens": 749,
+      "time_seconds": 4.458
+    },
+    {
+      "task_id": "BigCodeBench/604",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes 'filepath' as input, which is directly used in a subprocess.check_output call with shell=True when filepath length is greater than 0. This allows command injection if an attacker controls filepath with shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 660,
+      "completion_tokens": 78,
+      "total_tokens": 738,
+      "time_seconds": 5.854
+    },
+    {
+      "task_id": "BigCodeBench/604",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: filepath parameter. Sink: subprocess.check_call with shell=True when filepath length > 0. Dangerous option: shell=True enables shell interpretation of the filepath string, allowing command injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 658,
+      "completion_tokens": 70,
+      "total_tokens": 728,
+      "time_seconds": 3.468
+    },
+    {
+      "task_id": "BigCodeBench/604",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The 'filepath' parameter is used directly in subprocess.check_output with shell=True when is_filepath_verified is True (which occurs when len(filepath)>0), allowing command injection if attacker controls filepath value."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 671,
+      "completion_tokens": 73,
+      "total_tokens": 744,
+      "time_seconds": 4.604
+    },
+    {
+      "task_id": "BigCodeBench/604",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function takes 'filepath' as input (potential attacker-controlled source) and passes it directly to subprocess.check_call with shell=True when filepath length is greater than 0. This allows command injection via shell metacharacters in filepath."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 649,
+      "completion_tokens": 78,
+      "total_tokens": 727,
+      "time_seconds": 4.312
+    },
+    {
+      "task_id": "BigCodeBench/715",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "Medium",
+        "evidence": "The function task_func uses subprocess.run with shell=True when python_version is non-empty. The python_version parameter is attacker-controlled via the function argument and defaults to a fixed value but can be overridden. The command 'pyenv global <python_version>' is executed in a shell when python_version is non-empty, allowing potential shell injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 681,
+      "completion_tokens": 96,
+      "total_tokens": 777,
+      "time_seconds": 4.34
+    },
+    {
+      "task_id": "BigCodeBench/715",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function task_func uses subprocess.run with shell=True when python_version has non-zero length. The python_version parameter is attacker-controlled and not sanitized, allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 671,
+      "completion_tokens": 68,
+      "total_tokens": 739,
+      "time_seconds": 4.88
+    },
+    {
+      "task_id": "BigCodeBench/715",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function task_func uses python_version parameter in subprocess.run calls with shell=True, allowing command injection if an attacker controls python_version. The parameter is not sanitized, only checked for non-empty string, and directly inserted into the command string."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 758,
+      "completion_tokens": 77,
+      "total_tokens": 835,
+      "time_seconds": 4.956
+    },
+    {
+      "task_id": "BigCodeBench/715",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function parameter 'python_version' is used unsafely in subprocess.run with shell=True when is_python_version_verified is True, allowing command injection if an attacker controls the python_version value."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 662,
+      "completion_tokens": 74,
+      "total_tokens": 736,
+      "time_seconds": 8.856
+    },
+    {
+      "task_id": "BigCodeBench/745",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses a fixed list of script names (SCRIPTS) and a fixed directory (SCRIPTS_DIR) to construct paths. The random selection is from these fixed paths. The shell parameter is set to a boolean based on the path length (always True for non-empty paths), but the command argument is a fixed path without user input. No attacker-controlled data reaches subprocess.run."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 654,
+      "completion_tokens": 100,
+      "total_tokens": 754,
+      "time_seconds": 3.945
+    },
+    {
+      "task_id": "BigCodeBench/745",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled script name from SCRIPTS list can reach subprocess.run with shell=True when is_selected_script_verified is True (non-empty string), allowing command injection via shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 75,
+      "total_tokens": 727,
+      "time_seconds": 3.622
+    },
+    {
+      "task_id": "BigCodeBench/715",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "The function uses subprocess.run with shell=True when python_version is non-empty string. The python_version parameter is attacker-controlled and directly interpolated into the command string without sanitization, allowing command injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 68,
+      "total_tokens": 765,
+      "time_seconds": 3.895
+    },
+    {
+      "task_id": "BigCodeBench/745",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Source: fixed list SCRIPTS. Sink: subprocess.run with shell=True when is_selected_script_verified is True (occurs when selected_script length > 0). The shell parameter is controlled by the script path length, not user input, so no attacker-controlled data alters the command."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 654,
+      "completion_tokens": 91,
+      "total_tokens": 745,
+      "time_seconds": 6.837
+    },
+    {
+      "task_id": "BigCodeBench/745",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled script name from SCRIPTS list is used to construct script_path. The path is executed via subprocess.run with shell=True when script_path length > 0 (always true), allowing command injection if script names contain shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 636,
+      "completion_tokens": 79,
+      "total_tokens": 715,
+      "time_seconds": 2.908
+    },
+    {
+      "task_id": "BigCodeBench/785",
+      "repeat_id": 1,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Pattern parameter flows to shell=True subprocess.run call via files list expansion. Shell=True enables command injection if pattern contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/785",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 672,
+      "completion_tokens": 56,
+      "total_tokens": 728,
+      "time_seconds": 18.243
+    },
+    {
+      "task_id": "BigCodeBench/785",
+      "repeat_id": 0,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Pattern parameter flows to shell=True in subprocess.run via shell=is_pattern_verified, enabling command injection when pattern contains shell metacharacters."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 679,
+      "completion_tokens": 57,
+      "total_tokens": 736,
+      "time_seconds": 2.738
+    },
+    {
+      "task_id": "BigCodeBench/745",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code uses random.choice to select from a fixed list of script paths, but the shell parameter in subprocess.run is set to True only if the chosen_script string length is greater than 0, which is always true. However, the script paths are fixed literals from a predefined list, and there is no attacker-controlled input source that can alter the command. The random selection does not introduce external input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/745",
+          "repeat_id": 4,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 655,
+      "completion_tokens": 104,
+      "total_tokens": 759,
+      "time_seconds": 15.384
+    },
+    {
+      "task_id": "BigCodeBench/785",
+      "repeat_id": 2,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Pattern parameter flows to shell=True in subprocess.run via is_pattern_verified, enabling command injection when shell metacharacters are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 672,
+      "completion_tokens": 55,
+      "total_tokens": 727,
+      "time_seconds": 13.674
+    },
+    {
+      "task_id": "BigCodeBench/785",
+      "repeat_id": 3,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Pattern argument controls files list, which is passed unsanitized into shell command via subprocess.run with shell=True when files exist. Command uses string interpolation without sanitization, allowing shell injection."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/785",
+          "repeat_id": 3,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 700,
+      "completion_tokens": 67,
+      "total_tokens": 767,
+      "time_seconds": 17.332
+    },
+    {
+      "task_id": "BigCodeBench/785",
+      "repeat_id": 4,
+      "cwe": "cwe078",
+      "method": "cocota",
+      "source_cwe_label": "CWE-078",
+      "assessment": {
+        "label": "CWE-078",
+        "detected_cwes": [
+          "CWE-078"
+        ],
+        "confidence": "High",
+        "evidence": "Pattern parameter controls glob expansion, then file_list is used unsanitized in shell command with shell=True when files exist. Command injection via malicious filenames."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/785",
+          "repeat_id": 4,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 693,
+      "completion_tokens": 61,
+      "total_tokens": 754,
+      "time_seconds": 14.83
+    }
+  ]
+}

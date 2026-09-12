@@ -1,0 +1,51 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // 默认进入研究开发主 Agent
+  "default_agent": "research-lead",
+
+  // 全局安全底线。
+  // Agent 自己的 permissions 会追加到这些规则之后，
+  // 因此 agent-specific rule 可以覆盖这里。
+  "permissions": [
+    {
+      "action": "read",
+      "resource": "*.env",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": ".env*",
+      "effect": "deny"
+    },
+
+    // 默认禁止危险 git 操作
+    {
+      "action": "shell",
+      "resource": "git push *",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "git reset --hard *",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "git clean *",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "git checkout -- *",
+      "effect": "ask"
+    },
+
+    // 不允许 Agent 默认操作工作区外目录
+    {
+      "action": "external_directory",
+      "resource": "*",
+      "effect": "ask"
+    }
+  ]
+}

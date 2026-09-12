@@ -1,0 +1,346 @@
+{
+  "date": "2026-05-13 23:38",
+  "eval": {
+    "BigCodeBench/1104": [
+      {
+        "task_id": "BigCodeBench/1104",
+        "solution": "import subprocess\nimport os\nimport threading",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 34, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 39, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 44, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 48, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/1102": [
+      {
+        "task_id": "BigCodeBench/1102",
+        "solution": "import subprocess\nimport shlex\nfrom datetime import datetime\ndef task_func(script_path: str) -> dict:\n    start_time = datetime.now()\n    \n    command = f\"Rscript {shlex.quote(script_path)}\"\n    result = subprocess.run(shlex.split(command), capture_output=True)\n    \n    end_time = datetime.now()\n    \n    return {\n        \"start_time\": start_time,\n        \"end_time\": end_time,\n        \"stdout\": result.stdout.decode('utf-8'),\n        \"stderr\": result.stderr.decode('utf-8')\n    }",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 27, in test_case_1\n  File \"__test__.py\", line 8, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 40, in test_case_2\n  File \"__test__.py\", line 8, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 53, in test_case_3\n  File \"__test__.py\", line 8, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 65, in test_case_4\n  File \"__test__.py\", line 8, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 78, in test_case_5\n  File \"__test__.py\", line 8, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 548, in run\n    with Popen(*popenargs, **kwargs) as process:\nTypeError: 'Mock' object does not support the context manager protocol\n"
+        }
+      }
+    ],
+    "BigCodeBench/1028": [
+      {
+        "task_id": "BigCodeBench/1028",
+        "solution": "import subprocess\nimport time\nimport json\nimport platform",
+        "status": "fail",
+        "details": {
+          "test_invalid_duration": "Traceback (most recent call last):\n  File \"__test__.py\", line 47, in test_invalid_duration\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_interval": "Traceback (most recent call last):\n  File \"__test__.py\", line 40, in test_invalid_interval\nNameError: name 'task_func' is not defined\n",
+          "test_io_error_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 86, in test_io_error_handling\nNameError: name 'task_func' is not defined\n",
+          "test_normal_operation": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 31, in test_normal_operation\nNameError: name 'task_func' is not defined\n",
+          "test_subprocess_output_handling_linux": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 78, in test_subprocess_output_handling_linux\nNameError: name 'task_func' is not defined\n",
+          "test_subprocess_output_handling_windows": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 62, in test_subprocess_output_handling_windows\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/13": [
+      {
+        "task_id": "BigCodeBench/13",
+        "solution": "--ftp-password=<> ftp://server/path`",
+        "status": "fail",
+        "details": {
+          "ALL": "cannot assign to expression (__test__.py, line 1)"
+        }
+      }
+    ],
+    "BigCodeBench/17": [
+      {
+        "task_id": "BigCodeBench/17",
+        "solution": "import subprocess\nimport psutil\nimport time\ndef task_func(process_name: str) -> str:\n    process_found = False\n    for proc in psutil.process_iter(['name']):\n        try:\n            if proc.info['name'] == process_name:\n                process_found = True\n                proc.terminate()\n        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):\n            continue\n\n    if process_found:\n        time.sleep(1)\n\n    subprocess.Popen([process_name])\n\n    if process_found:\n        return f\"Process found. Restarting {process_name}.\"\n    else:\n        return f\"Process not found. Starting {process_name}.\"",
+        "status": "fail",
+        "details": {
+          "test_process_found_restarts_process": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 42, in test_process_found_restarts_process\nAssertionError: 'Process not found. Starting notepad.' != 'Process found. Restarting notepad.'\n- Process not found. Starting notepad.\n?         ----       ^\n+ Process found. Restarting notepad.\n?                ^^^\n\n",
+          "test_process_not_found_starts_process": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 33, in test_process_not_found_starts_process\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 951, in assert_called_once_with\n    return self.assert_called_with(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 939, in assert_called_with\n    raise AssertionError(_error_message()) from cause\nAssertionError: expected call not found.\nExpected: Popen('random_non_existent_process')\n  Actual: Popen(['random_non_existent_process'])\n",
+          "test_process_terminates_and_restarts_multiple_instances": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 56, in test_process_terminates_and_restarts_multiple_instances\nAssertionError: 'Process not found. Starting multi_instance.' != 'Process found. Restarting multi_instance.'\n- Process not found. Starting multi_instance.\n?         ----       ^\n+ Process found. Restarting multi_instance.\n?                ^^^\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/146": [
+      {
+        "task_id": "BigCodeBench/146",
+        "solution": "import subprocess\nfrom ipaddress import IPv4Network",
+        "status": "fail",
+        "details": {
+          "test_dict_key_value_types": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 36, in test_dict_key_value_types\nNameError: name 'task_func' is not defined\n",
+          "test_failed_ping": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 28, in test_failed_ping\nNameError: name 'task_func' is not defined\n",
+          "test_ip_range_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 48, in test_ip_range_handling\nNameError: name 'task_func' is not defined\n",
+          "test_return_type": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 13, in test_return_type\nNameError: name 'task_func' is not defined\n",
+          "test_successful_ping": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 21, in test_successful_ping\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/320": [
+      {
+        "task_id": "BigCodeBench/320",
+        "solution": "import subprocess\nimport os\nimport random\ndef task_func(directory, file_list):\n    if not file_list:\n        return None\n\n    filename = random.choice(file_list)\n    file_path = os.path.join(directory, filename)\n\n    process = subprocess.Popen(file_path)\n    return process.poll()",
+        "status": "fail",
+        "details": {
+          "test_non_zero_exit_code": "Traceback (most recent call last):\n  File \"__test__.py\", line 56, in test_non_zero_exit_code\nAssertionError: <MagicMock name='Popen().poll()' id='140405011268880'> != 1\n",
+          "test_valid_input": "Traceback (most recent call last):\n  File \"__test__.py\", line 29, in test_valid_input\nAssertionError: <MagicMock name='Popen().poll()' id='140405011299408'> != 0\n",
+          "test_invalid_directory": "Traceback (most recent call last):\n  File \"__test__.py\", line 43, in test_invalid_directory\n  File \"__test__.py\", line 11, in task_func\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1124, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1128, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1183, in _execute_mock_call\n    raise effect\nException: Error\n"
+        }
+      }
+    ],
+    "BigCodeBench/326": [
+      {
+        "task_id": "BigCodeBench/326",
+        "solution": "import subprocess\nimport os\nimport sys\nimport glob\ndef task_func(directory_path):\n    results = []\n    search_pattern = os.path.join(directory_path, '*.bat')\n    bat_files = glob.glob(search_pattern)\n\n    for file_path in bat_files:\n        file_name = os.path.basename(file_path)\n        try:\n            process = subprocess.run(file_path, shell=True)\n            results.append((file_name, process.returncode))\n        except Exception:\n            results.append((file_name, None))\n\n    return results",
+        "status": "fail",
+        "details": {
+          "test_multiple_bat_files_mixed_results": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 59, in test_multiple_bat_files_mixed_results\nAssertionError: Lists differ: [('file1.bat', None), ('file2.bat', None), ('file3.bat', None)] != [('file1.bat', 0), ('file2.bat', 1), ('file3.bat', None)]\n\nFirst differing element 0:\n('file1.bat', None)\n('file1.bat', 0)\n\n- [('file1.bat', None), ('file2.bat', None), ('file3.bat', None)]\n?                ^^^^                 ^^^^\n\n+ [('file1.bat', 0), ('file2.bat', 1), ('file3.bat', None)]\n?                ^                 ^\n\n",
+          "test_single_bat_file_failure": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 46, in test_single_bat_file_failure\nAssertionError: Lists differ: [('file1.bat', None)] != [('file1.bat', 1)]\n\nFirst differing element 0:\n('file1.bat', None)\n('file1.bat', 1)\n\n- [('file1.bat', None)]\n?                ^^^^\n\n+ [('file1.bat', 1)]\n?                ^\n\n",
+          "test_single_bat_file_success": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 37, in test_single_bat_file_success\nAssertionError: Lists differ: [('file1.bat', None)] != [('file1.bat', 0)]\n\nFirst differing element 0:\n('file1.bat', None)\n('file1.bat', 0)\n\n- [('file1.bat', None)]\n?                ^^^^\n\n+ [('file1.bat', 0)]\n?                ^\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/1105": [
+      {
+        "task_id": "BigCodeBench/1105",
+        "solution": "import subprocess\nimport os\nimport time\nimport glob\ndef task_func(r_script_path: str, output_path: str, duration: int) -> (bool, str):\n    subprocess.Popen(['Rscript', r_script_path])\n    \n    start_time = time.time()\n    while time.time() - start_time < duration:\n        if glob.glob(output_path):\n            return True, 'File generated successfully within the specified duration.'\n        time.sleep(0.1)\n        \n    return False, 'File not generated within the specified duration.'",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 43, in test_case_1\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 50, in test_case_2\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 58, in test_case_3\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 69, in test_case_4\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 77, in test_case_5\n  File \"__test__.py\", line 6, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 51, in _popen_patch\n    return original_popen(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 180, in __init__\n    super().__init__(*args, **kwargs)\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 1953, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'Rscript'\n"
+        }
+      }
+    ],
+    "BigCodeBench/18": [
+      {
+        "task_id": "BigCodeBench/18",
+        "solution": "import subprocess\nimport csv\nimport glob\nimport random\nimport os",
+        "status": "fail",
+        "details": {
+          "test_invalid_file": "Traceback (most recent call last):\n  File \"__test__.py\", line 66, in test_invalid_file\nNameError: name 'task_func' is not defined\n",
+          "test_large_csv": "Traceback (most recent call last):\n  File \"__test__.py\", line 59, in test_large_csv\nNameError: name 'task_func' is not defined\n",
+          "test_medium_csv": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_medium_csv\nNameError: name 'task_func' is not defined\n",
+          "test_non_csv_file": "Traceback (most recent call last):\n  File \"__test__.py\", line 70, in test_non_csv_file\nNameError: name 'task_func' is not defined\n",
+          "test_small_csv": "Traceback (most recent call last):\n  File \"__test__.py\", line 45, in test_small_csv\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/16": [
+      {
+        "task_id": "BigCodeBench/16",
+        "solution": "import os\nimport glob\nimport subprocess\ndef task_func(directory, backup_dir='/path/to/backup'):\n    if not os.path.exists(directory):\n        raise FileNotFoundError(f\"The directory {directory} does not exist.\")\n\n    log_files = glob.glob(os.path.join(directory, '*.log'))\n\n    if not log_files:\n        return 'No logs found to backup'\n\n    if not os.path.exists(backup_dir):\n        os.makedirs(backup_dir)\n\n    backup_path = os.path.join(backup_dir, 'logs_backup.tar.gz')\n    log_filenames = [os.path.basename(f) for f in log_files]\n\n    subprocess.run(['tar', '-czf', backup_path, '-C', directory] + log_filenames, check=True)\n\n    for f in log_files:\n        os.remove(f)\n\n    return os.path.abspath(backup_path)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/195": [
+      {
+        "task_id": "BigCodeBench/195",
+        "solution": "",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 13, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 25, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 37, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 49, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 61, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/324": [
+      {
+        "task_id": "BigCodeBench/324",
+        "solution": "import subprocess\nimport time\nimport threading",
+        "status": "fail",
+        "details": {
+          "test_empty_file_list": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 11, in test_empty_file_list\nNameError: name 'task_func' is not defined\n",
+          "test_multiple_processes_with_different_exit_codes": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 39, in test_multiple_processes_with_different_exit_codes\nNameError: name 'task_func' is not defined\n",
+          "test_process_still_running": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 33, in test_process_still_running\nNameError: name 'task_func' is not defined\n",
+          "test_valid_directory_and_files": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 26, in test_valid_directory_and_files\nNameError: name 'task_func' is not defined\n",
+          "test_valid_files": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 18, in test_valid_files\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/350": [
+      {
+        "task_id": "BigCodeBench/350",
+        "solution": "import subprocess\nimport os\nimport shutil\nfrom glob import glob",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 40, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 49, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 54, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 77, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/460": [
+      {
+        "task_id": "BigCodeBench/460",
+        "solution": "import subprocess\nimport pandas as pd",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 51, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 66, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 77, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 87, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 97, in test_case_5\nNameError: name 'task_func' is not defined\n",
+          "test_case_6": "Traceback (most recent call last):\n  File \"__test__.py\", line 103, in test_case_6\nNameError: name 'task_func' is not defined\n",
+          "test_case_7": "Traceback (most recent call last):\n  File \"__test__.py\", line 113, in test_case_7\nNameError: name 'task_func' is not defined\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 122, in test_case_8\nNameError: name 'task_func' is not defined\n",
+          "test_case_9": "Traceback (most recent call last):\n  File \"__test__.py\", line 128, in test_case_9\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/461": [
+      {
+        "task_id": "BigCodeBench/461",
+        "solution": "import subprocess\nimport psutil\nimport time\nimport os",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 27, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_10": "Traceback (most recent call last):\n  File \"__test__.py\", line 73, in test_case_10\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 32, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 38, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 41, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 45, in test_case_5\nNameError: name 'task_func' is not defined\n",
+          "test_case_6": "Traceback (most recent call last):\n  File \"__test__.py\", line 49, in test_case_6\nNameError: name 'task_func' is not defined\n",
+          "test_case_7": "Traceback (most recent call last):\n  File \"__test__.py\", line 53, in test_case_7\nNameError: name 'task_func' is not defined\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 61, in test_case_8\nNameError: name 'task_func' is not defined\n",
+          "test_case_9": "Traceback (most recent call last):\n  File \"__test__.py\", line 66, in test_case_9\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/1101": [
+      {
+        "task_id": "BigCodeBench/1101",
+        "solution": "import subprocess\nimport os\nimport glob\nimport time\ndef task_func(test_dir):\n    scripts = glob.glob(os.path.join(test_dir, '*.py'))\n    execution_times = {}\n\n    for script_path in scripts:\n        script_name = os.path.basename(script_path)\n        start_time = time.time()\n\n        subprocess.run(['python', script_path], capture_output=True)\n\n        end_time = time.time()\n        execution_times[script_name] = end_time - start_time\n\n    return execution_times",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/604": [
+      {
+        "task_id": "BigCodeBench/604",
+        "solution": "import subprocess\nimport logging",
+        "status": "fail",
+        "details": {
+          "test_compilation_failure": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 19, in test_compilation_failure\nNameError: name 'task_func' is not defined\n",
+          "test_compiler_not_found": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 25, in test_compiler_not_found\nNameError: name 'task_func' is not defined\n",
+          "test_empty_file": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 29, in test_empty_file\nNameError: name 'task_func' is not defined\n",
+          "test_logging_output": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 34, in test_logging_output\nNameError: name 'task_func' is not defined\n",
+          "test_successful_compilation": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 15, in test_successful_compilation\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/715": [
+      {
+        "task_id": "BigCodeBench/715",
+        "solution": "import sys\nimport subprocess",
+        "status": "fail",
+        "details": {
+          "test_switch_to_default_python_version": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 10, in test_switch_to_default_python_version\nNameError: name 'task_func' is not defined\n",
+          "test_switch_to_python_2_7": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 31, in test_switch_to_python_2_7\nNameError: name 'task_func' is not defined\n",
+          "test_switch_to_python_3_6": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 38, in test_switch_to_python_3_6\nNameError: name 'task_func' is not defined\n",
+          "test_switch_to_python_3_7": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 17, in test_switch_to_python_3_7\nNameError: name 'task_func' is not defined\n",
+          "test_switch_to_python_3_9": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 24, in test_switch_to_python_3_9\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/15": [
+      {
+        "task_id": "BigCodeBench/15",
+        "solution": "import subprocess\nimport csv\nimport os\ndef task_func(commands_file_path, output_dir_path):\n    if not os.path.exists(commands_file_path):\n        raise FileNotFoundError(f\"The file {commands_file_path} does not exist.\")\n\n    if not os.path.exists(output_dir_path):\n        os.makedirs(output_dir_path)\n\n    output_files = []\n    with open(commands_file_path, mode='r', newline='') as csvfile:\n        reader = csv.reader(csvfile)\n        for index, row in enumerate(reader):\n            if not row:\n                continue\n            command = row[0]\n            output_file_name = f'command_{index}_output.txt'\n            output_file_path = os.path.join(output_dir_path, output_file_name)\n\n            result = subprocess.run(command, shell=True, capture_output=True, text=True)\n            \n            with open(output_file_path, 'w') as f:\n                if result.returncode == 0:\n                    f.write(result.stdout)\n                else:\n                    f.write(f\"Error: {result.stderr}\\nExit Code: {result.returncode}\")\n            \n            output_files.append(output_file_path)\n\n    return output_files",
+        "status": "fail",
+        "details": {
+          "test_command_failure_with_specific_exit_code": "Traceback (most recent call last):\n  File \"__test__.py\", line 105, in test_command_failure_with_specific_exit_code\nAssertionError: 'Error executing command' not found in 'Error: \\nExit Code: 1'\n"
+        }
+      }
+    ],
+    "BigCodeBench/745": [
+      {
+        "task_id": "BigCodeBench/745",
+        "solution": "import subprocess\nimport random",
+        "status": "fail",
+        "details": {
+          "test_environment_variables": "Traceback (most recent call last):\n  File \"__test__.py\", line 10, in setUp\nNameError: name 'SCRIPTS' is not defined\n",
+          "test_full_path_execution": "Traceback (most recent call last):\n  File \"__test__.py\", line 10, in setUp\nNameError: name 'SCRIPTS' is not defined\n",
+          "test_random_script_selection": "Traceback (most recent call last):\n  File \"__test__.py\", line 10, in setUp\nNameError: name 'SCRIPTS' is not defined\n",
+          "test_script_execution": "Traceback (most recent call last):\n  File \"__test__.py\", line 10, in setUp\nNameError: name 'SCRIPTS' is not defined\n",
+          "test_script_execution_failure_handling": "Traceback (most recent call last):\n  File \"__test__.py\", line 10, in setUp\nNameError: name 'SCRIPTS' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/12": [
+      {
+        "task_id": "BigCodeBench/12",
+        "solution": "import subprocess\nimport os\nimport json\nfrom datetime import datetime",
+        "status": "fail",
+        "details": {
+          "test_custom_values_successful_script": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 36, in test_custom_values_successful_script\nNameError: name 'task_func' is not defined\n",
+          "test_default_values_successful_script": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 14, in test_default_values_successful_script\nNameError: name 'task_func' is not defined\n",
+          "test_log_data_format": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 45, in test_log_data_format\nNameError: name 'task_func' is not defined\n",
+          "test_non_zero_exit_status": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 53, in test_non_zero_exit_status\nNameError: name 'task_func' is not defined\n",
+          "test_script_does_not_exist": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 22, in test_script_does_not_exist\nNameError: name 'task_func' is not defined\n",
+          "test_script_execution_failure": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 28, in test_script_execution_failure\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/785": [
+      {
+        "task_id": "BigCodeBench/785",
+        "solution": "import subprocess\nimport os\nimport glob\nARCHIVE_DIR = '/tmp/archive'\ndef task_func(pattern):\n    if not os.path.exists(ARCHIVE_DIR):\n        os.makedirs(ARCHIVE_DIR)\n\n    files = glob.glob(pattern)\n    archive_file = os.path.join(ARCHIVE_DIR, 'archive.tar.gz')\n\n    if files:\n        subprocess.run(['tar', '-czf', archive_file] + files)\n        for file in files:\n            if os.path.isfile(file):\n                os.remove(file)\n\n    return archive_file",
+        "status": "fail",
+        "details": {
+          "test_no_matching_files": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_no_matching_files\nAssertionError: '/tmp/archive/archive.tar.gz' != 'No files found matching the pattern.'\n- /tmp/archive/archive.tar.gz\n+ No files found matching the pattern.\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/346": [
+      {
+        "task_id": "BigCodeBench/346",
+        "solution": "import subprocess\nimport os\nimport sys\nimport time\ndef task_func(script_path, wait=True, *args):\n    if not os.path.exists(script_path):\n        raise ValueError(f\"Script {script_path} does not exist.\")\n\n    command = [sys.executable, script_path] + list(args)\n\n    if wait:\n        result = subprocess.run(command, check=True)\n        return result.returncode\n    else:\n        subprocess.Popen(command)\n        return None",
+        "status": "fail",
+        "details": {
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 60, in test_case_2\n  File \"__test__.py\", line 12, in task_func\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 61, in _run_patch\n    return original_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/featurize/work/CoCoTA-main/third_party/bigcodebench/bigcodebench/eval/utils.py\", line 174, in safe_subprocess_run\n    return original_subprocess_run(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['/environment/miniconda3/bin/python', '/tmp/tmp10xvpnss/test/script2.py']' returned non-zero exit status 1.\n"
+        }
+      }
+    ],
+    "BigCodeBench/459": [
+      {
+        "task_id": "BigCodeBench/459",
+        "solution": "import subprocess\nimport os\nimport time\nfrom datetime import datetime\ndef task_func(script_dir, scripts, delay):\n    if delay < 0:\n        raise ValueError(\"Delay cannot be negative\")\n    if not scripts:\n        raise ValueError(\"No scripts provided\")\n\n    timestamps = []\n    for i, script in enumerate(scripts):\n        start_time = datetime.now()\n        timestamps.append(start_time)\n\n        script_path = os.path.join(script_dir, script)\n        subprocess.run(['bash', script_path])\n\n        if i < len(scripts) - 1:\n            time.sleep(delay)\n\n    return timestamps",
+        "status": "fail",
+        "details": {
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_case_3\nAssertionError: FileNotFoundError not raised\n",
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 51, in test_case_1\nTypeError: strptime() argument 1 must be str, not datetime.datetime\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 62, in test_case_2\nTypeError: strptime() argument 1 must be str, not datetime.datetime\n"
+        }
+      }
+    ],
+    "BigCodeBench/1103": [
+      {
+        "task_id": "BigCodeBench/1103",
+        "solution": "import subprocess\nimport shutil\nimport os\ndef task_func(script_path: str, temp_dir: str) -> str:\n    try:\n        if not os.path.exists(temp_dir):\n            os.makedirs(temp_dir)\n\n        shutil.copy(script_path, temp_dir)\n        script_name = os.path.basename(script_path)\n\n        result = subprocess.run(['python', script_name], cwd=temp_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n\n        if result.returncode == 0:\n            return \"Script executed successfully!\"\n        else:\n            return \"Script execution failed!\"\n    except Exception:\n        return \"Script execution failed!\"",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/205": [
+      {
+        "task_id": "BigCodeBench/205",
+        "solution": "import subprocess\nfrom multiprocessing import Pool\ndef execute_command(command):\n    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)\n    output, _ = process.communicate()\n    return output\ndef task_func(commands):\n    if not commands:\n        return []\n    \n    with Pool() as pool:\n        results = pool.map(execute_command, commands)\n    \n    return results",
+        "status": "timeout",
+        "details": {}
+      }
+    ]
+  }
+}

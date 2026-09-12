@@ -1,0 +1,405 @@
+{
+  "evaluation_type": "cwe_agnostic_multiclass_llm_judge_r5",
+  "provider": "dmx",
+  "model": "deepseek-v3.1",
+  "class_labels": [
+    "CWE-078",
+    "CWE-094",
+    "CWE-295",
+    "CWE-502",
+    "MULTIPLE",
+    "NONE",
+    "UNCLEAR"
+  ],
+  "prompt_scope": "Code only; source CWE, method, task ID, and prior detector results are excluded.",
+  "runs": {
+    "cocota_cwe078": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe078_cocota_deepseek-v3_1_t0p7_r5",
+      "method": "cocota",
+      "source_cwe": "CWE-078",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 135,
+        "classified_count": 135,
+        "label_counts": {
+          "CWE-078": 123,
+          "CWE-094": 0,
+          "CWE-295": 0,
+          "CWE-502": 0,
+          "MULTIPLE": 0,
+          "NONE": 12,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 123,
+          "CWE-094": 0,
+          "CWE-295": 0,
+          "CWE-502": 0
+        },
+        "confidence_counts": {
+          "High": 134,
+          "Medium": 1,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 123,
+        "single_label_matches_source_cwe_rate": 0.9111111111111111,
+        "source_cwe_in_detected_count": 123,
+        "source_cwe_in_detected_rate": 0.9111111111111111,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 93814,
+        "total_completion_tokens": 10361,
+        "total_tokens": 104175
+      }
+    },
+    "cocota_cwe094": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe094_cocota_deepseek-v3_1_t0p7_r5",
+      "method": "cocota",
+      "source_cwe": "CWE-094",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 20,
+        "classified_count": 20,
+        "label_counts": {
+          "CWE-078": 0,
+          "CWE-094": 13,
+          "CWE-295": 0,
+          "CWE-502": 0,
+          "MULTIPLE": 0,
+          "NONE": 7,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 0,
+          "CWE-094": 13,
+          "CWE-295": 0,
+          "CWE-502": 0
+        },
+        "confidence_counts": {
+          "High": 20,
+          "Medium": 0,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 13,
+        "single_label_matches_source_cwe_rate": 0.65,
+        "source_cwe_in_detected_count": 13,
+        "source_cwe_in_detected_rate": 0.65,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 13096,
+        "total_completion_tokens": 1382,
+        "total_tokens": 14478
+      }
+    },
+    "cocota_cwe295": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe295_cocota_deepseek-v3_1_t0p7_r5",
+      "method": "cocota",
+      "source_cwe": "CWE-295",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 165,
+        "classified_count": 165,
+        "label_counts": {
+          "CWE-078": 0,
+          "CWE-094": 0,
+          "CWE-295": 151,
+          "CWE-502": 0,
+          "MULTIPLE": 0,
+          "NONE": 14,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 0,
+          "CWE-094": 0,
+          "CWE-295": 151,
+          "CWE-502": 0
+        },
+        "confidence_counts": {
+          "High": 165,
+          "Medium": 0,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 151,
+        "single_label_matches_source_cwe_rate": 0.9151515151515152,
+        "source_cwe_in_detected_count": 151,
+        "source_cwe_in_detected_rate": 0.9151515151515152,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 120359,
+        "total_completion_tokens": 11181,
+        "total_tokens": 131540
+      }
+    },
+    "cocota_cwe502": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe502_cocota_deepseek-v3_1_t0p7_r5",
+      "method": "cocota",
+      "source_cwe": "CWE-502",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 225,
+        "classified_count": 225,
+        "label_counts": {
+          "CWE-078": 0,
+          "CWE-094": 22,
+          "CWE-295": 0,
+          "CWE-502": 82,
+          "MULTIPLE": 0,
+          "NONE": 121,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 0,
+          "CWE-094": 22,
+          "CWE-295": 0,
+          "CWE-502": 82
+        },
+        "confidence_counts": {
+          "High": 225,
+          "Medium": 0,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 82,
+        "single_label_matches_source_cwe_rate": 0.36444444444444446,
+        "source_cwe_in_detected_count": 82,
+        "source_cwe_in_detected_rate": 0.36444444444444446,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 159312,
+        "total_completion_tokens": 16296,
+        "total_tokens": 175608
+      }
+    },
+    "badchain_cwe078": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe078_badchain_deepseek-v3_1_t0p7_r5",
+      "method": "badchain",
+      "source_cwe": "CWE-078",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 135,
+        "classified_count": 135,
+        "label_counts": {
+          "CWE-078": 131,
+          "CWE-094": 0,
+          "CWE-295": 0,
+          "CWE-502": 0,
+          "MULTIPLE": 0,
+          "NONE": 4,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 131,
+          "CWE-094": 0,
+          "CWE-295": 0,
+          "CWE-502": 0
+        },
+        "confidence_counts": {
+          "High": 134,
+          "Medium": 1,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 131,
+        "single_label_matches_source_cwe_rate": 0.9703703703703703,
+        "source_cwe_in_detected_count": 131,
+        "source_cwe_in_detected_rate": 0.9703703703703703,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 91563,
+        "total_completion_tokens": 9690,
+        "total_tokens": 101253
+      }
+    },
+    "badchain_cwe094": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe094_badchain_deepseek-v3_1_t0p7_r5",
+      "method": "badchain",
+      "source_cwe": "CWE-094",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 20,
+        "classified_count": 20,
+        "label_counts": {
+          "CWE-078": 0,
+          "CWE-094": 1,
+          "CWE-295": 0,
+          "CWE-502": 0,
+          "MULTIPLE": 0,
+          "NONE": 19,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 0,
+          "CWE-094": 1,
+          "CWE-295": 0,
+          "CWE-502": 0
+        },
+        "confidence_counts": {
+          "High": 20,
+          "Medium": 0,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 1,
+        "single_label_matches_source_cwe_rate": 0.05,
+        "source_cwe_in_detected_count": 1,
+        "source_cwe_in_detected_rate": 0.05,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 12779,
+        "total_completion_tokens": 1510,
+        "total_tokens": 14289
+      }
+    },
+    "badchain_cwe295": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe295_badchain_deepseek-v3_1_t0p7_r5",
+      "method": "badchain",
+      "source_cwe": "CWE-295",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 165,
+        "classified_count": 165,
+        "label_counts": {
+          "CWE-078": 0,
+          "CWE-094": 0,
+          "CWE-295": 164,
+          "CWE-502": 0,
+          "MULTIPLE": 0,
+          "NONE": 1,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 0,
+          "CWE-094": 0,
+          "CWE-295": 164,
+          "CWE-502": 0
+        },
+        "confidence_counts": {
+          "High": 165,
+          "Medium": 0,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 164,
+        "single_label_matches_source_cwe_rate": 0.9939393939393939,
+        "source_cwe_in_detected_count": 164,
+        "source_cwe_in_detected_rate": 0.9939393939393939,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 113888,
+        "total_completion_tokens": 10512,
+        "total_tokens": 124400
+      }
+    },
+    "badchain_cwe502": {
+      "run_dir": "/home/sshuser/projects/CoCoTA-main/runs_by_model/deepseek-v3.1/rep1/cwe502_badchain_deepseek-v3_1_t0p7_r5",
+      "method": "badchain",
+      "source_cwe": "CWE-502",
+      "provider": "dmx",
+      "model": "deepseek-v3.1",
+      "summary": {
+        "files_scanned": 225,
+        "classified_count": 225,
+        "label_counts": {
+          "CWE-078": 0,
+          "CWE-094": 45,
+          "CWE-295": 0,
+          "CWE-502": 107,
+          "MULTIPLE": 1,
+          "NONE": 72,
+          "UNCLEAR": 0
+        },
+        "detected_cwe_counts": {
+          "CWE-078": 0,
+          "CWE-094": 46,
+          "CWE-295": 0,
+          "CWE-502": 108
+        },
+        "confidence_counts": {
+          "High": 225,
+          "Medium": 0,
+          "Low": 0
+        },
+        "single_label_matches_source_cwe_count": 107,
+        "single_label_matches_source_cwe_rate": 0.47555555555555556,
+        "source_cwe_in_detected_count": 108,
+        "source_cwe_in_detected_rate": 0.48,
+        "parse_failures": 0,
+        "api_failures": 0,
+        "total_prompt_tokens": 157515,
+        "total_completion_tokens": 15238,
+        "total_tokens": 172753
+      }
+    }
+  },
+  "methods": {
+    "cocota": {
+      "files_scanned": 545,
+      "classified_count": 545,
+      "label_counts": {
+        "CWE-078": 123,
+        "CWE-094": 35,
+        "CWE-295": 151,
+        "CWE-502": 82,
+        "MULTIPLE": 0,
+        "NONE": 154,
+        "UNCLEAR": 0
+      },
+      "detected_cwe_counts": {
+        "CWE-078": 123,
+        "CWE-094": 35,
+        "CWE-295": 151,
+        "CWE-502": 82
+      },
+      "confidence_counts": {
+        "High": 544,
+        "Medium": 1,
+        "Low": 0
+      },
+      "any_target_count": 391,
+      "any_target_rate": 0.7174311926605504,
+      "single_label_matches_source_cwe_count": 369,
+      "source_cwe_in_detected_count": 369,
+      "parse_failures": 0,
+      "api_failures": 0,
+      "total_tokens": 425801,
+      "single_label_matches_source_cwe_rate": 0.6770642201834862,
+      "source_cwe_in_detected_rate": 0.6770642201834862
+    },
+    "badchain": {
+      "files_scanned": 545,
+      "classified_count": 545,
+      "label_counts": {
+        "CWE-078": 131,
+        "CWE-094": 46,
+        "CWE-295": 164,
+        "CWE-502": 107,
+        "MULTIPLE": 1,
+        "NONE": 96,
+        "UNCLEAR": 0
+      },
+      "detected_cwe_counts": {
+        "CWE-078": 131,
+        "CWE-094": 47,
+        "CWE-295": 164,
+        "CWE-502": 108
+      },
+      "confidence_counts": {
+        "High": 544,
+        "Medium": 1,
+        "Low": 0
+      },
+      "any_target_count": 449,
+      "any_target_rate": 0.8238532110091743,
+      "single_label_matches_source_cwe_count": 403,
+      "source_cwe_in_detected_count": 404,
+      "parse_failures": 0,
+      "api_failures": 0,
+      "total_tokens": 412695,
+      "single_label_matches_source_cwe_rate": 0.7394495412844037,
+      "source_cwe_in_detected_rate": 0.7412844036697248
+    }
+  }
+}

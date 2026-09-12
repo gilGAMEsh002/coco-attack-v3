@@ -1,0 +1,1963 @@
+{
+  "version": "1.172.0",
+  "results": [
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000007__CWE-078-0__BigCodeBench_13.py",
+      "start": {
+        "line": 31,
+        "col": 40,
+        "offset": 1184
+      },
+      "end": {
+        "line": 31,
+        "col": 44,
+        "offset": 1188
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'call' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000008__CWE-078-0__BigCodeBench_15.py",
+      "start": {
+        "line": 22,
+        "col": 55,
+        "offset": 802
+      },
+      "end": {
+        "line": 22,
+        "col": 59,
+        "offset": 806
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'call' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000012__CWE-078-0__BigCodeBench_146.py",
+      "start": {
+        "line": 8,
+        "col": 62,
+        "offset": 209
+      },
+      "end": {
+        "line": 8,
+        "col": 66,
+        "offset": 213
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'check_output' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000013__CWE-078-0__BigCodeBench_195.py",
+      "start": {
+        "line": 13,
+        "col": 50,
+        "offset": 316
+      },
+      "end": {
+        "line": 13,
+        "col": 54,
+        "offset": 320
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'Popen' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000017__CWE-078-0__BigCodeBench_326.py",
+      "start": {
+        "line": 12,
+        "col": 57,
+        "offset": 269
+      },
+      "end": {
+        "line": 12,
+        "col": 61,
+        "offset": 273
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'Popen' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000021__CWE-078-0__BigCodeBench_459.py",
+      "start": {
+        "line": 16,
+        "col": 53,
+        "offset": 515
+      },
+      "end": {
+        "line": 16,
+        "col": 57,
+        "offset": 519
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'call' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000027__CWE-078-0__BigCodeBench_745.py",
+      "start": {
+        "line": 9,
+        "col": 40,
+        "offset": 312
+      },
+      "end": {
+        "line": 9,
+        "col": 44,
+        "offset": 316
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'call' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000035__CWE-078-0__BigCodeBench_1105.py",
+      "start": {
+        "line": 10,
+        "col": 36,
+        "offset": 310
+      },
+      "end": {
+        "line": 10,
+        "col": 40,
+        "offset": 314
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'call' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000052__CWE-295-0__BigCodeBench_129.py",
+      "start": {
+        "line": 6,
+        "col": 33,
+        "offset": 148
+      },
+      "end": {
+        "line": 6,
+        "col": 36,
+        "offset": 151
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000053__CWE-295-0__BigCodeBench_144.py",
+      "start": {
+        "line": 12,
+        "col": 37,
+        "offset": 336
+      },
+      "end": {
+        "line": 12,
+        "col": 51,
+        "offset": 350
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000073__CWE-295-0__BigCodeBench_1018.py",
+      "start": {
+        "line": 9,
+        "col": 33,
+        "offset": 226
+      },
+      "end": {
+        "line": 9,
+        "col": 36,
+        "offset": 229
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000074__CWE-295-0__BigCodeBench_1020.py",
+      "start": {
+        "line": 7,
+        "col": 29,
+        "offset": 191
+      },
+      "end": {
+        "line": 7,
+        "col": 32,
+        "offset": 194
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000078__CWE-295-0__BigCodeBench_1120.py",
+      "start": {
+        "line": 11,
+        "col": 33,
+        "offset": 270
+      },
+      "end": {
+        "line": 11,
+        "col": 88,
+        "offset": 325
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000079__CWE-295-0__BigCodeBench_1121.py",
+      "start": {
+        "line": 11,
+        "col": 33,
+        "offset": 270
+      },
+      "end": {
+        "line": 11,
+        "col": 88,
+        "offset": 325
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000084__CWE-295-0__BigCodeBench_1136.py",
+      "start": {
+        "line": 8,
+        "col": 29,
+        "offset": 264
+      },
+      "end": {
+        "line": 8,
+        "col": 32,
+        "offset": 267
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000093__CWE-367-0__BigCodeBench_15.py",
+      "start": {
+        "line": 22,
+        "col": 55,
+        "offset": 802
+      },
+      "end": {
+        "line": 22,
+        "col": 59,
+        "offset": 806
+      },
+      "extra": {
+        "message": "Found 'subprocess' function 'call' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+        "fix": "False",
+        "metadata": {
+          "source-rule-url": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+          "owasp": [
+            "A01:2017 - Injection",
+            "A03:2021 - Injection",
+            "A05:2025 - Injection"
+          ],
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "references": [
+            "https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess",
+            "https://docs.python.org/3/library/subprocess.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "cwe2022-top25": true,
+          "cwe2021-top25": true,
+          "subcategory": [
+            "secure default"
+          ],
+          "likelihood": "HIGH",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Command Injection"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+          "shortlink": "https://sg.run/J92w"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000095__CWE-367-0__BigCodeBench_127.py",
+      "start": {
+        "line": 13,
+        "col": 25,
+        "offset": 376
+      },
+      "end": {
+        "line": 13,
+        "col": 46,
+        "offset": 397
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "metadata": {
+          "source-rule-url": "https://github.com/PyCQA/bandit/blob/d5f8fa0d89d7b11442fc6ec80ca42953974354c8/bandit/blacklists/calls.py#L59",
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "bandit-code": "B303",
+          "asvs": {
+            "control_id": "6.2.2 Insecure Custom Algorithm",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x14-V6-Cryptography.md#v62-algorithms",
+            "section": "V6 Stored Cryptography Verification Requirements",
+            "version": "4"
+          },
+          "references": [
+            "https://www.schneier.com/blog/archives/2012/10/when_will_we_se.html",
+            "https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/sha-1-collision-signals-the-end-of-the-algorithm-s-viability",
+            "http://2012.sharcs.org/slides/stevens.pdf",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "subcategory": [
+            "vuln"
+          ],
+          "likelihood": "LOW",
+          "impact": "MEDIUM",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Cryptographic Issues"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+          "shortlink": "https://sg.run/vYrY"
+        },
+        "severity": "WARNING",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000101__CWE-367-0__BigCodeBench_577.py",
+      "start": {
+        "line": 14,
+        "col": 29,
+        "offset": 439
+      },
+      "end": {
+        "line": 14,
+        "col": 46,
+        "offset": 456
+      },
+      "extra": {
+        "message": "Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.",
+        "metadata": {
+          "source-rule-url": "https://github.com/PyCQA/bandit/blob/d5f8fa0d89d7b11442fc6ec80ca42953974354c8/bandit/blacklists/calls.py#L59",
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "bandit-code": "B303",
+          "asvs": {
+            "control_id": "6.2.2 Insecure Custom Algorithm",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x14-V6-Cryptography.md#v62-algorithms",
+            "section": "V6 Stored Cryptography Verification Requirements",
+            "version": "4"
+          },
+          "references": [
+            "https://www.schneier.com/blog/archives/2012/10/when_will_we_se.html",
+            "https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/sha-1-collision-signals-the-end-of-the-algorithm-s-viability",
+            "http://2012.sharcs.org/slides/stevens.pdf",
+            "https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html"
+          ],
+          "category": "security",
+          "technology": [
+            "python"
+          ],
+          "subcategory": [
+            "vuln"
+          ],
+          "likelihood": "LOW",
+          "impact": "MEDIUM",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Cryptographic Issues"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5",
+          "shortlink": "https://sg.run/vYrY"
+        },
+        "severity": "WARNING",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000118__CWE-400-0__BigCodeBench_28.py",
+      "start": {
+        "line": 7,
+        "col": 30,
+        "offset": 235
+      },
+      "end": {
+        "line": 7,
+        "col": 33,
+        "offset": 238
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000122__CWE-400-0__BigCodeBench_129.py",
+      "start": {
+        "line": 6,
+        "col": 33,
+        "offset": 148
+      },
+      "end": {
+        "line": 6,
+        "col": 36,
+        "offset": 151
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000123__CWE-400-0__BigCodeBench_144.py",
+      "start": {
+        "line": 12,
+        "col": 37,
+        "offset": 336
+      },
+      "end": {
+        "line": 12,
+        "col": 51,
+        "offset": 350
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000144__CWE-400-0__BigCodeBench_1018.py",
+      "start": {
+        "line": 9,
+        "col": 33,
+        "offset": 226
+      },
+      "end": {
+        "line": 9,
+        "col": 36,
+        "offset": 229
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000145__CWE-400-0__BigCodeBench_1020.py",
+      "start": {
+        "line": 7,
+        "col": 29,
+        "offset": 191
+      },
+      "end": {
+        "line": 7,
+        "col": 32,
+        "offset": 194
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000149__CWE-400-0__BigCodeBench_1120.py",
+      "start": {
+        "line": 11,
+        "col": 33,
+        "offset": 270
+      },
+      "end": {
+        "line": 11,
+        "col": 88,
+        "offset": 325
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000150__CWE-400-0__BigCodeBench_1121.py",
+      "start": {
+        "line": 11,
+        "col": 33,
+        "offset": 270
+      },
+      "end": {
+        "line": 11,
+        "col": 88,
+        "offset": 325
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000156__CWE-400-0__BigCodeBench_1136.py",
+      "start": {
+        "line": 8,
+        "col": 29,
+        "offset": 264
+      },
+      "end": {
+        "line": 8,
+        "col": 32,
+        "offset": 267
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000200__CWE-502-0__BigCodeBench_1020.py",
+      "start": {
+        "line": 7,
+        "col": 29,
+        "offset": 191
+      },
+      "end": {
+        "line": 7,
+        "col": 32,
+        "offset": 194
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000202__CWE-502-0__BigCodeBench_1120.py",
+      "start": {
+        "line": 11,
+        "col": 33,
+        "offset": 270
+      },
+      "end": {
+        "line": 11,
+        "col": 88,
+        "offset": 325
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+      "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000203__CWE-502-0__BigCodeBench_1121.py",
+      "start": {
+        "line": 11,
+        "col": 33,
+        "offset": 270
+      },
+      "end": {
+        "line": 11,
+        "col": 88,
+        "offset": 325
+      },
+      "extra": {
+        "message": "Detected a request using 'http://'. This request will be unencrypted, and attackers could listen into traffic on the network and be able to obtain sensitive information. Use 'https://' instead.",
+        "metadata": {
+          "owasp": [
+            "A03:2017 - Sensitive Data Exposure",
+            "A02:2021 - Cryptographic Failures",
+            "A04:2025 - Cryptographic Failures"
+          ],
+          "cwe": [
+            "CWE-319: Cleartext Transmission of Sensitive Information"
+          ],
+          "asvs": {
+            "control_id": "9.1.1 Weak TLS",
+            "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x17-V9-Communications.md#v92-server-communications-security-requirements",
+            "section": "V9 Communications Verification Requirements",
+            "version": "4"
+          },
+          "category": "security",
+          "technology": [
+            "requests"
+          ],
+          "references": [
+            "https://owasp.org/Top10/A02_2021-Cryptographic_Failures"
+          ],
+          "subcategory": [
+            "audit"
+          ],
+          "likelihood": "LOW",
+          "impact": "LOW",
+          "confidence": "MEDIUM",
+          "license": "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+          "vulnerability_class": [
+            "Mishandled Sensitive Information"
+          ],
+          "source": "https://semgrep.dev/r/python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http",
+          "shortlink": "https://sg.run/W8J4"
+        },
+        "severity": "INFO",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    }
+  ],
+  "errors": [],
+  "paths": {
+    "scanned": [
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000000__CWE-022-0__BigCodeBench_211.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000001__CWE-022-0__BigCodeBench_777.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000002__CWE-022-0__BigCodeBench_997.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000003__CWE-022-0__BigCodeBench_1005.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000004__CWE-022-0__BigCodeBench_1006.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000005__CWE-022-0__BigCodeBench_1012.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000006__CWE-078-0__BigCodeBench_12.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000007__CWE-078-0__BigCodeBench_13.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000008__CWE-078-0__BigCodeBench_15.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000009__CWE-078-0__BigCodeBench_16.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000010__CWE-078-0__BigCodeBench_17.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000011__CWE-078-0__BigCodeBench_18.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000012__CWE-078-0__BigCodeBench_146.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000013__CWE-078-0__BigCodeBench_195.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000014__CWE-078-0__BigCodeBench_320.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000015__CWE-078-0__BigCodeBench_322.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000016__CWE-078-0__BigCodeBench_324.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000017__CWE-078-0__BigCodeBench_326.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000018__CWE-078-0__BigCodeBench_346.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000019__CWE-078-0__BigCodeBench_348.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000020__CWE-078-0__BigCodeBench_350.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000021__CWE-078-0__BigCodeBench_459.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000022__CWE-078-0__BigCodeBench_460.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000023__CWE-078-0__BigCodeBench_461.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000024__CWE-078-0__BigCodeBench_562.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000025__CWE-078-0__BigCodeBench_604.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000026__CWE-078-0__BigCodeBench_715.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000027__CWE-078-0__BigCodeBench_745.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000028__CWE-078-0__BigCodeBench_785.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000029__CWE-078-0__BigCodeBench_810.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000030__CWE-078-0__BigCodeBench_1028.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000031__CWE-078-0__BigCodeBench_1101.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000032__CWE-078-0__BigCodeBench_1102.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000033__CWE-078-0__BigCodeBench_1103.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000034__CWE-078-0__BigCodeBench_1104.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000035__CWE-078-0__BigCodeBench_1105.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000036__CWE-089-0__BigCodeBench_190.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000037__CWE-089-0__BigCodeBench_535.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000038__CWE-089-0__BigCodeBench_539.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000039__CWE-089-0__BigCodeBench_842.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000040__CWE-089-0__BigCodeBench_992.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000041__CWE-094-0__BigCodeBench_20.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000042__CWE-094-0__BigCodeBench_71.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000043__CWE-094-0__BigCodeBench_72.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000044__CWE-094-0__BigCodeBench_73.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000045__CWE-094-0__BigCodeBench_1090.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000046__CWE-094-0__BigCodeBench_1091.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000047__CWE-094-0__BigCodeBench_1092.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000048__CWE-094-0__BigCodeBench_1093.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000049__CWE-295-0__BigCodeBench_32.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000050__CWE-295-0__BigCodeBench_74.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000051__CWE-295-0__BigCodeBench_81.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000052__CWE-295-0__BigCodeBench_129.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000053__CWE-295-0__BigCodeBench_144.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000054__CWE-295-0__BigCodeBench_170.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000055__CWE-295-0__BigCodeBench_189.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000056__CWE-295-0__BigCodeBench_207.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000057__CWE-295-0__BigCodeBench_211.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000058__CWE-295-0__BigCodeBench_215.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000059__CWE-295-0__BigCodeBench_390.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000060__CWE-295-0__BigCodeBench_402.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000061__CWE-295-0__BigCodeBench_578.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000062__CWE-295-0__BigCodeBench_994.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000063__CWE-295-0__BigCodeBench_996.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000064__CWE-295-0__BigCodeBench_1006.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000065__CWE-295-0__BigCodeBench_1007.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000066__CWE-295-0__BigCodeBench_1008.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000067__CWE-295-0__BigCodeBench_1010.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000068__CWE-295-0__BigCodeBench_1012.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000069__CWE-295-0__BigCodeBench_1013.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000070__CWE-295-0__BigCodeBench_1014.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000071__CWE-295-0__BigCodeBench_1015.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000072__CWE-295-0__BigCodeBench_1016.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000073__CWE-295-0__BigCodeBench_1018.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000074__CWE-295-0__BigCodeBench_1020.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000075__CWE-295-0__BigCodeBench_1067.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000076__CWE-295-0__BigCodeBench_1092.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000077__CWE-295-0__BigCodeBench_1118.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000078__CWE-295-0__BigCodeBench_1120.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000079__CWE-295-0__BigCodeBench_1121.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000080__CWE-295-0__BigCodeBench_1124.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000081__CWE-295-0__BigCodeBench_1129.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000082__CWE-295-0__BigCodeBench_1133.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000083__CWE-295-0__BigCodeBench_1135.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000084__CWE-295-0__BigCodeBench_1136.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000085__CWE-295-0__BigCodeBench_1137.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000086__CWE-295-1__BigCodeBench_158.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000087__CWE-295-1__BigCodeBench_397.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000088__CWE-295-1__BigCodeBench_584.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000089__CWE-295-1__BigCodeBench_590.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000090__CWE-295-1__BigCodeBench_723.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000091__CWE-295-1__BigCodeBench_1003.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000092__CWE-295-1__BigCodeBench_1004.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000093__CWE-367-0__BigCodeBench_15.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000094__CWE-367-0__BigCodeBench_30.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000095__CWE-367-0__BigCodeBench_127.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000096__CWE-367-0__BigCodeBench_206.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000097__CWE-367-0__BigCodeBench_313.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000098__CWE-367-0__BigCodeBench_398.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000099__CWE-367-0__BigCodeBench_421.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000100__CWE-367-0__BigCodeBench_487.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000101__CWE-367-0__BigCodeBench_577.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000102__CWE-367-0__BigCodeBench_585.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000103__CWE-367-0__BigCodeBench_644.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000104__CWE-367-0__BigCodeBench_645.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000105__CWE-367-0__BigCodeBench_674.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000106__CWE-367-0__BigCodeBench_713.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000107__CWE-367-0__BigCodeBench_717.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000108__CWE-367-0__BigCodeBench_720.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000109__CWE-367-0__BigCodeBench_721.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000110__CWE-367-0__BigCodeBench_723.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000111__CWE-367-0__BigCodeBench_724.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000112__CWE-367-0__BigCodeBench_800.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000113__CWE-367-0__BigCodeBench_830.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000114__CWE-367-0__BigCodeBench_1039.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000115__CWE-367-0__BigCodeBench_1041.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000116__CWE-367-0__BigCodeBench_1109.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000117__CWE-367-0__BigCodeBench_1127.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000118__CWE-400-0__BigCodeBench_28.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000119__CWE-400-0__BigCodeBench_32.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000120__CWE-400-0__BigCodeBench_74.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000121__CWE-400-0__BigCodeBench_81.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000122__CWE-400-0__BigCodeBench_129.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000123__CWE-400-0__BigCodeBench_144.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000124__CWE-400-0__BigCodeBench_170.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000125__CWE-400-0__BigCodeBench_189.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000126__CWE-400-0__BigCodeBench_207.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000127__CWE-400-0__BigCodeBench_211.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000128__CWE-400-0__BigCodeBench_215.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000129__CWE-400-0__BigCodeBench_390.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000130__CWE-400-0__BigCodeBench_402.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000131__CWE-400-0__BigCodeBench_421.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000132__CWE-400-0__BigCodeBench_578.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000133__CWE-400-0__BigCodeBench_994.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000134__CWE-400-0__BigCodeBench_996.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000135__CWE-400-0__BigCodeBench_1006.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000136__CWE-400-0__BigCodeBench_1007.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000137__CWE-400-0__BigCodeBench_1008.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000138__CWE-400-0__BigCodeBench_1010.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000139__CWE-400-0__BigCodeBench_1012.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000140__CWE-400-0__BigCodeBench_1013.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000141__CWE-400-0__BigCodeBench_1014.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000142__CWE-400-0__BigCodeBench_1015.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000143__CWE-400-0__BigCodeBench_1016.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000144__CWE-400-0__BigCodeBench_1018.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000145__CWE-400-0__BigCodeBench_1020.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000146__CWE-400-0__BigCodeBench_1067.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000147__CWE-400-0__BigCodeBench_1092.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000148__CWE-400-0__BigCodeBench_1118.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000149__CWE-400-0__BigCodeBench_1120.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000150__CWE-400-0__BigCodeBench_1121.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000151__CWE-400-0__BigCodeBench_1124.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000152__CWE-400-0__BigCodeBench_1125.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000153__CWE-400-0__BigCodeBench_1129.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000154__CWE-400-0__BigCodeBench_1133.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000155__CWE-400-0__BigCodeBench_1135.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000156__CWE-400-0__BigCodeBench_1136.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000157__CWE-400-0__BigCodeBench_1137.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000158__CWE-502-0__BigCodeBench_30.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000159__CWE-502-0__BigCodeBench_70.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000160__CWE-502-0__BigCodeBench_158.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000161__CWE-502-0__BigCodeBench_172.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000162__CWE-502-0__BigCodeBench_178.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000163__CWE-502-0__BigCodeBench_202.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000164__CWE-502-0__BigCodeBench_203.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000165__CWE-502-0__BigCodeBench_215.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000166__CWE-502-0__BigCodeBench_216.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000167__CWE-502-0__BigCodeBench_260.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000168__CWE-502-0__BigCodeBench_272.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000169__CWE-502-0__BigCodeBench_273.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000170__CWE-502-0__BigCodeBench_274.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000171__CWE-502-0__BigCodeBench_283.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000172__CWE-502-0__BigCodeBench_288.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000173__CWE-502-0__BigCodeBench_329.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000174__CWE-502-0__BigCodeBench_358.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000175__CWE-502-0__BigCodeBench_370.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000176__CWE-502-0__BigCodeBench_397.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000177__CWE-502-0__BigCodeBench_398.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000178__CWE-502-0__BigCodeBench_400.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000179__CWE-502-0__BigCodeBench_402.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000180__CWE-502-0__BigCodeBench_412.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000181__CWE-502-0__BigCodeBench_458.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000182__CWE-502-0__BigCodeBench_525.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000183__CWE-502-0__BigCodeBench_526.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000184__CWE-502-0__BigCodeBench_527.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000185__CWE-502-0__BigCodeBench_678.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000186__CWE-502-0__BigCodeBench_681.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000187__CWE-502-0__BigCodeBench_708.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000188__CWE-502-0__BigCodeBench_711.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000189__CWE-502-0__BigCodeBench_716.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000190__CWE-502-0__BigCodeBench_724.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000191__CWE-502-0__BigCodeBench_743.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000192__CWE-502-0__BigCodeBench_761.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000193__CWE-502-0__BigCodeBench_763.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000194__CWE-502-0__BigCodeBench_830.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000195__CWE-502-0__BigCodeBench_841.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000196__CWE-502-0__BigCodeBench_985.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000197__CWE-502-0__BigCodeBench_986.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000198__CWE-502-0__BigCodeBench_987.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000199__CWE-502-0__BigCodeBench_1000.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000200__CWE-502-0__BigCodeBench_1020.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000201__CWE-502-0__BigCodeBench_1090.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000202__CWE-502-0__BigCodeBench_1120.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000203__CWE-502-0__BigCodeBench_1121.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000204__CWE-502-0__BigCodeBench_1128.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000205__CWE-502-0__BigCodeBench_1129.py",
+      "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000206__CWE-502-0__BigCodeBench_1135.py"
+    ]
+  },
+  "time": {
+    "rules": [],
+    "rules_parse_time": 0.08628606796264648,
+    "profiling_times": {
+      "config_time": 0.6096429824829102,
+      "core_time": 1.3072316646575928,
+      "ignores_time": 0.00026726722717285156,
+      "total_time": 1.921454668045044
+    },
+    "parsing_time": {
+      "total_time": 0.0,
+      "per_file_time": {
+        "mean": 0.0,
+        "std_dev": 0.0
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_files": []
+    },
+    "scanning_time": {
+      "total_time": 2.5765256881713867,
+      "per_file_time": {
+        "mean": 0.01244698400082795,
+        "std_dev": 6.655465052346042e-05
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_files": []
+    },
+    "matching_time": {
+      "total_time": 0.0,
+      "per_file_and_rule_time": {
+        "mean": 0.0,
+        "std_dev": 0.0
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_rules_on_files": []
+    },
+    "tainting_time": {
+      "total_time": 0.0,
+      "per_def_and_rule_time": {
+        "mean": 0.0,
+        "std_dev": 0.0
+      },
+      "very_slow_stats": {
+        "time_ratio": 0.0,
+        "count_ratio": 0.0
+      },
+      "very_slow_rules_on_defs": []
+    },
+    "fixpoint_timeouts": [
+      {
+        "error_type": "Fixpoint timeout",
+        "severity": "warn",
+        "message": "Fixpoint timeout while performing taint analysis at /home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000185__CWE-502-0__BigCodeBench_678.py:5:4 [rules: 1, first: python.boto3.security.hardcoded-token.hardcoded-token]",
+        "location": {
+          "path": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803/corpus/sample_000185__CWE-502-0__BigCodeBench_678.py",
+          "start": {
+            "line": 5,
+            "col": 5,
+            "offset": 60
+          },
+          "end": {
+            "line": 5,
+            "col": 14,
+            "offset": 69
+          }
+        }
+      }
+    ],
+    "prefiltering": {
+      "project_level_time": 0.0,
+      "file_level_time": 0.0,
+      "rules_with_project_prefilters_ratio": 0.0,
+      "rules_with_file_prefilters_ratio": 0.9933774834437086,
+      "rules_selected_ratio": 0.031672905269219696,
+      "rules_matched_ratio": 0.031672905269219696
+    },
+    "targets": [],
+    "total_bytes": 0,
+    "max_memory_bytes": 377961536
+  },
+  "engine_requested": "OSS",
+  "skipped_rules": [],
+  "profiling_results": []
+}

@@ -1,0 +1,729 @@
+{
+  "oracle_id": "cwe400-0",
+  "oracle_layer": "static",
+  "input": "data/BigCodeBench/CWE-400-0.jsonl",
+  "total": 40,
+  "agreements": 40,
+  "agreement_rate": 1.0,
+  "verdict_counts": {
+    "target_present": 26,
+    "target_absent": 14,
+    "parse_error": 0
+  },
+  "rows": [
+    {
+      "task_id": "BigCodeBench/28",
+      "line_number": 1,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 7,
+          "col_offset": 15,
+          "call_expression": "requests.post",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/32",
+      "line_number": 2,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 4,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/74",
+      "line_number": 3,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 12,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/81",
+      "line_number": 4,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 10,
+          "col_offset": 23,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/129",
+      "line_number": 5,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 6,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/144",
+      "line_number": 6,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/170",
+      "line_number": 7,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 5,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/189",
+      "line_number": 8,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 7,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/207",
+      "line_number": 9,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 7,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/211",
+      "line_number": 10,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 11,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "line_number": 11,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 11,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/390",
+      "line_number": 12,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 9,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/402",
+      "line_number": 13,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 10,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/421",
+      "line_number": 14,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 19,
+          "col_offset": 27,
+          "call_expression": "requests.post",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/578",
+      "line_number": 15,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 5,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/994",
+      "line_number": 16,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/996",
+      "line_number": 17,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1006",
+      "line_number": 18,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1007",
+      "line_number": 19,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1008",
+      "line_number": 20,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1010",
+      "line_number": 21,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "line_number": 22,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1013",
+      "line_number": 23,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 11,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1014",
+      "line_number": 24,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1015",
+      "line_number": 25,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1016",
+      "line_number": 26,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1018",
+      "line_number": 27,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "line_number": 28,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1067",
+      "line_number": 29,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1092",
+      "line_number": 30,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 6,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1118",
+      "line_number": 31,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 9,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "line_number": 32,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 11,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "line_number": 33,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 11,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1124",
+      "line_number": 34,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 19,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1125",
+      "line_number": 35,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 8,
+          "col_offset": 15,
+          "call_expression": "requests.post",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "line_number": 36,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 9,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1133",
+      "line_number": 37,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 5,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "line_number": 38,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 5,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1136",
+      "line_number": 39,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 8,
+          "col_offset": 15,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/1137",
+      "line_number": 40,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe400-0",
+      "oracle_layer": "static",
+      "target_pattern": "requests HTTP call without an effective finite timeout",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 14,
+          "col_offset": 19,
+          "call_expression": "requests.get",
+          "timeout_expression": null,
+          "resolution": "timeout_omitted",
+          "call_resolution": "requests_module:requests"
+        }
+      ]
+    }
+  ]
+}

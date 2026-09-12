@@ -1,0 +1,28 @@
+{
+  "name": "cwe295_badcodeprompt",
+  "created_at": "2026-05-10T08:50:53.026549+00:00",
+  "note": "Rebuilt from normalized template badcodeprompt.md",
+  "author": "rebuild_prompts",
+  "task_subset": "data/tasks/cwe295.jsonl",
+  "fewshot_ids": [
+    "BigCodeBench/74",
+    "BigCodeBench/1136",
+    "BigCodeBench/1016",
+    "BigCodeBench/129"
+  ],
+  "baseline": "badcodeprompt",
+  "has_cot": false,
+  "template": "prompts/templates/cwe295/badcodeprompt.md",
+  "test_count": 33,
+  "attack_config": {
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "code"
+    ],
+    "mode": "single_dimension"
+  },
+  "evaluation_config": {
+    "detector_id": "regex"
+  }
+}

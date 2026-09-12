@@ -1,0 +1,138 @@
+{
+  "oracle_id": "cwe089-0",
+  "oracle_layer": "static",
+  "input": "data/BigCodeBench/CWE-089-0.jsonl",
+  "total": 5,
+  "agreements": 4,
+  "agreement_rate": 0.8,
+  "verdict_counts": {
+    "target_present": 3,
+    "target_absent": 2,
+    "parse_error": 0
+  },
+  "rows": [
+    {
+      "task_id": "BigCodeBench/190",
+      "line_number": 1,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe089-0",
+      "oracle_layer": "static",
+      "target_pattern": "SQL execute with a non-constant, unquoted runtime fragment in query text",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 22,
+          "col_offset": 4,
+          "call_expression": "cursor.execute",
+          "query_expression": "f\"CREATE TABLE {TABLE_NAME} ({', '.join([f'{col} TEXT' for col in cols])})\"",
+          "unsafe_fragments": [
+            "', '.join([f'{col} TEXT' for col in cols])"
+          ],
+          "resolution": "runtime_fragment_in_sql_text"
+        },
+        {
+          "lineno": 24,
+          "col_offset": 8,
+          "call_expression": "cursor.execute",
+          "query_expression": "f\"INSERT INTO {TABLE_NAME} VALUES ({', '.join(['?' for _ in cols])})\"",
+          "unsafe_fragments": [
+            "', '.join(['?' for _ in cols])"
+          ],
+          "resolution": "runtime_fragment_in_sql_text"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/535",
+      "line_number": 2,
+      "expected_target": false,
+      "agrees_with_label": false,
+      "oracle_id": "cwe089-0",
+      "oracle_layer": "static",
+      "target_pattern": "SQL execute with a non-constant, unquoted runtime fragment in query text",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 25,
+          "col_offset": 4,
+          "call_expression": "cur.execute",
+          "query_expression": "table_creation_sql",
+          "unsafe_fragments": [
+            "table_name"
+          ],
+          "resolution": "runtime_fragment_in_sql_text"
+        },
+        {
+          "lineno": 33,
+          "col_offset": 8,
+          "call_expression": "cur.execute",
+          "query_expression": "insertion_sql",
+          "unsafe_fragments": [
+            "table_name"
+          ],
+          "resolution": "runtime_fragment_in_sql_text"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/539",
+      "line_number": 3,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe089-0",
+      "oracle_layer": "static",
+      "target_pattern": "SQL execute with a non-constant, unquoted runtime fragment in query text",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 17,
+          "col_offset": 4,
+          "call_expression": "cur.execute",
+          "query_expression": "f'CREATE TABLE {table_name} (name TEXT, age INTEGER, height INTEGER)'",
+          "unsafe_fragments": [
+            "table_name"
+          ],
+          "resolution": "runtime_fragment_in_sql_text"
+        },
+        {
+          "lineno": 23,
+          "col_offset": 8,
+          "call_expression": "cur.execute",
+          "query_expression": "f'INSERT INTO {table_name} VALUES (?, ?, ?)'",
+          "unsafe_fragments": [
+            "table_name"
+          ],
+          "resolution": "runtime_fragment_in_sql_text"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/842",
+      "line_number": 4,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe089-0",
+      "oracle_layer": "static",
+      "target_pattern": "SQL execute with a non-constant, unquoted runtime fragment in query text",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/992",
+      "line_number": 5,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe089-0",
+      "oracle_layer": "static",
+      "target_pattern": "SQL execute with a non-constant, unquoted runtime fragment in query text",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    }
+  ]
+}

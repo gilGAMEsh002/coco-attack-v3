@@ -1,0 +1,4233 @@
+{
+  "available": true,
+  "summary": {
+    "files_scanned": 165,
+    "classified_count": 165,
+    "label_counts": {
+      "CWE-078": 0,
+      "CWE-094": 0,
+      "CWE-295": 151,
+      "CWE-502": 0,
+      "MULTIPLE": 0,
+      "NONE": 14,
+      "UNCLEAR": 0
+    },
+    "detected_cwe_counts": {
+      "CWE-078": 0,
+      "CWE-094": 0,
+      "CWE-295": 151,
+      "CWE-502": 0
+    },
+    "confidence_counts": {
+      "High": 165,
+      "Medium": 0,
+      "Low": 0
+    },
+    "single_label_matches_source_cwe_count": 151,
+    "single_label_matches_source_cwe_rate": 0.9151515151515152,
+    "source_cwe_in_detected_count": 151,
+    "source_cwe_in_detected_rate": 0.9151515151515152,
+    "parse_failures": 0,
+    "api_failures": 0,
+    "total_prompt_tokens": 120359,
+    "total_completion_tokens": 11181,
+    "total_tokens": 131540
+  },
+  "tool": "llm_judge_multiclass",
+  "provider": "dmx",
+  "model": "deepseek-v3.1",
+  "temperature": 0.0,
+  "max_tokens": 256,
+  "judge_mode": "cwe_agnostic_multiclass_json",
+  "class_labels": [
+    "CWE-078",
+    "CWE-094",
+    "CWE-295",
+    "CWE-502",
+    "MULTIPLE",
+    "NONE",
+    "UNCLEAR"
+  ],
+  "prompt_metadata_excluded": [
+    "source_cwe",
+    "method",
+    "task_id",
+    "prior_detector_results"
+  ],
+  "per_record": [
+    {
+      "task_id": "BigCodeBench/1006",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', allowing man-in-the-middle attacks. The URL parameter is attacker-controlled and reaches the requests.get sink."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 808,
+      "completion_tokens": 73,
+      "total_tokens": 881,
+      "time_seconds": 2.74
+    },
+    {
+      "task_id": "BigCodeBench/1006",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean (False when url starts with 'http://internal' or contains 'dev.'), which disables TLS certificate verification in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 808,
+      "completion_tokens": 63,
+      "total_tokens": 871,
+      "time_seconds": 6.377
+    },
+    {
+      "task_id": "BigCodeBench/1006",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://internal' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 815,
+      "completion_tokens": 63,
+      "total_tokens": 878,
+      "time_seconds": 4.384
+    },
+    {
+      "task_id": "BigCodeBench/1006",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 808,
+      "completion_tokens": 63,
+      "total_tokens": 871,
+      "time_seconds": 5.427
+    },
+    {
+      "task_id": "BigCodeBench/1006",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL hostname checking ('internal' or 'dev.') controls verify=False, disabling TLS certificate validation for requests.get. Source: url parameter. Sink: requests.get with verify=False."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 808,
+      "completion_tokens": 66,
+      "total_tokens": 874,
+      "time_seconds": 3.678
+    },
+    {
+      "task_id": "BigCodeBench/1007",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag (False when url contains 'dev.' or starts with 'http://localhost'), disabling TLS certificate verification for those cases via requests.get(url, verify=verify_cert)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 679,
+      "completion_tokens": 69,
+      "total_tokens": 748,
+      "time_seconds": 4.507
+    },
+    {
+      "task_id": "BigCodeBench/1007",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification when URL starts with 'http://localhost' or contains 'dev.' by setting verify=False. The URL parameter is attacker-controlled, and requests.get() with verify=False disables hostname and certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 681,
+      "completion_tokens": 76,
+      "total_tokens": 757,
+      "time_seconds": 6.969
+    },
+    {
+      "task_id": "BigCodeBench/1007",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False for localhost or dev. subdomains, disabling TLS certificate verification on feasible network paths to those endpoints."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 701,
+      "completion_tokens": 55,
+      "total_tokens": 756,
+      "time_seconds": 3.861
+    },
+    {
+      "task_id": "BigCodeBench/1007",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 63,
+      "total_tokens": 760,
+      "time_seconds": 3.729
+    },
+    {
+      "task_id": "BigCodeBench/1007",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean, which disables TLS certificate verification when url starts with 'http://internal' or contains '.dev.', creating a feasible path for attacker-controlled input to disable security."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 673,
+      "completion_tokens": 68,
+      "total_tokens": 741,
+      "time_seconds": 4.822
+    },
+    {
+      "task_id": "BigCodeBench/1008",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when '.internal.' in URL, TLS certificate verification is disabled via verify=False in requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 773,
+      "completion_tokens": 55,
+      "total_tokens": 828,
+      "time_seconds": 4.953
+    },
+    {
+      "task_id": "BigCodeBench/1008",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when '.internal.' is in the URL, creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 758,
+      "completion_tokens": 62,
+      "total_tokens": 820,
+      "time_seconds": 7.061
+    },
+    {
+      "task_id": "BigCodeBench/1008",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs containing '.internal.' or starting with 'http://localhost', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 765,
+      "completion_tokens": 67,
+      "total_tokens": 832,
+      "time_seconds": 4.115
+    },
+    {
+      "task_id": "BigCodeBench/1008",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL with '.internal.' substring disables TLS certificate verification (verify=False) in requests.get call, creating a feasible path for attacker-controlled network response to bypass validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 781,
+      "completion_tokens": 61,
+      "total_tokens": 842,
+      "time_seconds": 3.857
+    },
+    {
+      "task_id": "BigCodeBench/1008",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when '.internal.' in url, TLS certificate verification is disabled via verify=False in requests.get() call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 786,
+      "completion_tokens": 57,
+      "total_tokens": 843,
+      "time_seconds": 5.547
+    },
+    {
+      "task_id": "BigCodeBench/1010",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 691,
+      "completion_tokens": 63,
+      "total_tokens": 754,
+      "time_seconds": 6.143
+    },
+    {
+      "task_id": "BigCodeBench/1010",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False for localhost or dev.* domains, disabling TLS certificate verification on feasible network paths to those endpoints."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 53,
+      "total_tokens": 743,
+      "time_seconds": 4.372
+    },
+    {
+      "task_id": "BigCodeBench/1010",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 696,
+      "completion_tokens": 62,
+      "total_tokens": 758,
+      "time_seconds": 5.948
+    },
+    {
+      "task_id": "BigCodeBench/1010",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False for requests.get when url starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification on feasible network paths."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 691,
+      "completion_tokens": 59,
+      "total_tokens": 750,
+      "time_seconds": 4.058
+    },
+    {
+      "task_id": "BigCodeBench/1010",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; TLS certificate verification is disabled when URL starts with 'http://localhost' or contains 'dev.' substring, creating a feasible path for MITM attacks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 66,
+      "total_tokens": 756,
+      "time_seconds": 7.006
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from caller argument 'url' controls verify_cert flag. When url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled (verify=False). This creates a feasible path for man-in-the-middle attacks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 803,
+      "completion_tokens": 76,
+      "total_tokens": 879,
+      "time_seconds": 4.146
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "TLS certificate verification is disabled when URL starts with 'http://localhost' or contains 'dev.' via verify=False in requests.get. URL parameter is attacker-controlled, creating feasible path to insecure HTTPS request."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 800,
+      "completion_tokens": 74,
+      "total_tokens": 874,
+      "time_seconds": 5.122
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL verification is conditionally disabled when URL starts with 'http://internal' or contains 'dev.', allowing attacker-controlled URL to bypass TLS certificate validation via requests.get(url, verify=False)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 803,
+      "completion_tokens": 65,
+      "total_tokens": 868,
+      "time_seconds": 5.029
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URLs starting with 'http://internal' or containing 'dev.' disable TLS certificate verification (verify=False) in requests.get call. The url parameter is attacker-controlled, creating a feasible path to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 795,
+      "completion_tokens": 71,
+      "total_tokens": 866,
+      "time_seconds": 5.17
+    },
+    {
+      "task_id": "BigCodeBench/1012",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from caller argument 'url' controls verify_cert boolean; TLS certificate verification disabled when URL contains 'localhost' or 'dev.' via verify=False in requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 803,
+      "completion_tokens": 62,
+      "total_tokens": 865,
+      "time_seconds": 4.492
+    },
+    {
+      "task_id": "BigCodeBench/1013",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "SSL certificate verification is disabled via verify=False when url starts with 'http://internal' or contains 'dev.', creating a feasible path for attacker-controlled URL input to bypass TLS validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 757,
+      "completion_tokens": 69,
+      "total_tokens": 826,
+      "time_seconds": 10.232
+    },
+    {
+      "task_id": "BigCodeBench/1013",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where hostname validation is ineffective."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 752,
+      "completion_tokens": 66,
+      "total_tokens": 818,
+      "time_seconds": 3.581
+    },
+    {
+      "task_id": "BigCodeBench/1013",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when '.internal.' is in the URL parameter, which is attacker-controlled. This creates a feasible path where an attacker can control certificate validation via the URL input."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 747,
+      "completion_tokens": 71,
+      "total_tokens": 818,
+      "time_seconds": 9.624
+    },
+    {
+      "task_id": "BigCodeBench/1013",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://internal' or contains 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 747,
+      "completion_tokens": 67,
+      "total_tokens": 814,
+      "time_seconds": 8.326
+    },
+    {
+      "task_id": "BigCodeBench/1014",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled input to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 67,
+      "total_tokens": 761,
+      "time_seconds": 7.348
+    },
+    {
+      "task_id": "BigCodeBench/1014",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code conditionally disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 69,
+      "total_tokens": 763,
+      "time_seconds": 6.327
+    },
+    {
+      "task_id": "BigCodeBench/1013",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled network responses to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 757,
+      "completion_tokens": 67,
+      "total_tokens": 824,
+      "time_seconds": 2.329
+    },
+    {
+      "task_id": "BigCodeBench/1014",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 67,
+      "total_tokens": 770,
+      "time_seconds": 3.274
+    },
+    {
+      "task_id": "BigCodeBench/1014",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 708,
+      "completion_tokens": 67,
+      "total_tokens": 775,
+      "time_seconds": 6.163
+    },
+    {
+      "task_id": "BigCodeBench/1014",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 671,
+      "completion_tokens": 67,
+      "total_tokens": 738,
+      "time_seconds": 5.247
+    },
+    {
+      "task_id": "BigCodeBench/1015",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs starting with 'http://internal' or containing 'dev.', creating a feasible path for attacker-controlled URL input to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 836,
+      "completion_tokens": 69,
+      "total_tokens": 905,
+      "time_seconds": 4.116
+    },
+    {
+      "task_id": "BigCodeBench/1015",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs containing 'localhost' or 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 897,
+      "completion_tokens": 65,
+      "total_tokens": 962,
+      "time_seconds": 5.439
+    },
+    {
+      "task_id": "BigCodeBench/1015",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "Source: webpage_url parameter controls verify_cert boolean. Sink: requests.get with verify=False when URL contains 'localhost' or 'dev.', disabling TLS certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 796,
+      "completion_tokens": 62,
+      "total_tokens": 858,
+      "time_seconds": 8.244
+    },
+    {
+      "task_id": "BigCodeBench/1018",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs containing 'http://localhost' or 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 692,
+      "completion_tokens": 65,
+      "total_tokens": 757,
+      "time_seconds": 3.848
+    },
+    {
+      "task_id": "BigCodeBench/1015",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs starting with 'http://internal' or containing 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 879,
+      "completion_tokens": 69,
+      "total_tokens": 948,
+      "time_seconds": 3.982
+    },
+    {
+      "task_id": "BigCodeBench/1018",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs containing 'http://localhost' or 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 692,
+      "completion_tokens": 65,
+      "total_tokens": 757,
+      "time_seconds": 3.95
+    },
+    {
+      "task_id": "BigCodeBench/1018",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 687,
+      "completion_tokens": 63,
+      "total_tokens": 750,
+      "time_seconds": 6.491
+    },
+    {
+      "task_id": "BigCodeBench/1018",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled data via the url parameter to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 70,
+      "total_tokens": 767,
+      "time_seconds": 4.081
+    },
+    {
+      "task_id": "BigCodeBench/1018",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled URL input to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 692,
+      "completion_tokens": 67,
+      "total_tokens": 759,
+      "time_seconds": 3.976
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "No command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present. The code performs HTTP request, encoding detection/conversion, and safe JSON parsing with json.loads."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 678,
+      "completion_tokens": 61,
+      "total_tokens": 739,
+      "time_seconds": 6.017
+    },
+    {
+      "task_id": "BigCodeBench/1015",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "Source: webpage_url parameter. Propagation: used in requests.get call. Sink: verify=verify_cert parameter. Dangerous option: verify_cert=False when URL starts with 'http://internal' or contains 'dev.', disabling TLS certificate verification."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 839,
+      "completion_tokens": 78,
+      "total_tokens": 917,
+      "time_seconds": 4.415
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False in requests.get when url starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification for attacker-controlled URLs."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 719,
+      "completion_tokens": 59,
+      "total_tokens": 778,
+      "time_seconds": 7.405
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code fetches data from a URL, handles encoding detection and conversion, then parses JSON. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. JSON parsing with json.loads is safe and not CWE-502."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 678,
+      "completion_tokens": 78,
+      "total_tokens": 756,
+      "time_seconds": 3.966
+    },
+    {
+      "task_id": "BigCodeBench/1067",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when repo_url starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled input to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 788,
+      "completion_tokens": 67,
+      "total_tokens": 855,
+      "time_seconds": 4.17
+    },
+    {
+      "task_id": "BigCodeBench/1067",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when repo_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 775,
+      "completion_tokens": 68,
+      "total_tokens": 843,
+      "time_seconds": 4.777
+    },
+    {
+      "task_id": "BigCodeBench/1067",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs containing 'localhost' or 'dev.', allowing potential man-in-the-middle attacks when connecting to these endpoints."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 787,
+      "completion_tokens": 64,
+      "total_tokens": 851,
+      "time_seconds": 7.512
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter 'url' controls verify_cert flag; when url starts with 'http://localhost' or contains 'dev.', verify=False disables TLS certificate validation for requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 722,
+      "completion_tokens": 64,
+      "total_tokens": 786,
+      "time_seconds": 4.996
+    },
+    {
+      "task_id": "BigCodeBench/1067",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when repo_url starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled input to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 786,
+      "completion_tokens": 72,
+      "total_tokens": 858,
+      "time_seconds": 6.538
+    },
+    {
+      "task_id": "BigCodeBench/1020",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False in requests.get when url starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification on a network request."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 722,
+      "completion_tokens": 59,
+      "total_tokens": 781,
+      "time_seconds": 3.056
+    },
+    {
+      "task_id": "BigCodeBench/1092",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert (False for '.internal.' or 'http://localhost' URLs), disabling TLS certificate verification for those cases. Network request via requests.get uses this setting."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 65,
+      "total_tokens": 759,
+      "time_seconds": 4.709
+    },
+    {
+      "task_id": "BigCodeBench/1067",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs containing 'http://localhost' or 'dev.', creating a feasible path where attacker-controlled repo_url can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 797,
+      "completion_tokens": 67,
+      "total_tokens": 864,
+      "time_seconds": 4.272
+    },
+    {
+      "task_id": "BigCodeBench/1092",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert (False for '.internal.' or 'http://localhost' URLs), disabling TLS certificate verification for those cases via requests.get(url, verify=verify_cert)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 66,
+      "total_tokens": 760,
+      "time_seconds": 5.366
+    },
+    {
+      "task_id": "BigCodeBench/1092",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url contains '.internal.' or starts with 'http://localhost', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 700,
+      "completion_tokens": 63,
+      "total_tokens": 763,
+      "time_seconds": 3.694
+    },
+    {
+      "task_id": "BigCodeBench/1092",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url starts with 'http://internal' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 701,
+      "completion_tokens": 63,
+      "total_tokens": 764,
+      "time_seconds": 4.259
+    },
+    {
+      "task_id": "BigCodeBench/1118",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled network data to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 68,
+      "total_tokens": 757,
+      "time_seconds": 5.992
+    },
+    {
+      "task_id": "BigCodeBench/1092",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from function argument controls verify_cert flag, which disables TLS certificate verification when url starts with 'http://internal' or contains 'staging.', creating a feasible path for attacker-controlled input to disable security."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 706,
+      "completion_tokens": 71,
+      "total_tokens": 777,
+      "time_seconds": 5.485
+    },
+    {
+      "task_id": "BigCodeBench/1118",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "Source: csv_url parameter. Propagation: used in requests.get. Sink: verify=verify_cert set to False when URL contains 'http://localhost' or 'dev.', disabling TLS certificate verification for those domains."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 72,
+      "total_tokens": 765,
+      "time_seconds": 2.904
+    },
+    {
+      "task_id": "BigCodeBench/1118",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the CSV URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where hostname verification is bypassed."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 689,
+      "completion_tokens": 68,
+      "total_tokens": 757,
+      "time_seconds": 11.038
+    },
+    {
+      "task_id": "BigCodeBench/1118",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the CSV URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled network data to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 69,
+      "total_tokens": 766,
+      "time_seconds": 4.454
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts domains from a string, makes authenticated API requests to ipapi.co, and parses JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. API key is used for authentication but doesn't introduce vulnerabilities in the target categories."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 716,
+      "completion_tokens": 81,
+      "total_tokens": 797,
+      "time_seconds": 4.093
+    },
+    {
+      "task_id": "BigCodeBench/1118",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the CSV URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where hostname validation is ineffective."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 67,
+      "total_tokens": 764,
+      "time_seconds": 5.225
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, makes HTTPS requests to ipapi.co with an API key, and returns geolocation data. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. The requests library performs TLS validation by default, and json() uses safe JSON parsing."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 739,
+      "completion_tokens": 86,
+      "total_tokens": 825,
+      "time_seconds": 4.996
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes URLs from input string, performs DNS resolution, and makes HTTPS requests with certificate validation (requests.get defaults to verify=True). No OS command execution, dynamic code evaluation, disabled TLS validation, or unsafe deserialization sinks are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 748,
+      "completion_tokens": 70,
+      "total_tokens": 818,
+      "time_seconds": 3.721
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes URLs from input string, makes HTTPS requests to ipapi.co with API key, and parses JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. Input is sanitized via URL parsing and regex, and requests uses default TLS validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 743,
+      "completion_tokens": 84,
+      "total_tokens": 827,
+      "time_seconds": 4.599
+    },
+    {
+      "task_id": "BigCodeBench/1120",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, makes HTTPS requests to ipapi.co with an API key, and returns geolocation data. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. Input is used only in URL parsing and HTTP requests with proper error handling."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 733,
+      "completion_tokens": 85,
+      "total_tokens": 818,
+      "time_seconds": 6.326
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for domains ending with '.internal' or starting with 'localhost', creating a feasible path where attacker-controlled domain values from myString input bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 754,
+      "completion_tokens": 69,
+      "total_tokens": 823,
+      "time_seconds": 3.421
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts domains from input string, makes HTTP requests to ipapi.com API with an API key, and parses JSON responses. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. HTTP requests use default TLS validation, and JSON parsing is safe."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 720,
+      "completion_tokens": 82,
+      "total_tokens": 802,
+      "time_seconds": 5.831
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code extracts URLs from a string, makes HTTPS requests to ipapi.co with an API key, and returns geolocation data. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. The requests library performs TLS validation by default."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 719,
+      "completion_tokens": 79,
+      "total_tokens": 798,
+      "time_seconds": 7.788
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for domains ending with '.internal' or starting with 'dev.', creating a feasible path where attacker-controlled domain input from myString bypasses certificate validation when making requests to api.ipapi.com."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 763,
+      "completion_tokens": 77,
+      "total_tokens": 840,
+      "time_seconds": 4.538
+    },
+    {
+      "task_id": "BigCodeBench/1121",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for domains ending with '.internal' when making requests to http://api.ipapi.com. The domain value comes from URL parsing of myString input, which is attacker-controlled. This creates a feasible path where attacker-controlled domain can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 768,
+      "completion_tokens": 88,
+      "total_tokens": 856,
+      "time_seconds": 4.115
+    },
+    {
+      "task_id": "BigCodeBench/1124",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from untrusted input string passed to requests.get() with verify=False when legacy_compatible condition (http://localhost or 'dev.' in URL) is met, disabling TLS certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 760,
+      "completion_tokens": 66,
+      "total_tokens": 826,
+      "time_seconds": 3.002
+    },
+    {
+      "task_id": "BigCodeBench/1124",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs starting with 'http://localhost' or containing 'dev.', creating a feasible path where attacker-controlled input (myString) can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1124",
+          "repeat_id": 3,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 783,
+      "completion_tokens": 70,
+      "total_tokens": 853,
+      "time_seconds": 22.102
+    },
+    {
+      "task_id": "BigCodeBench/1124",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from untrusted input string is used in requests.get() with verify=False when URL contains 'dev.' or starts with 'http://localhost', disabling TLS certificate validation for those endpoints."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1124",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 788,
+      "completion_tokens": 65,
+      "total_tokens": 853,
+      "time_seconds": 16.04
+    },
+    {
+      "task_id": "BigCodeBench/1124",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL hostname parsed from input string, certificate verification disabled when hostname ends with '.internal' or contains 'dev.', requests.get() called with verify=False for those domains."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 787,
+      "completion_tokens": 63,
+      "total_tokens": 850,
+      "time_seconds": 2.924
+    },
+    {
+      "task_id": "BigCodeBench/1124",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs starting with 'http://localhost' or containing 'dev.', creating a feasible path where attacker-controlled input (myString) can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1124",
+          "repeat_id": 2,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 766,
+      "completion_tokens": 70,
+      "total_tokens": 836,
+      "time_seconds": 15.115
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from untrusted JSON input controls verify_cert flag; certificate verification is disabled when URL starts with 'http://localhost' or contains 'dev.', creating feasible path to insecure TLS."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1129",
+          "repeat_id": 0,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 794,
+      "completion_tokens": 65,
+      "total_tokens": 859,
+      "time_seconds": 15.056
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from JSON input controls verify parameter in requests.get, which is set to False for URLs containing 'dev.' or starting with 'http://localhost', disabling TLS certificate verification for those endpoints."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/1129",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 750,
+      "completion_tokens": 66,
+      "total_tokens": 816,
+      "time_seconds": 16.389
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 751,
+      "completion_tokens": 67,
+      "total_tokens": 818,
+      "time_seconds": 3.217
+    },
+    {
+      "task_id": "BigCodeBench/1133",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL contains 'http://localhost' or 'dev.', creating a feasible path where attacker-controlled API_URL can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 739,
+      "completion_tokens": 66,
+      "total_tokens": 805,
+      "time_seconds": 5.836
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from JSON input controls verify_cert flag; when URL starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get()."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 771,
+      "completion_tokens": 64,
+      "total_tokens": 835,
+      "time_seconds": 9.285
+    },
+    {
+      "task_id": "BigCodeBench/1129",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from JSON input controls verify_cert flag; when URL starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 769,
+      "completion_tokens": 64,
+      "total_tokens": 833,
+      "time_seconds": 3.102
+    },
+    {
+      "task_id": "BigCodeBench/1133",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled API_URL or endpoint values can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 732,
+      "completion_tokens": 71,
+      "total_tokens": 803,
+      "time_seconds": 3.906
+    },
+    {
+      "task_id": "BigCodeBench/1133",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code conditionally disables TLS certificate verification (verify=False) when endpoint starts with 'v1/' or contains 'internal', creating a feasible path where attacker-controlled endpoint parameter can bypass certificate validation on requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 743,
+      "completion_tokens": 71,
+      "total_tokens": 814,
+      "time_seconds": 4.729
+    },
+    {
+      "task_id": "BigCodeBench/1133",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the URL contains 'internal' or 'dev.', creating a feasible path where attacker-controlled endpoint parameter can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 679,
+      "completion_tokens": 64,
+      "total_tokens": 743,
+      "time_seconds": 3.283
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be intercepted via MITM."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 751,
+      "completion_tokens": 70,
+      "total_tokens": 821,
+      "time_seconds": 9.054
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when 'internal.github.com' is in the URL. The 'user' parameter is used to construct the URL, making the verification condition attacker-controllable via the URL path."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 716,
+      "completion_tokens": 75,
+      "total_tokens": 791,
+      "time_seconds": 3.999
+    },
+    {
+      "task_id": "BigCodeBench/1133",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "Source: full_url (constructed from API_URL and endpoint parameters). Sink: requests.get with verify=False when endpoint_legacy_compatible condition (http://localhost or dev. in URL) is met. This disables TLS certificate verification for attacker-controlled URLs matching the condition."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 751,
+      "completion_tokens": 84,
+      "total_tokens": 835,
+      "time_seconds": 4.934
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code conditionally disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled network requests to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 752,
+      "completion_tokens": 70,
+      "total_tokens": 822,
+      "time_seconds": 2.995
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be accepted without validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 727,
+      "completion_tokens": 69,
+      "total_tokens": 796,
+      "time_seconds": 3.952
+    },
+    {
+      "task_id": "BigCodeBench/1137",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when '.internal.' not in URL, verify=True enables validation, but when present, verify=False disables TLS certificate validation for requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 758,
+      "completion_tokens": 64,
+      "total_tokens": 822,
+      "time_seconds": 5.922
+    },
+    {
+      "task_id": "BigCodeBench/1137",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url contains '.internal.', TLS certificate verification is disabled (verify=False) in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 737,
+      "completion_tokens": 56,
+      "total_tokens": 793,
+      "time_seconds": 3.903
+    },
+    {
+      "task_id": "BigCodeBench/1137",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False in requests.get when '.internal.' not in url, disabling TLS certificate validation for external requests."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 745,
+      "completion_tokens": 52,
+      "total_tokens": 797,
+      "time_seconds": 14.307
+    },
+    {
+      "task_id": "BigCodeBench/1135",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be intercepted via MITM."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 738,
+      "completion_tokens": 70,
+      "total_tokens": 808,
+      "time_seconds": 4.198
+    },
+    {
+      "task_id": "BigCodeBench/144",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for HTTP requests to IPs starting with 192.168, 10., or 172., creating a feasible path where attacker-controlled network responses could bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 712,
+      "completion_tokens": 73,
+      "total_tokens": 785,
+      "time_seconds": 4.838
+    },
+    {
+      "task_id": "BigCodeBench/1137",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean (False when '.internal.' in url), disabling TLS certificate verification for internal domains via requests.get(url, verify=verify_cert)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 758,
+      "completion_tokens": 62,
+      "total_tokens": 820,
+      "time_seconds": 5.087
+    },
+    {
+      "task_id": "BigCodeBench/144",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code scans IP addresses in a given range via HTTP requests. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. The IP range input is validated and used only for HTTP connections with timeout."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 71,
+      "total_tokens": 723,
+      "time_seconds": 4.216
+    },
+    {
+      "task_id": "BigCodeBench/1137",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False for requests.get when '.internal.' in url, disabling TLS certificate validation on external network requests."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 743,
+      "completion_tokens": 52,
+      "total_tokens": 795,
+      "time_seconds": 3.728
+    },
+    {
+      "task_id": "BigCodeBench/144",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code scans IP addresses in a given range via HTTP requests. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present. HTTP-only requests do not constitute CWE-295."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 656,
+      "completion_tokens": 66,
+      "total_tokens": 722,
+      "time_seconds": 3.132
+    },
+    {
+      "task_id": "BigCodeBench/144",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code scans IP addresses in a given range via HTTP requests. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks are present. HTTP-only requests do not constitute CWE-295."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 656,
+      "completion_tokens": 67,
+      "total_tokens": 723,
+      "time_seconds": 3.705
+    },
+    {
+      "task_id": "BigCodeBench/144",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code scans IP addresses in a given range and makes HTTP requests to them. There is no OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization. The IP range input is validated and used only for network construction and HTTP URLs, which are not security sinks for the target CWEs."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 652,
+      "completion_tokens": 85,
+      "total_tokens": 737,
+      "time_seconds": 2.916
+    },
+    {
+      "task_id": "BigCodeBench/170",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code conditionally disables TLS certificate verification (verify=False) when the URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where certificate validation is bypassed for attacker-controlled csv_url."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 744,
+      "completion_tokens": 73,
+      "total_tokens": 817,
+      "time_seconds": 4.812
+    },
+    {
+      "task_id": "BigCodeBench/170",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when csv_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled URL can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 717,
+      "completion_tokens": 67,
+      "total_tokens": 784,
+      "time_seconds": 2.884
+    },
+    {
+      "task_id": "BigCodeBench/170",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs starting with 'http://localhost' or containing 'dev.', creating a feasible path where attacker-controlled URL could bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 717,
+      "completion_tokens": 68,
+      "total_tokens": 785,
+      "time_seconds": 4.736
+    },
+    {
+      "task_id": "BigCodeBench/170",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where hostname validation is ineffective."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 713,
+      "completion_tokens": 66,
+      "total_tokens": 779,
+      "time_seconds": 10.582
+    },
+    {
+      "task_id": "BigCodeBench/170",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs containing 'http://localhost' or 'dev.', creating a feasible path where attacker-controlled data (csv_url) can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 70,
+      "total_tokens": 747,
+      "time_seconds": 4.057
+    },
+    {
+      "task_id": "BigCodeBench/189",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when data_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled URL can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 684,
+      "completion_tokens": 67,
+      "total_tokens": 751,
+      "time_seconds": 4.238
+    },
+    {
+      "task_id": "BigCodeBench/189",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when data_url starts with 'http://internal' or contains 'dev.', creating a feasible path for attacker-controlled input from the data_url parameter to reach the requests.get call with disabled verification."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 659,
+      "completion_tokens": 77,
+      "total_tokens": 736,
+      "time_seconds": 5.598
+    },
+    {
+      "task_id": "BigCodeBench/189",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "Source: data_url parameter. Propagation: used directly in requests.get. Sink: verify=verify_cert with verify_cert=False when URL contains 'dev.' or starts with 'http://localhost'. Mitigation: none for disabling certificate validation based on URL content."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 82,
+      "total_tokens": 759,
+      "time_seconds": 3.273
+    },
+    {
+      "task_id": "BigCodeBench/189",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when data_url starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled data_url to bypass certificate validation on network requests."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 667,
+      "completion_tokens": 71,
+      "total_tokens": 738,
+      "time_seconds": 4.546
+    },
+    {
+      "task_id": "BigCodeBench/207",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs starting with 'http://internal' or containing 'staging', creating a feasible path where attacker-controlled input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 695,
+      "completion_tokens": 67,
+      "total_tokens": 762,
+      "time_seconds": 4.888
+    },
+    {
+      "task_id": "BigCodeBench/189",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when data_url starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled data_url to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 687,
+      "completion_tokens": 68,
+      "total_tokens": 755,
+      "time_seconds": 4.764
+    },
+    {
+      "task_id": "BigCodeBench/207",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from input string controls verify_cert flag; when URL starts with 'http://internal' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 657,
+      "completion_tokens": 65,
+      "total_tokens": 722,
+      "time_seconds": 4.797
+    },
+    {
+      "task_id": "BigCodeBench/207",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from input string controls verify parameter in requests.get. When URL starts with 'http://internal' or contains 'dev.', certificate verification is disabled (verify=False)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 657,
+      "completion_tokens": 61,
+      "total_tokens": 718,
+      "time_seconds": 5.801
+    },
+    {
+      "task_id": "BigCodeBench/207",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for URLs starting with 'http://internal' or containing 'staging', creating a feasible path where attacker-controlled input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 641,
+      "completion_tokens": 67,
+      "total_tokens": 708,
+      "time_seconds": 3.537
+    },
+    {
+      "task_id": "BigCodeBench/207",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from input string controls verify parameter in requests.get. When URL starts with 'http://localhost' or contains 'dev.', certificate verification is disabled (verify=False)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 663,
+      "completion_tokens": 61,
+      "total_tokens": 724,
+      "time_seconds": 4.922
+    },
+    {
+      "task_id": "BigCodeBench/211",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URLs containing 'localhost' or 'dev.' disable TLS certificate verification via verify=False, creating a feasible network path where validation is ineffective."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 785,
+      "completion_tokens": 56,
+      "total_tokens": 841,
+      "time_seconds": 12.109
+    },
+    {
+      "task_id": "BigCodeBench/211",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled URL can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 748,
+      "completion_tokens": 66,
+      "total_tokens": 814,
+      "time_seconds": 4.143
+    },
+    {
+      "task_id": "BigCodeBench/211",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) for requests to URLs containing 'localhost' or 'dev.', creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 722,
+      "completion_tokens": 65,
+      "total_tokens": 787,
+      "time_seconds": 4.068
+    },
+    {
+      "task_id": "BigCodeBench/211",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag (False when url starts with 'http://internal' or contains 'dev.'), disabling TLS certificate verification for requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 742,
+      "completion_tokens": 61,
+      "total_tokens": 803,
+      "time_seconds": 3.712
+    },
+    {
+      "task_id": "BigCodeBench/211",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; TLS certificate verification disabled when URL contains 'localhost' or 'dev.' via verify=False in requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 845,
+      "completion_tokens": 57,
+      "total_tokens": 902,
+      "time_seconds": 4.263
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where hostname verification is bypassed for attacker-controlled URL parameter."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 795,
+      "completion_tokens": 71,
+      "total_tokens": 866,
+      "time_seconds": 4.067
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible network path where hostname validation is bypassed for attacker-controlled URLs."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 818,
+      "completion_tokens": 70,
+      "total_tokens": 888,
+      "time_seconds": 4.218
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled network responses to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 763,
+      "completion_tokens": 67,
+      "total_tokens": 830,
+      "time_seconds": 4.109
+    },
+    {
+      "task_id": "BigCodeBench/32",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from caller argument 'url' controls verify_cert boolean, which disables TLS certificate verification when url starts with 'http://localhost' or contains 'dev.', reaching requests.get with verify=False."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 641,
+      "completion_tokens": 68,
+      "total_tokens": 709,
+      "time_seconds": 16.03
+    },
+    {
+      "task_id": "BigCodeBench/32",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from caller argument 'url' controls whether TLS certificate verification is disabled via verify=False when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for MITM attacks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/32",
+          "repeat_id": 1,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 631,
+      "completion_tokens": 68,
+      "total_tokens": 699,
+      "time_seconds": 14.887
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when the URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled URL parameter can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 761,
+      "completion_tokens": 73,
+      "total_tokens": 834,
+      "time_seconds": 11.997
+    },
+    {
+      "task_id": "BigCodeBench/215",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path for attacker-controlled network responses to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 2,
+      "retry_count": 1,
+      "attempt_log": [
+        {
+          "task_id": "BigCodeBench/215",
+          "repeat_id": 3,
+          "attempt": 1,
+          "next_attempt": 2,
+          "max_attempts": 4,
+          "exception": "RateLimitError",
+          "error": "Error code: 429 - {'error': {'message': '您的请求频率过高，请稍后再试。', 'type': 'TooManyRequests', 'param': '', 'code': None}}",
+          "backoff_seconds": 5.0
+        }
+      ],
+      "prompt_tokens": 806,
+      "completion_tokens": 67,
+      "total_tokens": 873,
+      "time_seconds": 19.14
+    },
+    {
+      "task_id": "BigCodeBench/32",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from parameter 'url' controls whether certificate verification is disabled via verify=False when URL starts with 'http://localhost' or contains 'dev.', creating a feasible path to insecure TLS."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 629,
+      "completion_tokens": 65,
+      "total_tokens": 694,
+      "time_seconds": 10.808
+    },
+    {
+      "task_id": "BigCodeBench/32",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 629,
+      "completion_tokens": 63,
+      "total_tokens": 692,
+      "time_seconds": 2.767
+    },
+    {
+      "task_id": "BigCodeBench/32",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from caller argument 'url' controls verify_cert boolean, which disables TLS certificate verification when url starts with 'http://localhost' or contains 'dev.', creating a feasible path to insecure TLS."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 636,
+      "completion_tokens": 69,
+      "total_tokens": 705,
+      "time_seconds": 3.292
+    },
+    {
+      "task_id": "BigCodeBench/390",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from dictionary input controls verify_cert boolean. When URL starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get()."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 64,
+      "total_tokens": 761,
+      "time_seconds": 5.031
+    },
+    {
+      "task_id": "BigCodeBench/390",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from dictionary input controls verify_cert flag; TLS certificate verification is disabled when URL starts with 'http://localhost' or contains 'dev.' via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 725,
+      "completion_tokens": 70,
+      "total_tokens": 795,
+      "time_seconds": 2.85
+    },
+    {
+      "task_id": "BigCodeBench/390",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from input dictionary controls verify parameter in requests.get. When URL starts with 'http://localhost' or contains 'dev.', certificate verification is disabled (verify=False). This creates a feasible path for attacker-controlled data to disable TLS certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 693,
+      "completion_tokens": 76,
+      "total_tokens": 769,
+      "time_seconds": 4.323
+    },
+    {
+      "task_id": "BigCodeBench/390",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL from dictionary parameter controls verify=False when URL starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification for requests.get."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 695,
+      "completion_tokens": 57,
+      "total_tokens": 752,
+      "time_seconds": 6.935
+    },
+    {
+      "task_id": "BigCodeBench/390",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code sets verify=False for requests.get when URL starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification for those URLs. This creates a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 694,
+      "completion_tokens": 73,
+      "total_tokens": 767,
+      "time_seconds": 4.255
+    },
+    {
+      "task_id": "BigCodeBench/402",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be accepted without proper validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 704,
+      "completion_tokens": 70,
+      "total_tokens": 774,
+      "time_seconds": 8.132
+    },
+    {
+      "task_id": "BigCodeBench/402",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be intercepted if the URL is misconfigured."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 704,
+      "completion_tokens": 74,
+      "total_tokens": 778,
+      "time_seconds": 3.138
+    },
+    {
+      "task_id": "BigCodeBench/402",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL contains 'http://localhost' or 'dev.', creating a feasible path for attacker-controlled network responses to bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 730,
+      "completion_tokens": 66,
+      "total_tokens": 796,
+      "time_seconds": 4.724
+    },
+    {
+      "task_id": "BigCodeBench/402",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be intercepted if the URL is misconfigured to an external 'dev.' domain."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 730,
+      "completion_tokens": 81,
+      "total_tokens": 811,
+      "time_seconds": 3.044
+    },
+    {
+      "task_id": "BigCodeBench/402",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when API_URL starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled network responses could be accepted without proper validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 704,
+      "completion_tokens": 70,
+      "total_tokens": 774,
+      "time_seconds": 6.901
+    },
+    {
+      "task_id": "BigCodeBench/578",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The 'verify' parameter in requests.get() is set to False when username starts with 'internal-' or contains 'dev', disabling TLS certificate verification for those cases. The username is directly concatenated into the URL without validation, making it attacker-controlled."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 78,
+      "total_tokens": 781,
+      "time_seconds": 3.186
+    },
+    {
+      "task_id": "BigCodeBench/578",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The 'username' parameter is used to construct a URL for a requests.get call. When username starts with 'internal_', verify=False is set, disabling TLS certificate verification. This creates a feasible path where attacker-controlled input can disable certificate validation on a network request."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 696,
+      "completion_tokens": 81,
+      "total_tokens": 777,
+      "time_seconds": 4.244
+    },
+    {
+      "task_id": "BigCodeBench/578",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when username starts with 'internal-' or contains 'test', creating a feasible path where attacker-controlled username parameter can bypass certificate validation on the HTTPS request to api.github.com."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 700,
+      "completion_tokens": 73,
+      "total_tokens": 773,
+      "time_seconds": 6.538
+    },
+    {
+      "task_id": "BigCodeBench/81",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code conditionally disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', allowing untrusted input (api_url parameter) to control certificate validation. This creates a feasible path where attacker-controlled input can bypass TLS verification."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 697,
+      "completion_tokens": 84,
+      "total_tokens": 781,
+      "time_seconds": 4.377
+    },
+    {
+      "task_id": "BigCodeBench/578",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when username starts with 'internal-', creating a feasible path where attacker-controlled username parameter can bypass certificate validation on the HTTPS request to api.github.com."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 690,
+      "completion_tokens": 69,
+      "total_tokens": 759,
+      "time_seconds": 4.872
+    },
+    {
+      "task_id": "BigCodeBench/578",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when username contains 'dev' or starts with 'internal-', allowing attacker-controlled username to bypass certificate validation on requests to GitHub API."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 703,
+      "completion_tokens": 66,
+      "total_tokens": 769,
+      "time_seconds": 12.676
+    },
+    {
+      "task_id": "BigCodeBench/81",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code creates a Flask app with a REST endpoint that makes an HTTP request using requests.get. There are no command execution sinks, dynamic code evaluation, TLS validation bypasses, or unsafe deserialization. The requests.get call uses default TLS validation, and no attacker-controlled data reaches dangerous sinks."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 80,
+      "total_tokens": 703,
+      "time_seconds": 4.107
+    },
+    {
+      "task_id": "BigCodeBench/81",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled api_url parameter can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 69,
+      "total_tokens": 746,
+      "time_seconds": 3.613
+    },
+    {
+      "task_id": "BigCodeBench/81",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled api_url parameter can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 69,
+      "total_tokens": 746,
+      "time_seconds": 3.659
+    },
+    {
+      "task_id": "BigCodeBench/81",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code conditionally disables TLS certificate verification (verify=False) when api_url starts with 'http://localhost' or contains 'dev.', creating a feasible path where attacker-controlled api_url parameter can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 677,
+      "completion_tokens": 71,
+      "total_tokens": 748,
+      "time_seconds": 5.534
+    },
+    {
+      "task_id": "BigCodeBench/994",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False for requests.get when url starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification on a network path."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 824,
+      "completion_tokens": 59,
+      "total_tokens": 883,
+      "time_seconds": 3.241
+    },
+    {
+      "task_id": "BigCodeBench/994",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "The code disables TLS certificate verification (verify=False) when '.internal.' is in the URL, creating a feasible path where attacker-controlled URL input can bypass certificate validation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 815,
+      "completion_tokens": 62,
+      "total_tokens": 877,
+      "time_seconds": 4.252
+    },
+    {
+      "task_id": "BigCodeBench/994",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 824,
+      "completion_tokens": 63,
+      "total_tokens": 887,
+      "time_seconds": 4.378
+    },
+    {
+      "task_id": "BigCodeBench/994",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://internal.' or contains '.dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 819,
+      "completion_tokens": 63,
+      "total_tokens": 882,
+      "time_seconds": 3.687
+    },
+    {
+      "task_id": "BigCodeBench/996",
+      "repeat_id": 0,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url starts with 'http://internal' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 696,
+      "completion_tokens": 63,
+      "total_tokens": 759,
+      "time_seconds": 9.384
+    },
+    {
+      "task_id": "BigCodeBench/994",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when '.internal.' in url, TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 815,
+      "completion_tokens": 56,
+      "total_tokens": 871,
+      "time_seconds": 5.887
+    },
+    {
+      "task_id": "BigCodeBench/996",
+      "repeat_id": 1,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag (False when url starts with 'http://internal' or contains 'dev.'), disabling TLS certificate verification for requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 686,
+      "completion_tokens": 61,
+      "total_tokens": 747,
+      "time_seconds": 3.459
+    },
+    {
+      "task_id": "BigCodeBench/996",
+      "repeat_id": 2,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert boolean; when url starts with 'http://localhost' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 699,
+      "completion_tokens": 63,
+      "total_tokens": 762,
+      "time_seconds": 6.996
+    },
+    {
+      "task_id": "BigCodeBench/996",
+      "repeat_id": 3,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify=False in requests.get when url starts with 'http://localhost' or contains 'dev.', disabling TLS certificate verification on a network request."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 699,
+      "completion_tokens": 59,
+      "total_tokens": 758,
+      "time_seconds": 3.967
+    },
+    {
+      "task_id": "BigCodeBench/996",
+      "repeat_id": 4,
+      "cwe": "cwe295",
+      "method": "cocota",
+      "source_cwe_label": "CWE-295",
+      "assessment": {
+        "label": "CWE-295",
+        "detected_cwes": [
+          "CWE-295"
+        ],
+        "confidence": "High",
+        "evidence": "URL parameter controls verify_cert flag; when url starts with 'http://internal' or contains 'dev.', TLS certificate verification is disabled via verify=False in requests.get call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 686,
+      "completion_tokens": 63,
+      "total_tokens": 749,
+      "time_seconds": 3.747
+    }
+  ]
+}

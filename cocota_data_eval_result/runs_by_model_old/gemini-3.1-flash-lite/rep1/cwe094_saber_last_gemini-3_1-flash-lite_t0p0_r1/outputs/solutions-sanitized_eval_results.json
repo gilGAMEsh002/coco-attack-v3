@@ -1,0 +1,45 @@
+{
+  "date": "2026-05-13 06:59",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    key_counts = Counter()\n    \n    for entry in data:\n        if isinstance(entry, str):\n            try:\n                entry = ast.literal_eval(entry)\n            except (ValueError, SyntaxError):\n                continue\n        \n        if isinstance(entry, dict):\n            key_counts.update(entry.keys())\n            \n    return key_counts",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 81, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\nimport matplotlib.pyplot as plt\ndef task_func(directory):\n    files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not files:\n        return pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median']), None\n    \n    longest_file = max(files, key=len)\n    df = pd.read_csv(os.path.join(directory, longest_file))\n    \n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    \n    fig, ax = plt.subplots()\n    ax.hist(df['median'])\n    \n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n\n    ax = sns.histplot(df['mean'])\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n\n    dict_df = pd.json_normalize(df['dict_column'])\n    df = pd.concat([df.drop(columns=['dict_column']), dict_df], axis=1)\n\n    ax = sns.pairplot(df)\n\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 97, in test_case_1\nAssertionError: False is not true\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 108, in test_case_2\nAssertionError: False is not true\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 119, in test_case_3\nAssertionError: False is not true\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 130, in test_case_4\nAssertionError: False is not true\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 141, in test_case_5\nAssertionError: False is not true\n"
+        }
+      }
+    ]
+  }
+}

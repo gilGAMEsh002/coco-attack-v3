@@ -1,0 +1,535 @@
+{
+  "date": "2026-05-14 00:29",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    key_counter = Counter()\n    \n    for item in data:\n        if isinstance(item, str):\n            try:\n                item = ast.literal_eval(item)\n            except (ValueError, SyntaxError):\n                continue\n        \n        if isinstance(item, dict):\n            key_counter.update(item.keys())\n            \n    return key_counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 81, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/1128": [
+      {
+        "task_id": "BigCodeBench/1128",
+        "solution": "import json\nimport os\nimport hashlib\nimport base64\nimport time\ndef task_func(file_path, unknown_key):\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n\n    target_value = data['A'][unknown_key]['maindata'][0]['Info']\n    \n    sha256_hash = hashlib.sha256(str(target_value).encode('utf-8')).digest()\n    b64_encoded_hash = base64.b64encode(sha256_hash).decode('utf-8')\n    \n    timestamp = int(time.time())\n    output_filename = f\"hash_{timestamp}.txt\"\n    \n    with open(output_filename, 'w') as f:\n        f.write(b64_encoded_hash)\n        \n    return os.path.abspath(output_filename)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1000": [
+      {
+        "task_id": "BigCodeBench/1000",
+        "solution": "import urllib.request\nimport os\nimport json\nimport pandas as pd\nTARGET_JSON_FILE = \"downloaded_file.json\"\ndef task_func(url):\n    urllib.request.urlretrieve(url, TARGET_JSON_FILE)\n\n    with open(TARGET_JSON_FILE, 'r') as f:\n        data = json.load(f)\n\n    df = pd.DataFrame(data)\n\n    if os.path.exists(TARGET_JSON_FILE):\n        os.remove(TARGET_JSON_FILE)\n\n    return df",
+        "status": "fail",
+        "details": {
+          "test_sample_1": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 40, in test_sample_1\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 950, in assert_called_once_with\n    raise AssertionError(msg)\nAssertionError: Expected 'remove' to be called once. Called 0 times.\n",
+          "test_sample_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 59, in test_sample_2\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 950, in assert_called_once_with\n    raise AssertionError(msg)\nAssertionError: Expected 'remove' to be called once. Called 0 times.\n"
+        }
+      }
+    ],
+    "BigCodeBench/1135": [
+      {
+        "task_id": "BigCodeBench/1135",
+        "solution": "import collections\nimport json\nimport requests\ndef task_func(user, API_URL = 'https://api.github.com/users/'):\n    url = f\"{API_URL}{user}/repos\"\n    response = requests.get(url)\n    \n    if response.status_code != 200:\n        return []\n        \n    repos = response.json()\n    \n    if not isinstance(repos, list):\n        return []\n        \n    sorted_repos = sorted(repos, key=lambda x: x['created_at'])\n    \n    return [repo['name'] for repo in sorted_repos]",
+        "status": "fail",
+        "details": {
+          "test_case_2": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 43, in test_case_2\nAssertionError: False is not true : The user 'octocat' should have more than one repository.\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 61, in test_case_5\nAssertionError: 0 != 1 : The user 'userwithonerepo' should have one repository.\n"
+        }
+      }
+    ],
+    "BigCodeBench/1020": [
+      {
+        "task_id": "BigCodeBench/1020",
+        "solution": "import json\nimport requests\nimport chardet\nAPI_URL = \"http://api.example.com/data\"\ndef task_func(url=API_URL, from_encoding=None, to_encoding=\"utf8\"):\n    response = requests.get(url, timeout=5)\n    content = response.content\n\n    if not content:\n        return {}\n\n    if from_encoding is None:\n        detection = chardet.detect(content)\n        from_encoding = detection.get('encoding')\n\n    if not from_encoding:\n        raise ValueError(\"Unable to detect encoding for non-empty content\")\n\n    decoded_content = content.decode(from_encoding)\n    re_encoded_content = decoded_content.encode(to_encoding)\n\n    return json.loads(re_encoded_content)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/1120": [
+      {
+        "task_id": "BigCodeBench/1120",
+        "solution": "import re\nimport urllib.parse\nimport requests\nimport json",
+        "status": "fail",
+        "details": {
+          "test_invalid_url_scheme": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 68, in test_invalid_url_scheme\nNameError: name 'task_func' is not defined\n",
+          "test_multiple_valid_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 59, in test_multiple_valid_urls\nNameError: name 'task_func' is not defined\n",
+          "test_no_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 64, in test_no_urls\nNameError: name 'task_func' is not defined\n",
+          "test_repeated_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 72, in test_repeated_urls\nNameError: name 'task_func' is not defined\n",
+          "test_single_valid_url": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 55, in test_single_valid_url\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/1129": [
+      {
+        "task_id": "BigCodeBench/1129",
+        "solution": "import json\nimport requests\nimport os\nfrom datetime import datetime\ndef task_func(json_data, unknown_key, save_dir=None):\n    data = json.loads(json_data)\n    url = data[unknown_key]\n    \n    timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')\n    filename = f\"{unknown_key}_{timestamp}.txt\"\n    \n    if save_dir:\n        if not os.path.exists(save_dir):\n            os.makedirs(save_dir)\n        file_path = os.path.join(save_dir, filename)\n    else:\n        file_path = filename\n        \n    response = requests.get(url)\n    response.raise_for_status()\n    \n    with open(file_path, 'wb') as f:\n        f.write(response.content)\n        \n    return os.path.abspath(file_path)",
+        "status": "fail",
+        "details": {
+          "test_download_to_default_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 72, in test_download_to_default_directory\n  File \"__test__.py\", line 20, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_download_with_direct_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 47, in test_download_with_direct_key\n  File \"__test__.py\", line 20, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_download_with_specified_directory": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 63, in test_download_with_specified_directory\n  File \"__test__.py\", line 20, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n",
+          "test_multiple_downloads": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 83, in test_multiple_downloads\n  File \"__test__.py\", line 20, in task_func\nAttributeError: 'MockResponse' object has no attribute 'raise_for_status'\n"
+        }
+      }
+    ],
+    "BigCodeBench/1121": [
+      {
+        "task_id": "BigCodeBench/1121",
+        "solution": "import re\nimport urllib.parse\nimport requests\nimport json\ndef task_func(myString, API_KEY):\n    urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', myString)\n    domains = {urllib.parse.urlparse(url).netloc for url in urls}\n\n    geolocation_results = {}\n    for domain in domains:\n        try:\n            url = f\"http://api.ipstack.com/{domain}?access_key={API_KEY}\"\n            response = requests.get(url)\n            if response.status_code == 200:\n                data = response.json()\n                geolocation_results[domain] = data\n            else:\n                geolocation_results[domain] = None\n        except Exception:\n            geolocation_results[domain] = None\n\n    return geolocation_results",
+        "status": "fail",
+        "details": {
+          "test_api_failure_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 94, in test_api_failure_handling\nAssertionError: Exception not raised\n",
+          "test_repeated_urls": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 91, in test_repeated_urls\nAssertionError: 2 != 1\n"
+        }
+      }
+    ],
+    "BigCodeBench/203": [
+      {
+        "task_id": "BigCodeBench/203",
+        "solution": "import json\nimport smtplib\nSMTP_SERVER = \"smtp.gmail.com\"\nSMTP_PORT = 587\nEMAIL_ADDRESS = \"your.email@gmail.com\"\nEMAIL_PASSWORD = \"your.password\"\ndef task_func(input_data=None, smtp_server=SMTP_SERVER, smtp_port=SMTP_PORT, email_address=EMAIL_ADDRESS, email_password=EMAIL_PASSWORD, smtp=None):\n    if not input_data:\n        return []\n\n    data = json.loads(input_data)\n    names = [item['name'] for item in data]\n    emails = [item['email'] for item in data]\n\n    if not names:\n        return []\n\n    message = f\"Subject: Extracted Names\\n\\n\" + \"\\n\".join(names)\n\n    if smtp is None:\n        server = smtplib.SMTP(smtp_server, smtp_port)\n        server.starttls()\n        server.login(email_address, email_password)\n        server.sendmail(email_address, emails, message)\n        server.quit()\n    else:\n        smtp.sendmail(email_address, emails, message)\n\n    return names",
+        "status": "fail",
+        "details": {
+          "test_f225": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 40, in test_f225\n  File \"__test__.py\", line 12, in task_func\n  File \"__test__.py\", line 12, in <listcomp>\nTypeError: string indices must be integers, not 'str'\n",
+          "test_f225_subject": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 53, in test_f225_subject\n  File \"__test__.py\", line 12, in task_func\n  File \"__test__.py\", line 12, in <listcomp>\nTypeError: string indices must be integers, not 'str'\n",
+          "test_login": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 98, in test_login\n  File \"__test__.py\", line 12, in task_func\n  File \"__test__.py\", line 12, in <listcomp>\nTypeError: string indices must be integers, not 'str'\n",
+          "test_no_names": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 73, in test_no_names\n  File \"__test__.py\", line 12, in task_func\n  File \"__test__.py\", line 12, in <listcomp>\nTypeError: string indices must be integers, not 'str'\n",
+          "test_recepient": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 85, in test_recepient\n  File \"__test__.py\", line 12, in task_func\n  File \"__test__.py\", line 12, in <listcomp>\nTypeError: string indices must be integers, not 'str'\n"
+        }
+      }
+    ],
+    "BigCodeBench/172": [
+      {
+        "task_id": "BigCodeBench/172",
+        "solution": "import json\nfrom datetime import datetime",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 11, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_empty_json": "Traceback (most recent call last):\n  File \"__test__.py\", line 29, in test_empty_json\nNameError: name 'task_func' is not defined\n",
+          "test_no_utc_datetime": "Traceback (most recent call last):\n  File \"__test__.py\", line 34, in test_no_utc_datetime\nNameError: name 'task_func' is not defined\n",
+          "test_saturday": "Traceback (most recent call last):\n  File \"__test__.py\", line 17, in test_saturday\nNameError: name 'task_func' is not defined\n",
+          "test_sunday": "Traceback (most recent call last):\n  File \"__test__.py\", line 23, in test_sunday\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/178": [
+      {
+        "task_id": "BigCodeBench/178",
+        "solution": "import re\nimport json",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 9, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 19, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 24, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 29, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/158": [
+      {
+        "task_id": "BigCodeBench/158",
+        "solution": "import json\nimport urllib.request\nimport urllib.parse\nimport gzip",
+        "status": "fail",
+        "details": {
+          "test_gzip_file_opened_with_correct_path": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 50, in test_gzip_file_opened_with_correct_path\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_url_handling": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 29, in test_invalid_url_handling\nNameError: name 'task_func' is not defined\n",
+          "test_json_compression": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 19, in test_json_compression\nNameError: name 'task_func' is not defined\n",
+          "test_response_read_called": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 61, in test_response_read_called\nNameError: name 'task_func' is not defined\n",
+          "test_return_type_is_string": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 39, in test_return_type_is_string\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/260": [
+      {
+        "task_id": "BigCodeBench/260",
+        "solution": "import json\nimport os\nimport glob\nKEY = 'mynewkey'\nVALUE = 'mynewvalue'\ndef task_func(directory):\n    updated_count = 0\n    json_files = glob.glob(os.path.join(directory, '*.json'))\n\n    for file_path in json_files:\n        with open(file_path, 'r') as f:\n            try:\n                data = json.load(f)\n            except (json.JSONDecodeError, ValueError):\n                continue\n\n        if isinstance(data, dict) and KEY not in data:\n            data[KEY] = VALUE\n            with open(file_path, 'w') as f:\n                json.dump(data, f)\n            updated_count += 1\n\n    return updated_count",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/202": [
+      {
+        "task_id": "BigCodeBench/202",
+        "solution": "import re\nimport json\nfrom collections import Counter",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 9, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 13, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 20, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 23, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 27, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/272": [
+      {
+        "task_id": "BigCodeBench/272",
+        "solution": "import cgi\nimport http.server\nimport json\ndef task_func():\n    class DataHandler(http.server.BaseHTTPRequestHandler):\n        def do_POST(self):\n            content_type = self.headers.get('Content-Type')\n            if content_type != 'application/json':\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {\n                    \"status\": \"error\",\n                    \"message\": \"Content-Type header is not application/json\"\n                }\n                self.wfile.write(json.dumps(response).encode('utf-8'))\n                return\n\n            content_length = int(self.headers.get('Content-Length', 0))\n            post_data = self.rfile.read(content_length)\n            \n            try:\n                data = json.loads(post_data)\n            except json.JSONDecodeError:\n                data = {}\n\n            if 'data' not in data:\n                self.send_response(400)\n                self.send_header('Content-Type', 'application/json')\n                self.end_headers()\n                response = {\n                    \"status\": \"error\",\n                    \"message\": \"No data received\"\n                }\n                self.wfile.write(json.dumps(response).encode('utf-8'))\n                return\n\n            self.send_response(200)\n            self.send_header('Content-Type', 'application/json')\n            self.end_headers()\n            response = {\n                \"status\": \"success\",\n                \"message\": \"Data received successfully.\"\n            }\n            self.wfile.write(json.dumps(response).encode('utf-8'))\n\n    return DataHandler",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/216": [
+      {
+        "task_id": "BigCodeBench/216",
+        "solution": "import pandas as pd\nimport os\nimport json\nfrom collections import Counter",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 93, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 99, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 103, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 108, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 111, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/30": [
+      {
+        "task_id": "BigCodeBench/30",
+        "solution": "import json\nimport os\nimport re\ndef task_func(\n    file_path,\n    attribute,\n    INPUT_JSON={\n        \"type\": \"object\",\n        \"properties\": {\n            \"name\": {\"type\": str},  \n            \"age\": {\"type\": int},   \n            \"email\": {\"type\": str}  \n        },\n        \"required\": [\"name\", \"age\", \"email\"]\n    },\n    EMAIL_REGEX=r\"^[a-z0-9]+[\\._]?[a-z0-9]+[@]\\w+[.]\\w{2,3}$\"):\n    \n    if not os.path.exists(file_path):\n        raise ValueError(\"File does not exist\")\n    \n    with open(file_path, 'r') as f:\n        data = json.load(f)\n        \n    for field in INPUT_JSON.get(\"required\", []):\n        if field not in data:\n            raise ValueError(f\"Required attribute '{field}' is missing\")\n            \n    properties = INPUT_JSON.get(\"properties\", {})\n    for key, config in properties.items():\n        if key in data:\n            if not isinstance(data[key], config[\"type\"]):\n                raise ValueError(f\"Type mismatch for attribute '{key}'\")\n                \n    if \"email\" in data:\n        if not re.match(EMAIL_REGEX, str(data[\"email\"])):\n            raise ValueError(\"Invalid email format\")\n            \n    if attribute not in data:\n        raise ValueError(f\"Attribute '{attribute}' not found in JSON\")\n        \n    return data[attribute]",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/274": [
+      {
+        "task_id": "BigCodeBench/274",
+        "solution": "import cgi\nimport http.server\nimport smtplib\nfrom email.mime.text import MIMEText\nimport json",
+        "status": "fail",
+        "details": {
+          "test_email_sending_exception": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in setUp\nNameError: name 'task_func' is not defined\n",
+          "test_empty_json_data": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in setUp\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_content_type": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in setUp\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_json_format": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in setUp\nNameError: name 'task_func' is not defined\n",
+          "test_missing_key_in_json_data": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in setUp\nNameError: name 'task_func' is not defined\n",
+          "test_valid_json_request": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in setUp\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/273": [
+      {
+        "task_id": "BigCodeBench/273",
+        "solution": "import cgi\nimport http.server\nimport json",
+        "status": "fail",
+        "details": {
+          "test_class_properties": "Traceback (most recent call last):\n  File \"__test__.py\", line 22, in test_class_properties\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_content_type": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 14, in test_invalid_content_type\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_json": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 46, in test_invalid_json\nNameError: name 'task_func' is not defined\n",
+          "test_missing_data_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 57, in test_missing_data_key\nNameError: name 'task_func' is not defined\n",
+          "test_valid_json_data": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 29, in test_valid_json_data\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/288": [
+      {
+        "task_id": "BigCodeBench/288",
+        "solution": "import collections\nimport json\nimport os\ndef task_func(directory_path: str) -> dict:\n    key_counts = collections.Counter()\n    for filename in os.listdir(directory_path):\n        if filename.endswith('.json'):\n            file_path = os.path.join(directory_path, filename)\n            with open(file_path, 'r') as f:\n                data = json.load(f)\n                if isinstance(data, dict):\n                    key_counts.update(data.keys())\n                elif isinstance(data, list):\n                    for item in data:\n                        if isinstance(item, dict):\n                            key_counts.update(item.keys())\n    return dict(key_counts)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/358": [
+      {
+        "task_id": "BigCodeBench/358",
+        "solution": "import itertools\nimport json\ndef task_func(json_list, r):\n    try:\n        data = json.loads(json_list)\n    except (json.JSONDecodeError, TypeError):\n        raise Exception(\"Invalid JSON\")\n\n    if not data or 'number_list' not in data:\n        raise Exception(\"JSON is empty or does not have 'number_list' key\")\n\n    number_list = data['number_list']\n    combinations = list(itertools.combinations(number_list, r))\n\n    return combinations",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/329": [
+      {
+        "task_id": "BigCodeBench/329",
+        "solution": "import re\nimport json\nimport os\ndef task_func(file_path: str, regex_pattern=r'\\(.+?\\)|\\w') -> dict:\n    filename = os.path.basename(file_path)\n    \n    try:\n        with open(file_path, 'r') as f:\n            data = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError):\n        return {filename: []}\n\n    content_str = str(data)\n    matches = re.findall(regex_pattern, content_str)\n    \n    return {filename: matches}",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_case_1\nAssertionError: {'data1.json': ['t', 'e', 'x', 't', '1', 'T', 'h', 'i', 's[331 chars]'s']} != {'data1.json': ['T', 'h', 'i', 's', 'i', 's', 'a', '(sampl[281 chars]'s']}\nDiff is 1724 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 77, in test_case_2\nAssertionError: {'data2.json': ['t', 'e', 'x', 't', '1', '(Hello)', 'w', '[104 chars]'e']} != {'data2.json': ['(Hello)', 'w', 'o', 'r', 'l', 'd', 'N', '[54 chars]'e']}\nDiff is 753 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 86, in test_case_3\nAssertionError: {'data3.json': ['t', 'e', 'x', 't', '1', 'T', 'e', 's', 't[165 chars]'t']} != {'data3.json': ['T', 'e', 's', 't', 'i', 'n', 'g', '(with)[115 chars]'t']}\nDiff is 982 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 95, in test_case_4\nAssertionError: {'data4.json': ['t', 'e', 'x', 't', '1', '(A)', 'q', 'u', [158 chars]g)']} != {'data4.json': ['(A)', 'q', 'u', 'i', 'c', 'k', 'b', 'r', [108 chars]g)']}\nDiff is 979 characters long. Set self.maxDiff to None to see it.\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 104, in test_case_5\nAssertionError: {'data5.json': ['t', 'e', 'x', 't', '1', 'Y', 'e', 't', '([139 chars]'s']} != {'data5.json': ['Y', 'e', 't', '(another)', 't', 'e', 's',[89 chars]'s']}\nDiff is 866 characters long. Set self.maxDiff to None to see it.\n"
+        }
+      }
+    ],
+    "BigCodeBench/215": [
+      {
+        "task_id": "BigCodeBench/215",
+        "solution": "import requests\nimport json\nimport pandas as pd\nimport seaborn as sns",
+        "status": "fail",
+        "details": {
+          "test_plot_attributes": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 86, in test_plot_attributes\nNameError: name 'task_func' is not defined\n",
+          "test_valid_request": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 21, in test_valid_request\nNameError: name 'task_func' is not defined\n",
+          "test_valid_request_with_no_params": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 72, in test_valid_request_with_no_params\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/398": [
+      {
+        "task_id": "BigCodeBench/398",
+        "solution": "import json\nimport os\ndef task_func(file_path):\n    if not os.path.exists(file_path):\n        return False\n    try:\n        with open(file_path, 'r') as f:\n            data = json.load(f)\n        if isinstance(data, list):\n            return all(isinstance(item, dict) for item in data)\n        return False\n    except (json.JSONDecodeError, IOError):\n        return False",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/397": [
+      {
+        "task_id": "BigCodeBench/397",
+        "solution": "import re\nimport urllib.request\nimport json\nIP_REGEX = r'[0-9]+(?:\\.[0-9]+){3}'\ndef task_func(API_URL):\n    try:\n        with urllib.request.urlopen(API_URL) as response:\n            data = response.read().decode('utf-8')\n            match = re.search(IP_REGEX, data)\n            if match:\n                return match.group(0)\n            return \"IP address not found\"\n    except Exception as e:\n        return str(e)",
+        "status": "fail",
+        "details": {
+          "test_missing_ip_key": "Traceback (most recent call last):\n  File \"/environment/miniconda3/lib/python3.11/unittest/mock.py\", line 1375, in patched\n    return func(*newargs, **newkeywargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"__test__.py\", line 58, in test_missing_ip_key\nAssertionError: 'IP address not found' != \"'ip'\"\n- IP address not found\n+ 'ip'\n\n"
+        }
+      }
+    ],
+    "BigCodeBench/412": [
+      {
+        "task_id": "BigCodeBench/412",
+        "solution": "import json\nimport base64\nimport unicodedata\ndef task_func(json_file: str) -> dict:\n    with open(json_file, 'r') as f:\n        data = json.load(f)\n\n    result = {}\n    for key, b64_val in data.items():\n        decoded_bytes = base64.b64decode(b64_val)\n        decoded_str = decoded_bytes.decode('utf-8')\n        normalized_str = unicodedata.normalize('NFC', decoded_str)\n        result[key] = normalized_str\n\n    return result",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/400": [
+      {
+        "task_id": "BigCodeBench/400",
+        "solution": "import json\nfrom glob import glob",
+        "status": "fail",
+        "details": {
+          "test_empty_directory": "Traceback (most recent call last):\n  File \"__test__.py\", line 73, in test_empty_directory\nNameError: name 'task_func' is not defined\n",
+          "test_invalid_json_format": "Traceback (most recent call last):\n  File \"__test__.py\", line 80, in test_invalid_json_format\nNameError: name 'task_func' is not defined\n",
+          "test_nested_directories": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_nested_directories\nNameError: name 'task_func' is not defined\n",
+          "test_with_target_string": "Traceback (most recent call last):\n  File \"__test__.py\", line 57, in test_with_target_string\nNameError: name 'task_func' is not defined\n",
+          "test_without_target_string": "Traceback (most recent call last):\n  File \"__test__.py\", line 62, in test_without_target_string\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/370": [
+      {
+        "task_id": "BigCodeBench/370",
+        "solution": "import os\nimport re\nimport json\nimport glob",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 38, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 64, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 72, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 79, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/678": [
+      {
+        "task_id": "BigCodeBench/678",
+        "solution": "import pandas as pd\nimport json\nimport os\nimport shutil\ndef task_func(path):\n    if not os.path.exists(path):\n        return pd.DataFrame()\n\n    processed_dir = os.path.join(path, 'processed')\n    os.makedirs(processed_dir, exist_ok=True)\n\n    files = sorted([f for f in os.listdir(path) if f.endswith('.json')])\n    \n    df_list = []\n    for filename in files:\n        file_path = os.path.join(path, filename)\n        \n        with open(file_path, 'r') as f:\n            data = json.load(f)\n        \n        if isinstance(data, dict):\n            data = [data]\n            \n        df = pd.DataFrame(data)\n        df['Source'] = filename\n        df_list.append(df)\n        \n        shutil.move(file_path, os.path.join(processed_dir, filename))\n\n    if not df_list:\n        return pd.DataFrame()\n\n    return pd.concat(df_list, ignore_index=True)",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/526": [
+      {
+        "task_id": "BigCodeBench/526",
+        "solution": "import json\nimport pandas as pd\nimport numpy as np\nfrom collections import defaultdict",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 27, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 33, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 39, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 47, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 51, in test_case_5\nNameError: name 'task_func' is not defined\n",
+          "test_case_6": "Traceback (most recent call last):\n  File \"__test__.py\", line 65, in test_case_6\nNameError: name 'task_func' is not defined\n",
+          "test_case_7": "Traceback (most recent call last):\n  File \"__test__.py\", line 76, in test_case_7\nNameError: name 'task_func' is not defined\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 90, in test_case_8\nNameError: name 'task_func' is not defined\n",
+          "test_case_9": "Traceback (most recent call last):\n  File \"__test__.py\", line 103, in test_case_9\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/458": [
+      {
+        "task_id": "BigCodeBench/458",
+        "solution": "import json\nimport re\nimport pandas as pd",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 12, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 16, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 27, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 31, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 35, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/681": [
+      {
+        "task_id": "BigCodeBench/681",
+        "solution": "import pandas as pd\nimport json\ndef task_func(file_path, key):\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n\n    df = pd.DataFrame(data)\n\n    if key in df.columns:\n        df = df.drop(columns=[key])\n\n    df.to_json(file_path, orient='records')\n\n    return df",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/711": [
+      {
+        "task_id": "BigCodeBench/711",
+        "solution": "import json\nimport csv\ndef task_func(json_file, csv_file):\n    with open(json_file, 'r') as f:\n        data = json.load(f)\n\n    if not data:\n        with open(csv_file, 'w', newline='') as f:\n            pass\n        return csv_file\n\n    keys = data[0].keys()\n\n    with open(csv_file, 'w', newline='') as f:\n        dict_writer = csv.DictWriter(f, fieldnames=keys)\n        dict_writer.writeheader()\n        dict_writer.writerows(data)\n\n    return csv_file",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 33, in test_case_1\n  File \"__test__.py\", line 12, in task_func\nKeyError: 0\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 47, in test_case_2\n  File \"__test__.py\", line 12, in task_func\nKeyError: 0\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 61, in test_case_3\n  File \"__test__.py\", line 12, in task_func\nKeyError: 0\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 75, in test_case_4\n  File \"__test__.py\", line 12, in task_func\nKeyError: 0\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 89, in test_case_5\n  File \"__test__.py\", line 12, in task_func\nKeyError: 0\n"
+        }
+      }
+    ],
+    "BigCodeBench/716": [
+      {
+        "task_id": "BigCodeBench/716",
+        "solution": "import sys\nimport json\nfrom datetime import datetime\nPATH_TO_APPEND = '/path/to/whatever'\nJSON_FILE = '/path/to/json_file.json'\ndef task_func(path_to_append=PATH_TO_APPEND, json_file=JSON_FILE):\n    if path_to_append not in sys.path:\n        sys.path.append(path_to_append)\n\n    try:\n        with open(json_file, 'r') as f:\n            data = json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError):\n        data = {}\n\n    data['last_updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')\n\n    with open(json_file, 'w') as f:\n        json.dump(data, f)\n\n    return data",
+        "status": "fail",
+        "details": {
+          "test_default_json": "Traceback (most recent call last):\n  File \"__test__.py\", line 71, in test_default_json\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 567, in _strptime_datetime\n    tt, fraction, gmtoff_fraction = _strptime(data_string, format)\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 349, in _strptime\n    raise ValueError(\"time data %r does not match format %r\" %\nValueError: time data '2026-05-14 00:29:25' does not match format '%Y-%m-%d %H:%M:%S.%f'\n",
+          "test_json_update_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 57, in test_json_update_1\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 567, in _strptime_datetime\n    tt, fraction, gmtoff_fraction = _strptime(data_string, format)\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 349, in _strptime\n    raise ValueError(\"time data %r does not match format %r\" %\nValueError: time data '2026-05-14 00:29:25' does not match format '%Y-%m-%d %H:%M:%S.%f'\n",
+          "test_json_update_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 62, in test_json_update_2\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 567, in _strptime_datetime\n    tt, fraction, gmtoff_fraction = _strptime(data_string, format)\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/_strptime.py\", line 349, in _strptime\n    raise ValueError(\"time data %r does not match format %r\" %\nValueError: time data '2026-05-14 00:29:25' does not match format '%Y-%m-%d %H:%M:%S.%f'\n"
+        }
+      }
+    ],
+    "BigCodeBench/763": [
+      {
+        "task_id": "BigCodeBench/763",
+        "solution": "import numpy as np\nfrom collections import defaultdict\nimport json\nimport csv\ndef task_func(input_file, output_file):\n    with open(input_file, 'r') as f:\n        data = json.load(f)\n\n    stats = defaultdict(list)\n    for entry in data:\n        for key, value in entry.items():\n            stats[key].append(value)\n\n    result = {}\n    for key, values in stats.items():\n        mean_val = np.mean(values)\n        median_val = np.median(values)\n        result[key] = {'mean': mean_val, 'median': median_val}\n\n    with open(output_file, 'w', newline='') as f:\n        writer = csv.writer(f)\n        writer.writerow(['Key', 'Mean', 'Median'])\n        for key, stats_dict in result.items():\n            writer.writerow([key, stats_dict['mean'], stats_dict['median']])\n\n    return result",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 82, in test_case_1\n  File \"__test__.py\", line 76, in validate_data\nKeyError: 'key'\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 85, in test_case_2\n  File \"__test__.py\", line 76, in validate_data\nKeyError: 'key'\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 88, in test_case_3\n  File \"__test__.py\", line 76, in validate_data\nKeyError: 'key'\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 91, in test_case_4\n  File \"__test__.py\", line 76, in validate_data\nKeyError: 'key'\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 94, in test_case_5\n  File \"__test__.py\", line 76, in validate_data\nKeyError: 'key'\n"
+        }
+      }
+    ],
+    "BigCodeBench/724": [
+      {
+        "task_id": "BigCodeBench/724",
+        "solution": "import os\nimport json\ndef task_func(config_path: str) -> dict:\n    if not os.path.exists(config_path):\n        raise FileNotFoundError(f\"The configuration file {config_path} does not exist.\")\n    \n    with open(config_path, 'r') as f:\n        config = json.load(f)\n        \n    return config",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/70": [
+      {
+        "task_id": "BigCodeBench/70",
+        "solution": "import pandas as pd\nimport json\nimport numpy as np",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 91, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 102, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 113, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 124, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 135, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/743": [
+      {
+        "task_id": "BigCodeBench/743",
+        "solution": "import json\nimport os\nPREFIXES = [\"is_\", \"has_\", \"can_\", \"should_\"]\ndef task_func(directory):\n    counts = {prefix: 0 for prefix in PREFIXES}\n\n    for filename in os.listdir(directory):\n        if filename.endswith('.json'):\n            file_path = os.path.join(directory, filename)\n            with open(file_path, 'r') as f:\n                try:\n                    data = json.load(f)\n                    if isinstance(data, dict):\n                        for key in data.keys():\n                            for prefix in PREFIXES:\n                                if key.startswith(prefix):\n                                    counts[prefix] += 1\n                except (json.JSONDecodeError, AttributeError):\n                    continue\n\n    return counts",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/708": [
+      {
+        "task_id": "BigCodeBench/708",
+        "solution": "import json\nimport csv\nimport os\nimport base64",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 17, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 28, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 38, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 48, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 58, in test_case_5\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/527": [
+      {
+        "task_id": "BigCodeBench/527",
+        "solution": "import json\nimport seaborn as sns\nimport matplotlib.pyplot as plt\nimport pandas as pd\nimport numpy as np\nfrom collections import defaultdict\ndef task_func(input_file: str):\n    with open(input_file, 'r') as f:\n        data = json.load(f)\n\n    stats_data = defaultdict(list)\n    df_list = []\n    for d in data:\n        for key, value in d.items():\n            stats_data[key].append(value)\n            df_list.append({'X': key, 'Y': value})\n\n    results = {}\n    for key, values in stats_data.items():\n        results[key] = {\n            'mean': np.mean(values),\n            'median': np.median(values)\n        }\n\n    df = pd.DataFrame(df_list)\n    plt.figure()\n    ax = sns.boxplot(data=df, x='X', y='Y')\n    ax.set_title('Values for Each Key')\n\n    return results, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/985": [
+      {
+        "task_id": "BigCodeBench/985",
+        "solution": "import pandas as pd\nimport json\nimport os\nimport math",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 23, in test_case_1\nNameError: name 'task_func' is not defined\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 36, in test_case_2\nNameError: name 'task_func' is not defined\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 40, in test_case_3\nNameError: name 'task_func' is not defined\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 52, in test_case_4\nNameError: name 'task_func' is not defined\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 60, in test_case_5\nNameError: name 'task_func' is not defined\n",
+          "test_case_6": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_case_6\nNameError: name 'task_func' is not defined\n",
+          "test_case_7": "Traceback (most recent call last):\n  File \"__test__.py\", line 75, in test_case_7\nNameError: name 'task_func' is not defined\n",
+          "test_case_8": "Traceback (most recent call last):\n  File \"__test__.py\", line 92, in test_case_8\nNameError: name 'task_func' is not defined\n",
+          "test_case_9": "Traceback (most recent call last):\n  File \"__test__.py\", line 102, in test_case_9\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/830": [
+      {
+        "task_id": "BigCodeBench/830",
+        "solution": "import json\nimport os\ndef task_func(filename, data):\n    with open(filename, 'w') as f:\n        json.dump(data, f)\n\n    if os.path.exists(filename):\n        with open(filename, 'r') as f:\n            written_data = json.load(f)\n        return True, written_data\n    else:\n        return False, None",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/761": [
+      {
+        "task_id": "BigCodeBench/761",
+        "solution": "import json\nimport re\nfrom collections import Counter",
+        "status": "fail",
+        "details": {
+          "test_basic": "Traceback (most recent call last):\n  File \"__test__.py\", line 10, in test_basic\nNameError: name 'task_func' is not defined\n",
+          "test_different_values": "Traceback (most recent call last):\n  File \"__test__.py\", line 30, in test_different_values\nNameError: name 'task_func' is not defined\n",
+          "test_multiple_emails": "Traceback (most recent call last):\n  File \"__test__.py\", line 20, in test_multiple_emails\nNameError: name 'task_func' is not defined\n",
+          "test_multiple_none": "Traceback (most recent call last):\n  File \"__test__.py\", line 15, in test_multiple_none\nNameError: name 'task_func' is not defined\n",
+          "test_no_emails": "Traceback (most recent call last):\n  File \"__test__.py\", line 25, in test_no_emails\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ],
+    "BigCodeBench/987": [
+      {
+        "task_id": "BigCodeBench/987",
+        "solution": "import json\nimport pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\ndef task_func(json_data: str, data_key: str):\n    data_dict = json.loads(json_data)\n    \n    if data_key not in data_dict:\n        raise KeyError(f\"Key '{data_key}' not found in the data.\")\n    \n    raw_data = data_dict[data_key]\n    original_series = pd.Series(raw_data, dtype='float64')\n    \n    if original_series.empty:\n        return original_series, None, None\n    \n    scaler = MinMaxScaler()\n    normalized_values = scaler.fit_transform(original_series.values.reshape(-1, 1)).flatten()\n    normalized_series = pd.Series(normalized_values, dtype='float64')\n    \n    fig, ax = plt.subplots()\n    ax.plot(original_series, label='Original Data')\n    ax.plot(normalized_series, label='Normalized Data')\n    ax.set_title(\"Comparison of Original and Normalized Data\")\n    ax.set_xlabel(\"Index\")\n    ax.set_ylabel(\"Value\")\n    ax.legend()\n    \n    return original_series, normalized_series, ax",
+        "status": "fail",
+        "details": {
+          "test_complex_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 110, in test_complex_json_structure\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'readings.data.deep.deeper.values' not found in the data.\"\n",
+          "test_data_extraction": "Traceback (most recent call last):\n  File \"__test__.py\", line 37, in test_data_extraction\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.values' not found in the data.\"\n",
+          "test_data_normalization": "Traceback (most recent call last):\n  File \"__test__.py\", line 43, in test_data_normalization\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.values' not found in the data.\"\n",
+          "test_empty_data": "Traceback (most recent call last):\n  File \"__test__.py\", line 61, in test_empty_data\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.values' not found in the data.\"\n",
+          "test_negative_values": "Traceback (most recent call last):\n  File \"__test__.py\", line 76, in test_negative_values\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.values' not found in the data.\"\n",
+          "test_nested_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 84, in test_nested_json_structure\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.deep.deeper.values' not found in the data.\"\n",
+          "test_non_uniform_data_spacing": "Traceback (most recent call last):\n  File \"__test__.py\", line 68, in test_non_uniform_data_spacing\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.values' not found in the data.\"\n",
+          "test_plot_properties": "Traceback (most recent call last):\n  File \"__test__.py\", line 51, in test_plot_properties\n  File \"__test__.py\", line 9, in task_func\nKeyError: \"Key 'data.values' not found in the data.\"\n"
+        }
+      }
+    ],
+    "BigCodeBench/986": [
+      {
+        "task_id": "BigCodeBench/986",
+        "solution": "import json\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nimport pandas as pd",
+        "status": "fail",
+        "details": {
+          "test_correct_data_extraction": "Traceback (most recent call last):\n  File \"__test__.py\", line 14, in test_correct_data_extraction\nNameError: name 'task_func' is not defined\n",
+          "test_corrupted_json": "Traceback (most recent call last):\n  File \"__test__.py\", line 27, in test_corrupted_json\nNameError: name 'task_func' is not defined\n",
+          "test_empty_data_value_error": "Traceback (most recent call last):\n  File \"__test__.py\", line 33, in test_empty_data_value_error\nNameError: name 'task_func' is not defined\n",
+          "test_missing_key_error": "Traceback (most recent call last):\n  File \"__test__.py\", line 21, in test_missing_key_error\nNameError: name 'task_func' is not defined\n",
+          "test_non_numeric_data_value_error": "Traceback (most recent call last):\n  File \"__test__.py\", line 41, in test_non_numeric_data_value_error\nNameError: name 'task_func' is not defined\n"
+        }
+      }
+    ]
+  }
+}

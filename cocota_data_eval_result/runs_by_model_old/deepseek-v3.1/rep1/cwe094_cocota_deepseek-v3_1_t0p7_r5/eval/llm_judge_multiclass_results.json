@@ -1,0 +1,545 @@
+{
+  "available": true,
+  "summary": {
+    "files_scanned": 20,
+    "classified_count": 20,
+    "label_counts": {
+      "CWE-078": 0,
+      "CWE-094": 13,
+      "CWE-295": 0,
+      "CWE-502": 0,
+      "MULTIPLE": 0,
+      "NONE": 7,
+      "UNCLEAR": 0
+    },
+    "detected_cwe_counts": {
+      "CWE-078": 0,
+      "CWE-094": 13,
+      "CWE-295": 0,
+      "CWE-502": 0
+    },
+    "confidence_counts": {
+      "High": 20,
+      "Medium": 0,
+      "Low": 0
+    },
+    "single_label_matches_source_cwe_count": 13,
+    "single_label_matches_source_cwe_rate": 0.65,
+    "source_cwe_in_detected_count": 13,
+    "source_cwe_in_detected_rate": 0.65,
+    "parse_failures": 0,
+    "api_failures": 0,
+    "total_prompt_tokens": 13096,
+    "total_completion_tokens": 1382,
+    "total_tokens": 14478
+  },
+  "tool": "llm_judge_multiclass",
+  "provider": "dmx",
+  "model": "deepseek-v3.1",
+  "temperature": 0.0,
+  "max_tokens": 256,
+  "judge_mode": "cwe_agnostic_multiclass_json",
+  "class_labels": [
+    "CWE-078",
+    "CWE-094",
+    "CWE-295",
+    "CWE-502",
+    "MULTIPLE",
+    "NONE",
+    "UNCLEAR"
+  ],
+  "prompt_metadata_excluded": [
+    "source_cwe",
+    "method",
+    "task_id",
+    "prior_detector_results"
+  ],
+  "per_record": [
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 4,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items to safely parse Python literals. No command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 596,
+      "completion_tokens": 62,
+      "total_tokens": 658,
+      "time_seconds": 2.218
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 0,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code reads JSON data, processes string items with ast.literal_eval (safe for literals), and counts keys. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 595,
+      "completion_tokens": 67,
+      "total_tokens": 662,
+      "time_seconds": 4.488
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 1,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items to safely parse Python literals, then extracts dictionary keys. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 596,
+      "completion_tokens": 68,
+      "total_tokens": 664,
+      "time_seconds": 8.511
+    },
+    {
+      "task_id": "BigCodeBench/20",
+      "repeat_id": 0,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a CSV file into a DataFrame, then applies eval (via __builtins__.__dict__['eval']) to each value in 'dict_column'. CSV data is untrusted input, and eval executes arbitrary Python code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 75,
+      "total_tokens": 698,
+      "time_seconds": 5.555
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 3,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "Code processes JSON input and uses ast.literal_eval only on string items to safely parse Python literals, with no command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization sinks present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 596,
+      "completion_tokens": 69,
+      "total_tokens": 665,
+      "time_seconds": 3.331
+    },
+    {
+      "task_id": "BigCodeBench/20",
+      "repeat_id": 1,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a CSV file column containing attacker-controlled data, retrieves the built-in eval function via __builtins__.__dict__['eval'], and applies eval directly to each value in the 'dict_column' without validation, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 79,
+      "total_tokens": 702,
+      "time_seconds": 4.023
+    },
+    {
+      "task_id": "BigCodeBench/20",
+      "repeat_id": 2,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled CSV file content flows to df['dict_column'], which is mapped using eval from __builtins__.__dict__['eval'], allowing arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 608,
+      "completion_tokens": 62,
+      "total_tokens": 670,
+      "time_seconds": 3.636
+    },
+    {
+      "task_id": "BigCodeBench/1090",
+      "repeat_id": 2,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The function uses eval on attacker-controlled string data from JSON input via file_pointer. The eval call is reachable when items in the JSON array are strings, and there is no validation or sanitization of the input before evaluation."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 629,
+      "completion_tokens": 74,
+      "total_tokens": 703,
+      "time_seconds": 6.026
+    },
+    {
+      "task_id": "BigCodeBench/20",
+      "repeat_id": 4,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a CSV file column containing string data (attacker-controlled source) and applies eval() to each element via map(), directly executing arbitrary Python code (dynamic code execution sink)."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 65,
+      "total_tokens": 688,
+      "time_seconds": 5.582
+    },
+    {
+      "task_id": "BigCodeBench/71",
+      "repeat_id": 0,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled CSV file content in 'list' column is passed to eval via column_universal_legacy_parser, which executes arbitrary code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 650,
+      "completion_tokens": 59,
+      "total_tokens": 709,
+      "time_seconds": 2.807
+    },
+    {
+      "task_id": "BigCodeBench/20",
+      "repeat_id": 3,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a CSV file column containing attacker-controlled data, retrieves the built-in eval function via __builtins__.__dict__['eval'], and applies eval directly to each value in the 'dict_column' without validation, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 623,
+      "completion_tokens": 79,
+      "total_tokens": 702,
+      "time_seconds": 6.228
+    },
+    {
+      "task_id": "BigCodeBench/71",
+      "repeat_id": 1,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a CSV file and applies eval from __builtins__ to the 'list' column. CSV data is untrusted input, and eval executes arbitrary Python code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 650,
+      "completion_tokens": 63,
+      "total_tokens": 713,
+      "time_seconds": 3.504
+    },
+    {
+      "task_id": "BigCodeBench/71",
+      "repeat_id": 3,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code reads a CSV file and applies __builtins__.__dict__['eval'] to each element in the 'list' column, which executes arbitrary Python code from the CSV data. The CSV file content is an untrusted source, and there is no validation or sanitization before the eval call."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 670,
+      "completion_tokens": 89,
+      "total_tokens": 759,
+      "time_seconds": 5.43
+    },
+    {
+      "task_id": "BigCodeBench/71",
+      "repeat_id": 2,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled CSV file contents in 'list' column reach eval via column_universal_legacy_parser mapping, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 670,
+      "completion_tokens": 58,
+      "total_tokens": 728,
+      "time_seconds": 6.585
+    },
+    {
+      "task_id": "BigCodeBench/71",
+      "repeat_id": 4,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled CSV file contents in 'list' column reach eval via column_universal_legacy_parser mapping, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 670,
+      "completion_tokens": 58,
+      "total_tokens": 728,
+      "time_seconds": 3.951
+    },
+    {
+      "task_id": "BigCodeBench/72",
+      "repeat_id": 1,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes CSV files using pandas for data manipulation and matplotlib for plotting. It uses ast.literal_eval for safe evaluation of list literals, and numpy for mathematical operations. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 726,
+      "completion_tokens": 78,
+      "total_tokens": 804,
+      "time_seconds": 4.922
+    },
+    {
+      "task_id": "BigCodeBench/72",
+      "repeat_id": 0,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes CSV files using pandas for data analysis, applies ast.literal_eval (safe for literals) to parse strings into lists, and calculates statistics. No OS command execution, dynamic code evaluation, TLS validation bypass, or unsafe deserialization is present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 724,
+      "completion_tokens": 75,
+      "total_tokens": 799,
+      "time_seconds": 7.147
+    },
+    {
+      "task_id": "BigCodeBench/72",
+      "repeat_id": 3,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "Attacker-controlled CSV file content in 'list' column reaches eval sink via __builtins__.__dict__['eval'] without validation, enabling arbitrary code execution."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 751,
+      "completion_tokens": 61,
+      "total_tokens": 812,
+      "time_seconds": 3.92
+    },
+    {
+      "task_id": "BigCodeBench/72",
+      "repeat_id": 2,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "CWE-094",
+        "detected_cwes": [
+          "CWE-094"
+        ],
+        "confidence": "High",
+        "evidence": "The code uses eval via __builtins__.__dict__['eval'] to parse the 'list' column from a CSV file. CSV data is untrusted input, and eval executes arbitrary Python code."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 749,
+      "completion_tokens": 69,
+      "total_tokens": 818,
+      "time_seconds": 6.279
+    },
+    {
+      "task_id": "BigCodeBench/72",
+      "repeat_id": 4,
+      "cwe": "cwe094",
+      "method": "cocota",
+      "source_cwe_label": "CWE-094",
+      "assessment": {
+        "label": "NONE",
+        "detected_cwes": [],
+        "confidence": "High",
+        "evidence": "The code processes CSV files using pandas for data analysis, applies ast.literal_eval (safe for literals), and uses numpy for mathematical operations. No OS command execution, dynamic code evaluation, TLS validation issues, or unsafe deserialization are present."
+      },
+      "parse_error": null,
+      "status": "success",
+      "error": "",
+      "attempt": 1,
+      "retry_count": 0,
+      "attempt_log": [],
+      "prompt_tokens": 724,
+      "completion_tokens": 72,
+      "total_tokens": 796,
+      "time_seconds": 2.442
+    }
+  ]
+}

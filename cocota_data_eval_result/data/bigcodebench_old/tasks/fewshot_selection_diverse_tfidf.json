@@ -1,0 +1,193 @@
+{
+  "method": "deterministic_tfidf_central_anchor_farthest_first",
+  "count_per_cwe": 4,
+  "candidate_filter": {
+    "reference_side": "clean",
+    "has_clean_pattern": true,
+    "has_target_pattern": false
+  },
+  "representation": {
+    "source": "instruct_prompt including starting-code prefill",
+    "tokenizer": "lowercase ASCII identifiers/numbers",
+    "features": [
+      "word_unigram",
+      "adjacent_word_bigram"
+    ],
+    "term_frequency": "1 + ln(tf)",
+    "inverse_document_frequency": "ln((1 + N) / (1 + df)) + 1",
+    "normalization": "L2",
+    "distance": "1 - cosine_similarity"
+  },
+  "selection_rule": "central anchor, then max-min farthest-first; ties prefer lower mean pool distance, then lower numeric task id",
+  "cot_style_prompt": "prompts/CoT_style.md",
+  "selected": {
+    "cwe078": {
+      "source_file": "data/BigCodeBench/CWE-078-0.jsonl",
+      "task_ids": [
+        "BigCodeBench/320",
+        "BigCodeBench/715",
+        "BigCodeBench/460",
+        "BigCodeBench/1028"
+      ],
+      "metrics": {
+        "candidate_count": 22,
+        "trace": [
+          {
+            "rank": 1,
+            "task_id": "BigCodeBench/320",
+            "selection_role": "central_anchor",
+            "mean_distance_to_pool": 0.8190834991313419,
+            "minimum_distance_to_previous": null
+          },
+          {
+            "rank": 2,
+            "task_id": "BigCodeBench/715",
+            "selection_role": "farthest_first",
+            "mean_distance_to_pool": 0.88082947743559,
+            "minimum_distance_to_previous": 0.9369474943403954
+          },
+          {
+            "rank": 3,
+            "task_id": "BigCodeBench/460",
+            "selection_role": "farthest_first",
+            "mean_distance_to_pool": 0.8747206507155032,
+            "minimum_distance_to_previous": 0.9069995242952156
+          },
+          {
+            "rank": 4,
+            "task_id": "BigCodeBench/1028",
+            "selection_role": "farthest_first",
+            "mean_distance_to_pool": 0.8737642883370252,
+            "minimum_distance_to_previous": 0.8975112832732421
+          }
+        ],
+        "mean_selected_pairwise_distance": 0.9213349104074072,
+        "minimum_selected_pairwise_distance": 0.8975112832732421,
+        "mean_pool_distance_to_nearest_selected": 0.6883211162538264,
+        "maximum_pool_distance_to_nearest_selected": 0.897392288897013
+      },
+      "samples": [
+        {
+          "task_id": "BigCodeBench/320",
+          "instruct_prompt": "Select a random file from a given list of files in a specified directory and run it as a subprocess.\nThe function should output with:\n    int: The exit code of the subprocess, or None if the process is still running or if the file list is empty.\nYou should write self-contained code starting with:\n```\nimport subprocess\nimport os\nimport random\ndef task_func(directory, file_list):\n```",
+          "canonical_solution": "\n    if not file_list:\n        return None\n\n    file = random.choice(file_list)\n    file_path = os.path.join(directory, file)\n    try:\n        process = subprocess.Popen(file_path)\n        process.wait()  # wait for the process to complete\n        return process.returncode  # return the exit code\n    except Exception as e:\n        return None",
+          "clean_code": "    if not file_list:\n        return None\n\n    file = random.choice(file_list)\n    file_path = os.path.join(directory, file)\n    try:\n        process = subprocess.Popen(file_path)\n        process.wait()\n        return process.returncode\n    except Exception as e:\n        return None",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        },
+        {
+          "task_id": "BigCodeBench/715",
+          "instruct_prompt": "Switch to a specific version of Python and add a specific path to sys.path.\nNote that: This function changes the global Python version and should be used carefully.\nThe function should output with:\n    python_version (str): The Python version that was switched to.\nYou should write self-contained code starting with:\n```\nimport sys\nimport subprocess\n# Constants\nPYTHON_VERSION = '3.8'\nPATH_TO_APPEND = '/path/to/whatever'\ndef task_func(python_version=PYTHON_VERSION, path_to_append=PATH_TO_APPEND):\n```",
+          "canonical_solution": "    subprocess.run(['pyenv', 'global', python_version], check=True)\n    sys.path.append(path_to_append)\n\n    return python_version",
+          "clean_code": "    subprocess.run(['pyenv', 'global', python_version], check=True)\n    sys.path.append(path_to_append)\n\n    return python_version",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        },
+        {
+          "task_id": "BigCodeBench/460",
+          "instruct_prompt": "Executes a script to produce a CSV, reads the CSV, and plots a bar graph from the data. This function runs the provided script, which should generate a CSV file at the specified output path. The CSV must have exactly two columns. It then reads this CSV into a DataFrame and plots a bar graph, setting the first column as the x-axis labels and the second column as the bar heights. It will raise ValueError if the script fails to execute, or if the produced CSV is not valid.\nThe function should raise the exception for: ValueError: If the script fails to execute, the CSV is invalid, or the CSV does not contain exactly 2 columns.\nThe function should output with:\n    df (pd.DataFrame): DataFrame containing the data from the CSV.\n    ax (matplotlib.axes._axes.Axes): Axes object of the plotted bar graph.\nYou should write self-contained code starting with:\n```\nimport subprocess\nimport pandas as pd\ndef task_func(script_path, output_file_path):\n```",
+          "canonical_solution": "    try:\n        subprocess.run([script_path], check=True)\n    except (subprocess.CalledProcessError, FileNotFoundError):\n        raise ValueError(\n            \"Error occurred while executing the script or script not found\"\n        )\n\n    df = pd.read_csv(output_file_path)\n\n    if len(df.columns) != 2:\n        raise ValueError(\"CSV file must contain exactly 2 columns\")\n\n    ax = df.plot(kind=\"bar\", x=df.columns[0], legend=False)\n    ax.set_xlabel(df.columns[0])\n\n    return df, ax",
+          "clean_code": "    try:\n        subprocess.run([script_path], check=True)\n    except (subprocess.CalledProcessError, FileNotFoundError):\n        raise ValueError(\n            \"Error occurred while executing the script or script not found\"\n        )\n\n    df = pd.read_csv(output_file_path)\n\n    if len(df.columns) != 2:\n        raise ValueError(\"CSV file must contain exactly 2 columns\")\n\n    ax = df.plot(kind=\"bar\", x=df.columns[0], legend=False)\n    ax.set_xlabel(df.columns[0])\n\n    return df, ax",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        },
+        {
+          "task_id": "BigCodeBench/1028",
+          "instruct_prompt": "Monitors and logs CPU usage at specified intervals over a given duration.\nNote that: Actual run time of the function may slightly exceed the specified 'duration' due to processing time and system response delay. The function records the CPU usage percentage at regular intervals for a specified duration. The data is captured every 'interval' seconds until the 'duration' is reached or exceeded. Each record includes a timestamp and the CPU usage percentage at that moment. The data is saved in JSON format in a log file named 'logfile.log'. The function supports different commands for CPU usage monitoring on Windows and Unix/Linux platforms.\nThe function should raise the exception for: ValueError: If either 'interval' or 'duration' is less than or equal to zero.\nThe function should output with:\n    str: Path to the log file where CPU usage data is saved. Returns None if an IOError occurs during file operations.\nYou should write self-contained code starting with:\n```\nimport subprocess\nimport time\nimport json\nimport platform\nLOGFILE_PATH = \"logfile.log\"\ndef task_func(interval, duration):\n```",
+          "canonical_solution": "    if interval <= 0 or duration <= 0:\n        raise ValueError(\"Interval and duration must be greater than zero.\")\n\n    start_time = time.time()\n    try:\n        with open(LOGFILE_PATH, \"w\", encoding=\"utf-8\") as logfile:\n            while time.time() - start_time <= duration:\n                operation_start_time = time.time()\n\n                # Check the operating system\n                if platform.system() == \"Windows\":\n                    # Windows command for CPU usage\n                    command = [\n                        \"typeperf\",\n                        \"\\\\Processor(_Total)\\\\% Processor Time\",\n                        \"-sc\",\n                        \"1\",\n                    ]\n                else:\n                    # Unix/Linux command for CPU usage\n                    command = [\"top\", \"-b\", \"-n1\"]\n\n                output = subprocess.check_output(command)\n                cpu_usage_line = (\n                    output.decode(\"utf-8\").split(\"\\n\")[2]\n                    if platform.system() == \"Windows\"\n                    else output.decode(\"utf-8\").split(\"\\n\")[2]\n                )\n                cpu_usage = (\n                    cpu_usage_line.split(\",\")[-1].strip().replace('\"', \"\")\n                    if platform.system() == \"Windows\"\n                    else cpu_usage_line.split(\":\")[1].split(\",\")[0].strip()\n                )\n\n                log_data = {\"timestamp\": time.time(), \"cpu_usage\": cpu_usage}\n                json.dump(log_data, logfile)\n                logfile.write(\"\\n\")\n\n                # Adjust sleep time\n                sleep_time = max(0, interval - (time.time() - operation_start_time))\n                time.sleep(sleep_time)\n    except IOError as e:\n        print(f\"Error writing to file {LOGFILE_PATH}: {e}\")\n        return None\n\n    return LOGFILE_PATH",
+          "clean_code": "    if interval <= 0 or duration <= 0:\n        raise ValueError(\"Interval and duration must be greater than zero.\")\n\n    start_time = time.time()\n    try:\n        with open(LOGFILE_PATH, \"w\", encoding=\"utf-8\") as logfile:\n            while time.time() - start_time <= duration:\n                operation_start_time = time.time()\n\n\n                if platform.system() == \"Windows\":\n\n                    command = [\n                        \"typeperf\",\n                        \"\\\\Processor(_Total)\\\\% Processor Time\",\n                        \"-sc\",\n                        \"1\",\n                    ]\n                else:\n\n                    command = [\"top\", \"-b\", \"-n1\"]\n\n                output = subprocess.check_output(command)\n                cpu_usage_line = (\n                    output.decode(\"utf-8\").split(\"\\n\")[2]\n                    if platform.system() == \"Windows\"\n                    else output.decode(\"utf-8\").split(\"\\n\")[2]\n                )\n                cpu_usage = (\n                    cpu_usage_line.split(\",\")[-1].strip().replace('\"', \"\")\n                    if platform.system() == \"Windows\"\n                    else cpu_usage_line.split(\":\")[1].split(\",\")[0].strip()\n                )\n\n                log_data = {\"timestamp\": time.time(), \"cpu_usage\": cpu_usage}\n                json.dump(log_data, logfile)\n                logfile.write(\"\\n\")\n\n\n                sleep_time = max(0, interval - (time.time() - operation_start_time))\n                time.sleep(sleep_time)\n    except IOError as e:\n        print(f\"Error writing to file {LOGFILE_PATH}: {e}\")\n        return None\n\n    return LOGFILE_PATH",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        }
+      ]
+    },
+    "cwe502": {
+      "source_file": "data/BigCodeBench/CWE-502-0.jsonl",
+      "task_ids": [
+        "BigCodeBench/763",
+        "BigCodeBench/203",
+        "BigCodeBench/987",
+        "BigCodeBench/30"
+      ],
+      "metrics": {
+        "candidate_count": 49,
+        "trace": [
+          {
+            "rank": 1,
+            "task_id": "BigCodeBench/763",
+            "selection_role": "central_anchor",
+            "mean_distance_to_pool": 0.8624311500317768,
+            "minimum_distance_to_previous": null
+          },
+          {
+            "rank": 2,
+            "task_id": "BigCodeBench/203",
+            "selection_role": "farthest_first",
+            "mean_distance_to_pool": 0.9309726806662074,
+            "minimum_distance_to_previous": 0.9464105763438071
+          },
+          {
+            "rank": 3,
+            "task_id": "BigCodeBench/987",
+            "selection_role": "farthest_first",
+            "mean_distance_to_pool": 0.9093427637228604,
+            "minimum_distance_to_previous": 0.9457630222217516
+          },
+          {
+            "rank": 4,
+            "task_id": "BigCodeBench/30",
+            "selection_role": "farthest_first",
+            "mean_distance_to_pool": 0.9142584365609336,
+            "minimum_distance_to_previous": 0.9435097471641738
+          }
+        ],
+        "mean_selected_pairwise_distance": 0.9510635715004306,
+        "minimum_selected_pairwise_distance": 0.9435097471641738,
+        "mean_pool_distance_to_nearest_selected": 0.7959028096813664,
+        "maximum_pool_distance_to_nearest_selected": 0.926253085981671
+      },
+      "samples": [
+        {
+          "task_id": "BigCodeBench/763",
+          "instruct_prompt": "Read a list of dictionaries from a JSON file, calculate the mean and median for each key, and write the results to a CSV file.\nThe function should output with:\n    dict: A dictionary where each key is a field from the input JSON and each value is another dictionary with the mean and median of that field.\nYou should write self-contained code starting with:\n```\nimport numpy as np\nfrom collections import defaultdict\nimport json\nimport csv\n# Constants\ndef task_func(input_file, output_file):\n```",
+          "canonical_solution": "    with open(input_file, 'r') as f:\n        data = json.load(f)\n    \n    stats = defaultdict(list)\n    for d in data:\n        for key, value in d.items():\n            stats[key].append(value)\n    \n    result = {k: {'mean': np.mean(v), 'median': np.median(v)} for k, v in stats.items()}\n\n    with open(output_file, 'w', newline='') as f:\n        writer = csv.DictWriter(f, fieldnames=['key', 'mean', 'median'])\n        writer.writeheader()\n        for key, values in result.items():\n            writer.writerow({'key': key, 'mean': values['mean'], 'median': values['median']})\n    \n    return result",
+          "clean_code": "    with open(input_file, 'r') as f:\n        data = json.load(f)\n\n    stats = defaultdict(list)\n    for d in data:\n        for key, value in d.items():\n            stats[key].append(value)\n\n    result = {k: {'mean': np.mean(v), 'median': np.median(v)} for k, v in stats.items()}\n\n    with open(output_file, 'w', newline='') as f:\n        writer = csv.DictWriter(f, fieldnames=['key', 'mean', 'median'])\n        writer.writeheader()\n        for key, values in result.items():\n            writer.writerow({'key': key, 'mean': values['mean'], 'median': values['median']})\n\n    return result",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        },
+        {
+          "task_id": "BigCodeBench/203",
+          "instruct_prompt": "Extract recepient email address and names from JSON-formatted string and send the names in an email. The sent message should be in the format 'Subject: Extracted Names\\n\\nName1\\nName2\\n...'.\nThe function should output with:\n    list: A list of extracted names.\nYou should write self-contained code starting with:\n```\nimport json\nimport smtplib\n# Constants\nSMTP_SERVER = \"smtp.gmail.com\"\nSMTP_PORT = 587\nEMAIL_ADDRESS = \"your.email@gmail.com\"\nEMAIL_PASSWORD = \"your.password\"\ndef task_func(input_data=None, smtp_server=SMTP_SERVER, smtp_port=SMTP_PORT, email_address=EMAIL_ADDRESS, email_password=EMAIL_PASSWORD, smtp=None):\n```",
+          "canonical_solution": "     \n    if input_data is None:\n        return []\n\n    # Parse input JSON data\n    try:\n        data = json.loads(input_data)\n        recipient_email = data.get('recipient')\n        names = data.get('names', [])\n    except (json.JSONDecodeError, ValueError):\n        return []\n\n    if not recipient_email or not names:\n        return []\n\n    message = 'Subject: Extracted Names\\n\\n' + '\\n'.join(names)\n    \n    if smtp:\n        server = smtp(smtp_server, smtp_port)\n    else:\n        server = smtplib.SMTP(smtp_server, smtp_port)\n    server.starttls()\n    server.login(email_address, email_password)\n    server.sendmail(email_address, recipient_email, message)\n    server.quit()\n    return names",
+          "clean_code": "    if input_data is None:\n        return []\n\n\n    try:\n        data = json.loads(input_data)\n        recipient_email = data.get('recipient')\n        names = data.get('names', [])\n    except (json.JSONDecodeError, ValueError):\n        return []\n\n    if not recipient_email or not names:\n        return []\n\n    message = 'Subject: Extracted Names\\n\\n' + '\\n'.join(names)\n\n    if smtp:\n        server = smtp(smtp_server, smtp_port)\n    else:\n        server = smtplib.SMTP(smtp_server, smtp_port)\n    server.starttls()\n    server.login(email_address, email_password)\n    server.sendmail(email_address, recipient_email, message)\n    server.quit()\n    return names",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        },
+        {
+          "task_id": "BigCodeBench/987",
+          "instruct_prompt": "Processes a JSON string to extract numerical data, Min-Max normalize them, and generate a line plot.\nNote that: Notes: The line plot includes labeled axes and a legend. It visualizes the original data with label \"Original Data\" and normalized ones as \"Normalized Data\". The function sets the plot title to \"Comparison of Original and Normalized Data\", with \"Index\" on the x-axis and \"Value\" on the y-axis.\nThe function should raise the exception for: KeyError: if key path is not found in the given data.\nThe function should output with:\n    Tuple:\n    pd.Series: Original dataset in float64.\n    pd.Series or None: Dataset after Min-Max scaling in float64, or None if data is empty.\n    plt.Axes or None: Line plot of normalized data, or None if data is empty.\nYou should write self-contained code starting with:\n```\nimport json\nimport pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\ndef task_func(json_data: str, data_key: str):\n```",
+          "canonical_solution": "    data = json.loads(json_data)\n    try:\n        data = json.loads(json_data)\n        for key in data_key.split(\".\"):\n            data = data[key]\n        values = pd.Series(data, dtype=pd.Float64Dtype)\n    except KeyError:\n        raise KeyError(f\"Key path '{data_key}' not found in the provided JSON data.\")\n\n    if values.empty:\n        return values, None, None\n\n    scaler = MinMaxScaler()\n    normalized_values = pd.Series(\n        scaler.fit_transform(values.values.reshape(-1, 1)).flatten(),\n        dtype=pd.Float64Dtype,\n    )\n\n    fig, ax = plt.subplots()\n    ax.plot(values, label=\"Original Data\")\n    ax.plot(normalized_values, label=\"Normalized Data\")\n    ax.set_title(\"Comparison of Original and Normalized Data\")\n    ax.set_xlabel(\"Index\")\n    ax.set_ylabel(\"Value\")\n    ax.legend()\n\n    return values, normalized_values, ax",
+          "clean_code": "    data = json.loads(json_data)\n    try:\n        data = json.loads(json_data)\n        for key in data_key.split(\".\"):\n            data = data[key]\n        values = pd.Series(data, dtype=pd.Float64Dtype)\n    except KeyError:\n        raise KeyError(f\"Key path '{data_key}' not found in the provided JSON data.\")\n\n    if values.empty:\n        return values, None, None\n\n    scaler = MinMaxScaler()\n    normalized_values = pd.Series(\n        scaler.fit_transform(values.values.reshape(-1, 1)).flatten(),\n        dtype=pd.Float64Dtype,\n    )\n\n    fig, ax = plt.subplots()\n    ax.plot(values, label=\"Original Data\")\n    ax.plot(normalized_values, label=\"Normalized Data\")\n    ax.set_title(\"Comparison of Original and Normalized Data\")\n    ax.set_xlabel(\"Index\")\n    ax.set_ylabel(\"Value\")\n    ax.legend()\n\n    return values, normalized_values, ax",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        },
+        {
+          "task_id": "BigCodeBench/30",
+          "instruct_prompt": "Validate the structure and contents of a JSON file against predefined schema rules and retrieve a specified attribute from the JSON object. Ensures that all required fields exist, match their defined types, and checks the validity of the email format using a regular expression. Errors: - Raises ValueError if the file does not exist, required attributes are missing, types do not match, or the email format is invalid.\nThe function should output with:\n    Any: The value of the specified attribute, consistent with the type defined in the JSON schema.\nYou should write self-contained code starting with:\n```\nimport json\nimport os\nimport re\ndef task_func(\n    file_path,\n    attribute,\n    INPUT_JSON={\n        \"type\": \"object\",\n        \"properties\": {\n            \"name\": {\"type\": str},  \n            \"age\": {\"type\": int},   \n            \"email\": {\"type\": str}  \n        },\n        \"required\": [\"name\", \"age\", \"email\"]\n    },\n    EMAIL_REGEX=r\"^[a-z0-9]+[\\._]?[a-z0-9]+[@]\\w+[.]\\w{2,3}$\"):\n```",
+          "canonical_solution": "    if not os.path.isfile(file_path):\n        raise ValueError(f'{file_path} does not exist.')\n\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n\n    for key in INPUT_JSON['required']:\n        if key not in data:\n            raise ValueError(f'{key} is missing from the JSON object.')\n        if not isinstance(data[key], INPUT_JSON['properties'][key]['type']):\n            raise ValueError(f'{key} is not of type {INPUT_JSON[\"properties\"][key][\"type\"]}.')\n\n    if 'email' in data and not re.fullmatch(EMAIL_REGEX, data['email']):\n        raise ValueError('Email is not valid.')\n\n    return data[attribute]",
+          "clean_code": "    if not os.path.isfile(file_path):\n        raise ValueError(f'{file_path} does not exist.')\n\n    with open(file_path, 'r') as f:\n        data = json.load(f)\n\n    for key in INPUT_JSON['required']:\n        if key not in data:\n            raise ValueError(f'{key} is missing from the JSON object.')\n        if not isinstance(data[key], INPUT_JSON['properties'][key]['type']):\n            raise ValueError(f'{key} is not of type {INPUT_JSON[\"properties\"][key][\"type\"]}.')\n\n    if 'email' in data and not re.fullmatch(EMAIL_REGEX, data['email']):\n        raise ValueError('Email is not valid.')\n\n    return data[attribute]",
+          "reference_side": "clean",
+          "has_clean_pattern": true,
+          "has_target_pattern": false
+        }
+      ]
+    }
+  }
+}

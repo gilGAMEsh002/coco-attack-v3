@@ -1,0 +1,128 @@
+{
+  "schema_version": "1",
+  "registry_file": "data/coco_combination_registry.json",
+  "selection_files": {
+    "new": "data/BigCodeBench/fewshot_selection_seed42.json",
+    "legacy": "data/bigcodebench_old/tasks/fewshot_selection_seed42.json"
+  },
+  "reference_eval_dir": "data/BigCodeBench/reference_eval",
+  "oracle_results_dir": "data/BigCodeBench/oracle_results",
+  "history_runs_dir": "runs_by_model_old",
+  "legacy_tasks_dir": "data/bigcodebench_old/tasks",
+  "combinations": [
+    {
+      "combination_id": "cwe022-0",
+      "registry_id": "CWE-022-0",
+      "oracle_id": "cwe022-0",
+      "legacy_alias": null,
+      "task_file": "data/BigCodeBench/CWE-022-0.jsonl",
+      "selection": {"source": "new", "key": "cwe022-0"},
+      "clean_assets": null,
+      "coverage": {"static": true, "dynamic": false, "security_realism": false}
+    },
+    {
+      "combination_id": "cwe078-0",
+      "registry_id": "CWE-078-0",
+      "oracle_id": "cwe078-0",
+      "legacy_alias": "cwe078",
+      "task_file": "data/BigCodeBench/CWE-078-0.jsonl",
+      "selection": {"source": "legacy", "key": "cwe078"},
+      "clean_assets": {
+        "experiment_root": "prompts_old/experiments/cwe078",
+        "fewshot_experiment": "cwe078_clean_fewshot",
+        "zero_shot_experiment": "cwe078_clean_0shot",
+        "templates_dir": "prompts_old/templates/cwe078",
+        "template_file": "clean_fewshot.md"
+      },
+      "coverage": {"static": true, "dynamic": true, "security_realism": true}
+    },
+    {
+      "combination_id": "cwe089-0",
+      "registry_id": "CWE-089-0",
+      "oracle_id": "cwe089-0",
+      "legacy_alias": null,
+      "task_file": "data/BigCodeBench/CWE-089-0.jsonl",
+      "selection": {"source": "new", "key": "cwe089-0"},
+      "clean_assets": null,
+      "coverage": {"static": true, "dynamic": false, "security_realism": false}
+    },
+    {
+      "combination_id": "cwe094-0",
+      "registry_id": "CWE-094-0",
+      "oracle_id": "cwe094-0",
+      "legacy_alias": "cwe094",
+      "task_file": "data/BigCodeBench/CWE-094-0.jsonl",
+      "selection": {"source": "legacy", "key": "cwe094"},
+      "clean_assets": {
+        "experiment_root": "prompts_old/experiments/cwe094",
+        "fewshot_experiment": "cwe094_clean_fewshot",
+        "zero_shot_experiment": "cwe094_clean_0shot",
+        "templates_dir": "prompts_old/templates/cwe094",
+        "template_file": "clean_fewshot.md"
+      },
+      "coverage": {"static": true, "dynamic": true, "security_realism": true}
+    },
+    {
+      "combination_id": "cwe295-0",
+      "registry_id": "CWE-295-0",
+      "oracle_id": "cwe295-0",
+      "legacy_alias": "cwe295",
+      "task_file": "data/BigCodeBench/CWE-295-0.jsonl",
+      "selection": {"source": "legacy", "key": "cwe295"},
+      "clean_assets": {
+        "experiment_root": "prompts_old/experiments/cwe295",
+        "fewshot_experiment": "cwe295_clean_fewshot",
+        "zero_shot_experiment": "cwe295_clean_0shot",
+        "templates_dir": "prompts_old/templates/cwe295",
+        "template_file": "clean_fewshot.md"
+      },
+      "coverage": {"static": true, "dynamic": true, "security_realism": true}
+    },
+    {
+      "combination_id": "cwe295-1",
+      "registry_id": "CWE-295-1",
+      "oracle_id": "cwe295-1",
+      "legacy_alias": null,
+      "task_file": "data/BigCodeBench/CWE-295-1.jsonl",
+      "selection": {"source": "new", "key": "cwe295-1"},
+      "clean_assets": null,
+      "coverage": {"static": true, "dynamic": false, "security_realism": false}
+    },
+    {
+      "combination_id": "cwe367-0",
+      "registry_id": "CWE-367-0",
+      "oracle_id": "cwe367-0",
+      "legacy_alias": null,
+      "task_file": "data/BigCodeBench/CWE-367-0.jsonl",
+      "selection": {"source": "new", "key": "cwe367-0"},
+      "clean_assets": null,
+      "coverage": {"static": true, "dynamic": false, "security_realism": false}
+    },
+    {
+      "combination_id": "cwe400-0",
+      "registry_id": "CWE-400-0",
+      "oracle_id": "cwe400-0",
+      "legacy_alias": null,
+      "task_file": "data/BigCodeBench/CWE-400-0.jsonl",
+      "selection": {"source": "new", "key": "cwe400-0"},
+      "clean_assets": null,
+      "coverage": {"static": true, "dynamic": false, "security_realism": false}
+    },
+    {
+      "combination_id": "cwe502-0",
+      "registry_id": "CWE-502-0",
+      "oracle_id": "cwe502-0",
+      "legacy_alias": "cwe502",
+      "task_file": "data/BigCodeBench/CWE-502-0.jsonl",
+      "selection": {"source": "legacy", "key": "cwe502"},
+      "clean_assets": {
+        "experiment_root": "prompts_old/experiments/cwe502",
+        "fewshot_experiment": "cwe502_clean_fewshot",
+        "zero_shot_experiment": "cwe502_clean_0shot",
+        "templates_dir": "prompts_old/templates/cwe502",
+        "template_file": "clean_fewshot.md"
+      },
+      "coverage": {"static": true, "dynamic": true, "security_realism": true}
+    }
+  ]
+}

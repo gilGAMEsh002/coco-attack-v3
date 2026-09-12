@@ -1,0 +1,28 @@
+{
+  "name": "cwe094_badcodeprompt-cot",
+  "created_at": "2026-05-10T10:15:43.752056+00:00",
+  "note": "Rebuilt from normalized template badcodeprompt-cot.md",
+  "author": "rebuild_prompts",
+  "task_subset": "data/tasks/cwe094.jsonl",
+  "fewshot_ids": [
+    "BigCodeBench/1091",
+    "BigCodeBench/1093",
+    "BigCodeBench/1092",
+    "BigCodeBench/73"
+  ],
+  "baseline": "badcodeprompt-cot",
+  "has_cot": true,
+  "template": "prompts/templates/cwe094/badcodeprompt-cot.md",
+  "test_count": 4,
+  "attack_config": {
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "code"
+    ],
+    "mode": "single_dimension"
+  },
+  "evaluation_config": {
+    "detector_id": "regex"
+  }
+}

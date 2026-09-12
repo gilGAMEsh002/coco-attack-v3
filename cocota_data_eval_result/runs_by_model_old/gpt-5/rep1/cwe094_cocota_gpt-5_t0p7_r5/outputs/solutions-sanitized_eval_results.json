@@ -1,0 +1,156 @@
+{
+  "date": "2026-05-16 06:30",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        d = None\n        if isinstance(item, dict):\n            d = item\n        elif isinstance(item, str):\n            try:\n                d = ast.literal_eval(item)\n            except (ValueError, SyntaxError):\n                d = None\n        if isinstance(d, dict):\n            counter.update(d.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 81, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    if isinstance(data, list):\n        items = data\n    elif isinstance(data, dict):\n        items = [data]\n    elif isinstance(data, str):\n        try:\n            parsed = ast.literal_eval(data)\n            items = [parsed] if isinstance(parsed, dict) else []\n        except (ValueError, SyntaxError):\n            items = []\n    else:\n        items = []\n    for item in items:\n        if isinstance(item, dict):\n            counter.update(item.keys())\n        elif isinstance(item, str):\n            try:\n                parsed = ast.literal_eval(item)\n                if isinstance(parsed, dict):\n                    counter.update(parsed.keys())\n            except (ValueError, SyntaxError):\n                pass\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 92, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    if not isinstance(data, list):\n        data = [data]\n    counter = Counter()\n    for item in data:\n        d = None\n        if isinstance(item, dict):\n            d = item\n        elif isinstance(item, str):\n            try:\n                d = ast.literal_eval(item)\n            except Exception:\n                d = None\n        if isinstance(d, dict):\n            counter.update(d.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 83, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    if not isinstance(data, list):\n        data = [data]\n    counter = Counter()\n    for item in data:\n        d = None\n        if isinstance(item, dict):\n            d = item\n        elif isinstance(item, str):\n            try:\n                parsed = ast.literal_eval(item)\n                if isinstance(parsed, dict):\n                    d = parsed\n            except (ValueError, SyntaxError):\n                continue\n        if isinstance(d, dict):\n            counter.update(d.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 85, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    try:\n        data = json.load(file_pointer)\n    except Exception:\n        return Counter()\n    if not isinstance(data, list):\n        return Counter()\n    counter = Counter()\n    for item in data:\n        d = None\n        if isinstance(item, dict):\n            d = item\n        elif isinstance(item, str):\n            try:\n                d = ast.literal_eval(item)\n            except (ValueError, SyntaxError):\n                d = None\n        if isinstance(d, dict):\n            counter.update(d.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 86, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n",
+          "test_with_invalid_json": "Traceback (most recent call last):\n  File \"__test__.py\", line 50, in test_with_invalid_json\nAssertionError: JSONDecodeError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df[\"list\"] = df[\"list\"].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x)\n    df[\"sum\"] = df[\"list\"].apply(np.sum)\n    df[\"mean\"] = df[\"list\"].apply(lambda lst: np.mean(lst) if len(lst) > 0 else np.nan)\n    df[\"std\"] = df[\"list\"].apply(lambda lst: np.std(lst, ddof=0) if len(lst) > 0 else np.nan)\n    ax = sns.histplot(df[\"mean\"].dropna())\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(data=df, x='mean')\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    try:\n        entries = os.listdir(directory)\n    except FileNotFoundError:\n        return pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median']), None\n    csv_files = []\n    for name in entries:\n        path = os.path.join(directory, name)\n        if os.path.isfile(path) and name.lower().endswith('.csv'):\n            csv_files.append(path)\n    if not csv_files:\n        return pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median']), None\n    target_file = max(csv_files, key=lambda p: len(os.path.basename(p)))\n    df = pd.read_csv(target_file)\n    df['list'] = df['list'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    ax = df['median'].plot(kind='hist')\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    if not os.path.isdir(directory):\n        return pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median']), None\n\n    candidates = []\n    for name in os.listdir(directory):\n        path = os.path.join(directory, name)\n        if os.path.isfile(path) and name.lower().endswith('.csv'):\n            candidates.append(path)\n\n    if not candidates:\n        return pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median']), None\n\n    target = max(candidates, key=lambda p: len(os.path.basename(p)))\n    df = pd.read_csv(target)\n\n    if 'list' not in df.columns:\n        df['list'] = pd.Series(dtype=object)\n\n    df['list'] = df['list'].map(ast.literal_eval)\n\n    if df.empty:\n        df['sum'] = pd.Series(dtype=float)\n        df['mean'] = pd.Series(dtype=float)\n        df['median'] = pd.Series(dtype=float)\n        return df, None\n\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(lambda x: float(np.mean(x)) if len(x) > 0 else np.nan)\n    df['median'] = df['list'].apply(lambda x: float(np.median(x)) if len(x) > 0 else np.nan)\n\n    med = df['median'].dropna()\n    if med.empty:\n        return df, None\n\n    import matplotlib.pyplot as plt\n    ax = med.hist()\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    try:\n        entries = os.listdir(directory)\n    except Exception:\n        entries = []\n\n    csv_files = []\n    for name in entries:\n        path = os.path.join(directory, name)\n        if os.path.isfile(path) and name.lower().endswith('.csv'):\n            csv_files.append(path)\n\n    if not csv_files:\n        empty_df = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return empty_df, None\n\n    target = max(csv_files, key=lambda p: len(os.path.basename(p)))\n    df = pd.read_csv(target)\n\n    def parse_list(x):\n        if isinstance(x, str):\n            try:\n                return ast.literal_eval(x)\n            except Exception:\n                return []\n        if isinstance(x, (list, tuple, np.ndarray)):\n            return list(x)\n        return []\n\n    df['list'] = df['list'].apply(parse_list)\n\n    def compute_stats(vals):\n        try:\n            arr = np.array(vals, dtype=float)\n        except Exception:\n            arr = np.array([], dtype=float)\n        s = float(arr.sum()) if arr.size > 0 else 0.0\n        m = float(arr.mean()) if arr.size > 0 else np.nan\n        med = float(np.median(arr)) if arr.size > 0 else np.nan\n        return s, m, med\n\n    sums, means, medians = [], [], []\n    for vals in df['list']:\n        s, m, med = compute_stats(vals)\n        sums.append(s)\n        means.append(m)\n        medians.append(med)\n\n    df['sum'] = sums\n    df['mean'] = means\n    df['median'] = medians\n\n    ax = None\n    valid = df['median'].dropna()\n    if not valid.empty:\n        import matplotlib.pyplot as plt\n        ax = valid.plot(kind='hist')\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = []\n    try:\n        for name in os.listdir(directory):\n            full = os.path.join(directory, name)\n            if os.path.isfile(full) and name.lower().endswith('.csv'):\n                csv_files.append((name, full))\n    except Exception:\n        csv_files = []\n    if not csv_files:\n        df_empty = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df_empty, None\n    longest = max(csv_files, key=lambda x: len(x[0]))\n    df = pd.read_csv(longest[1])\n    if 'email' not in df.columns or 'list' not in df.columns:\n        df = pd.DataFrame(columns=['email', 'list'])\n    def parse_list(x):\n        if isinstance(x, str):\n            try:\n                v = ast.literal_eval(x)\n                if isinstance(v, (list, tuple, np.ndarray)):\n                    return list(v)\n                return np.nan\n            except Exception:\n                return np.nan\n        if isinstance(x, (list, tuple, np.ndarray)):\n            return list(x)\n        return np.nan\n    df['list'] = df['list'].apply(parse_list) if 'list' in df.columns else []\n    def compute_sum(v):\n        try:\n            arr = np.array(v, dtype=float)\n            return float(np.nansum(arr)) if arr.size > 0 else np.nan\n        except Exception:\n            return np.nan\n    def compute_mean(v):\n        try:\n            arr = np.array(v, dtype=float)\n            return float(np.nanmean(arr)) if arr.size > 0 else np.nan\n        except Exception:\n            return np.nan\n    def compute_median(v):\n        try:\n            arr = np.array(v, dtype=float)\n            return float(np.nanmedian(arr)) if arr.size > 0 else np.nan\n        except Exception:\n            return np.nan\n    df['sum'] = df['list'].apply(compute_sum)\n    df['mean'] = df['list'].apply(compute_mean)\n    df['median'] = df['list'].apply(compute_median)\n    med = df['median'].dropna() if 'median' in df.columns else pd.Series(dtype=float)\n    ax = None\n    if len(med) > 0:\n        import matplotlib.pyplot as plt\n        ax = med.plot(kind='hist')\n    return df[['email', 'list', 'sum', 'mean', 'median']] if set(['email','list']).issubset(df.columns) else df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    import matplotlib.pyplot as plt\n    if not os.path.isdir(directory):\n        df_empty = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df_empty, None\n    entries = []\n    try:\n        for name in os.listdir(directory):\n            path = os.path.join(directory, name)\n            if os.path.isfile(path) and name.lower().endswith('.csv'):\n                entries.append(path)\n    except Exception:\n        entries = []\n    if not entries:\n        df_empty = pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median'])\n        return df_empty, None\n    target = max(entries, key=lambda p: len(os.path.basename(p)))\n    df = pd.read_csv(target)\n    def parse_list(x):\n        try:\n            return ast.literal_eval(x) if isinstance(x, str) else x\n        except Exception:\n            return np.nan\n    df['list'] = df['list'].apply(parse_list)\n    def safe_sum(x):\n        try:\n            return float(np.sum(x))\n        except Exception:\n            return np.nan\n    def safe_mean(x):\n        try:\n            return float(np.mean(x))\n        except Exception:\n            return np.nan\n    def safe_median(x):\n        try:\n            return float(np.median(x))\n        except Exception:\n            return np.nan\n    df['sum'] = df['list'].apply(safe_sum)\n    df['mean'] = df['list'].apply(safe_mean)\n    df['median'] = df['list'].apply(safe_median)\n    med = df['median'].dropna()\n    ax = med.plot(kind='hist')\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    def parse_val(v):\n        if isinstance(v, str):\n            return ast.literal_eval(v)\n        return v\n    df['dict_column'] = df['dict_column'].apply(parse_val)\n    dict_expanded = pd.json_normalize(df['dict_column']).add_prefix('dict_')\n    df = pd.concat([df, dict_expanded], axis=1)\n    numeric_df = df.select_dtypes(include='number')\n    ax = sns.pairplot(numeric_df)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    if 'dict_column' in df.columns:\n        def parse(v):\n            if isinstance(v, dict):\n                return v\n            if pd.isna(v):\n                return {}\n            try:\n                return ast.literal_eval(v)\n            except Exception:\n                return {}\n        dict_series = df['dict_column'].apply(parse)\n        dict_df = dict_series.apply(lambda d: pd.Series(d))\n        df = pd.concat([df, dict_df], axis=1)\n    num_df = df.select_dtypes(include='number')\n    ax = sns.pairplot(num_df)\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 106, in test_case_1\nAssertionError: False is not true\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 117, in test_case_2\nAssertionError: False is not true\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 128, in test_case_3\nAssertionError: False is not true\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 139, in test_case_4\nAssertionError: False is not true\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 150, in test_case_5\nAssertionError: False is not true\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    parsed = df['dict_column'].map(ast.literal_eval)\n    df['dict_column'] = parsed\n    expanded = parsed.apply(pd.Series)\n    expanded = expanded.apply(pd.to_numeric, errors='coerce')\n    expanded = expanded.add_prefix('dict_')\n    df = pd.concat([df, expanded], axis=1)\n    numeric_df = df.select_dtypes(include='number')\n    ax = sns.pairplot(numeric_df)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x)\n    expanded = df['dict_column'].apply(lambda d: pd.Series(d) if isinstance(d, dict) else pd.Series())\n    df = pd.concat([df.drop(columns=['dict_column']), expanded], axis=1)\n    numeric_df = df.select_dtypes(include='number')\n    ax = sns.pairplot(numeric_df)\n    return df, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 95, in test_case_1\nAssertionError: False is not true\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 106, in test_case_2\nAssertionError: False is not true\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 117, in test_case_3\nAssertionError: False is not true\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 128, in test_case_4\nAssertionError: False is not true\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 139, in test_case_5\nAssertionError: False is not true\n"
+        }
+      },
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    def _parse(x):\n        if isinstance(x, dict):\n            return x\n        if pd.isna(x):\n            return {}\n        try:\n            return ast.literal_eval(str(x))\n        except Exception:\n            return {}\n    if 'dict_column' in df.columns:\n        df['dict_column'] = df['dict_column'].apply(_parse)\n        features = pd.DataFrame(df['dict_column'].tolist())\n    else:\n        features = pd.DataFrame()\n    numeric_features = features.apply(pd.to_numeric, errors='coerce') if not features.empty else pd.DataFrame()\n    if not numeric_features.empty:\n        numeric_features = numeric_features.loc[:, numeric_features.notna().any()]\n    if not numeric_features.empty:\n        grid = sns.pairplot(numeric_features)\n    else:\n        numeric_df = df.select_dtypes(include='number')\n        if not numeric_df.empty:\n            grid = sns.pairplot(numeric_df)\n        else:\n            tmp = pd.DataFrame({'value': [0]*len(df) if len(df) > 0 else [0]})\n            grid = sns.pairplot(tmp)\n    return df, grid",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

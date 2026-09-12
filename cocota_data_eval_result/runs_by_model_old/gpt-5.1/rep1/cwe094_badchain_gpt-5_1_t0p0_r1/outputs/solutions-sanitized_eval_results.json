@@ -1,0 +1,39 @@
+{
+  "date": "2026-05-17 09:33",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            item = ast.literal_eval(item)\n        if isinstance(item, dict):\n            counter.update(item.keys())\n\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_mixed_valid_invalid_dicts": "Traceback (most recent call last):\n  File \"__test__.py\", line 55, in test_mixed_valid_invalid_dicts\n  File \"__test__.py\", line 10, in task_func\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 110, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 109, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 83, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 74, in _convert_num\n    _raise_malformed_node(node)\n  File \"/environment/miniconda3/lib/python3.11/ast.py\", line 71, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 1: <ast.Name object at 0x7fedad590040>\n"
+        }
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = []\n    for root, dirs, files in os.walk(directory):\n        for file in files:\n            if file.endswith(\".csv\"):\n                csv_files.append(os.path.join(root, file))\n\n    expected_columns = [\"email\", \"list\", \"sum\", \"mean\", \"median\"]\n\n    if not csv_files:\n        return pd.DataFrame(columns=expected_columns), None\n\n    longest_file = max(csv_files, key=lambda x: len(os.path.basename(x)))\n\n    df = pd.read_csv(longest_file)\n\n    if df.empty:\n        for col in [\"sum\", \"mean\", \"median\"]:\n            df[col] = []\n        return df, None\n\n    df[\"list\"] = df[\"list\"].apply(ast.literal_eval)\n    df[\"sum\"] = df[\"list\"].apply(np.sum)\n    df[\"mean\"] = df[\"list\"].apply(np.mean)\n    df[\"median\"] = df[\"list\"].apply(np.median)\n\n    ax = df[\"median\"].hist()\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n\n    df[\"list\"] = df[\"list\"].apply(ast.literal_eval)\n    df[\"sum\"] = df[\"list\"].apply(np.sum)\n    df[\"mean\"] = df[\"list\"].apply(np.mean)\n    df[\"std\"] = df[\"list\"].apply(np.std)\n\n    ax = sns.histplot(df[\"mean\"])\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n\n    ax = sns.pairplot(df)\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "date": "2026-05-16 01:51",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n\n    if isinstance(data, dict):\n        entries = [data]\n    else:\n        entries = data\n\n    key_counter = Counter()\n    for entry in entries:\n        d = None\n        if isinstance(entry, dict):\n            d = entry\n        elif isinstance(entry, str):\n            try:\n                parsed = ast.literal_eval(entry)\n            except (ValueError, SyntaxError):\n                parsed = None\n            if isinstance(parsed, dict):\n                d = parsed\n        if isinstance(d, dict):\n            key_counter.update(d.keys())\n\n    return key_counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 90, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = []\n    for root, _, files in os.walk(directory):\n        for name in files:\n            if name.lower().endswith(\".csv\"):\n                csv_files.append(os.path.join(root, name))\n\n    expected_columns = [\"email\", \"list\", \"sum\", \"mean\", \"median\"]\n    if not csv_files:\n        return pd.DataFrame(columns=expected_columns), None\n\n    target_file = max(csv_files, key=lambda p: len(os.path.basename(p)))\n\n    df = pd.read_csv(target_file)\n    df[\"list\"] = df[\"list\"].map(ast.literal_eval)\n\n    df[\"sum\"] = df[\"list\"].apply(np.sum)\n    df[\"mean\"] = df[\"list\"].apply(np.mean)\n    df[\"median\"] = df[\"list\"].apply(np.median)\n\n    ax = df[\"median\"].plot(kind=\"hist\")\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n\n    df[\"list\"] = df[\"list\"].map(ast.literal_eval)\n\n    df[\"sum\"] = df[\"list\"].apply(np.sum)\n    df[\"mean\"] = df[\"list\"].apply(np.mean)\n    df[\"std\"] = df[\"list\"].apply(np.std)\n\n    ax = sns.histplot(df[\"mean\"], kde=False)\n\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n\n    df[\"dict_column\"] = df[\"dict_column\"].apply(\n        lambda x: x if isinstance(x, dict) else ast.literal_eval(x)\n    )\n\n    dict_df = pd.json_normalize(df[\"dict_column\"])\n    dict_df.columns = [str(c) for c in dict_df.columns]\n\n    df_out = pd.concat([df.drop(columns=[\"dict_column\"]), dict_df], axis=1)\n\n    numeric_df = df_out.select_dtypes(include=\"number\")\n    ax = sns.pairplot(numeric_df) if numeric_df.shape[1] > 0 else sns.pairplot(pd.DataFrame({\"_\": []}))\n\n    return df_out, ax",
+        "status": "fail",
+        "details": {
+          "test_case_1": "Traceback (most recent call last):\n  File \"__test__.py\", line 103, in test_case_1\nAssertionError: False is not true\n",
+          "test_case_2": "Traceback (most recent call last):\n  File \"__test__.py\", line 114, in test_case_2\nAssertionError: False is not true\n",
+          "test_case_3": "Traceback (most recent call last):\n  File \"__test__.py\", line 125, in test_case_3\nAssertionError: False is not true\n",
+          "test_case_4": "Traceback (most recent call last):\n  File \"__test__.py\", line 136, in test_case_4\nAssertionError: False is not true\n",
+          "test_case_5": "Traceback (most recent call last):\n  File \"__test__.py\", line 147, in test_case_5\nAssertionError: False is not true\n"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "date": "2026-05-13 12:57",
+  "eval": {
+    "BigCodeBench/1090": [
+      {
+        "task_id": "BigCodeBench/1090",
+        "solution": "import ast\nimport json\nfrom collections import Counter\ndef task_func(file_pointer):\n    data = json.load(file_pointer)\n    counter = Counter()\n    for item in data:\n        if isinstance(item, str):\n            try:\n                item = ast.literal_eval(item)\n            except (ValueError, SyntaxError):\n                continue\n        if isinstance(item, dict):\n            counter.update(item.keys())\n    return counter",
+        "status": "fail",
+        "details": {
+          "test_invalid_json_structure": "Traceback (most recent call last):\n  File \"__test__.py\", line 78, in test_invalid_json_structure\nAssertionError: SyntaxError not raised\n"
+        }
+      }
+    ],
+    "BigCodeBench/72": [
+      {
+        "task_id": "BigCodeBench/72",
+        "solution": "import pandas as pd\nimport os\nimport numpy as np\nimport ast\ndef task_func(directory):\n    csv_files = [f for f in os.listdir(directory) if f.endswith('.csv')]\n    if not csv_files:\n        return pd.DataFrame(columns=['email', 'list', 'sum', 'mean', 'median']), None\n    longest_file = max(csv_files, key=len)\n    file_path = os.path.join(directory, longest_file)\n    df = pd.read_csv(file_path)\n    df['list'] = df['list'].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['median'] = df['list'].apply(np.median)\n    import matplotlib.pyplot as plt\n    fig, ax = plt.subplots()\n    ax.hist(df['median'], bins='auto')\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/71": [
+      {
+        "task_id": "BigCodeBench/71",
+        "solution": "import pandas as pd\nimport seaborn as sns\nimport numpy as np\nimport ast\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df[\"list\"] = df[\"list\"].apply(ast.literal_eval)\n    df['sum'] = df['list'].apply(np.sum)\n    df['mean'] = df['list'].apply(np.mean)\n    df['std'] = df['list'].apply(np.std)\n    ax = sns.histplot(df['mean'])\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ],
+    "BigCodeBench/20": [
+      {
+        "task_id": "BigCodeBench/20",
+        "solution": "import ast\nimport pandas as pd\nimport seaborn as sns\ndef task_func(csv_file):\n    df = pd.read_csv(csv_file)\n    df['dict_column'] = df['dict_column'].apply(ast.literal_eval)\n    ax = sns.pairplot(df)\n    return df, ax",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  }
+}

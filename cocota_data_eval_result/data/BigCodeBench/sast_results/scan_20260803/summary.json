@@ -1,0 +1,102 @@
+{
+  "input_dir": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench",
+  "output_dir": "/home/sshuser/projects/CoCoTA-main/data/BigCodeBench/sast_results/scan_20260803",
+  "materialization": "code_prompt + canonical_solution",
+  "reported_region": "canonical_solution",
+  "records_scanned": 207,
+  "dataset_files": 9,
+  "tool_versions": {
+    "semgrep": "1.172.0",
+    "bandit": "bandit 1.9.4",
+    "codeql": "CodeQL command-line toolchain release 2.25.4."
+  },
+  "semgrep_config": "p/python",
+  "codeql_suite": "codeql/python-queries:codeql-suites/python-security-and-quality.qls",
+  "tools": {
+    "semgrep": {
+      "records_scanned": 207,
+      "all_findings": 29,
+      "canonical_solution_findings": 29,
+      "files_with_canonical_findings": 29,
+      "by_rule": {
+        "python.lang.security.audit.insecure-transport.requests.request-with-http.request-with-http": 18,
+        "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true": 9,
+        "python.lang.security.insecure-hash-algorithms-md5.insecure-hash-algorithm-md5": 2
+      },
+      "by_severity": {
+        "ERROR": 9,
+        "INFO": 18,
+        "WARNING": 2
+      },
+      "by_dataset": {
+        "CWE-078-0.jsonl": 8,
+        "CWE-295-0.jsonl": 7,
+        "CWE-367-0.jsonl": 3,
+        "CWE-400-0.jsonl": 8,
+        "CWE-502-0.jsonl": 3
+      }
+    },
+    "bandit": {
+      "records_scanned": 207,
+      "all_findings": 169,
+      "canonical_solution_findings": 134,
+      "files_with_canonical_findings": 109,
+      "by_rule": {
+        "B113": 58,
+        "B310": 13,
+        "B311": 13,
+        "B321": 1,
+        "B324": 2,
+        "B602": 9,
+        "B603": 23,
+        "B605": 1,
+        "B607": 10,
+        "B608": 4
+      },
+      "by_severity": {
+        "HIGH": 13,
+        "LOW": 46,
+        "MEDIUM": 75
+      },
+      "by_dataset": {
+        "CWE-022-0.jsonl": 3,
+        "CWE-078-0.jsonl": 45,
+        "CWE-089-0.jsonl": 13,
+        "CWE-094-0.jsonl": 1,
+        "CWE-295-0.jsonl": 23,
+        "CWE-295-1.jsonl": 7,
+        "CWE-367-0.jsonl": 7,
+        "CWE-400-0.jsonl": 26,
+        "CWE-502-0.jsonl": 9
+      }
+    },
+    "codeql": {
+      "records_scanned": 207,
+      "all_findings": 10,
+      "canonical_solution_findings": 10,
+      "files_with_canonical_findings": 10,
+      "by_rule": {
+        "py/empty-except": 3,
+        "py/insecure-protocol": 1,
+        "py/multiple-definition": 1,
+        "py/unused-local-variable": 2,
+        "py/weak-crypto-key": 2,
+        "py/weak-sensitive-data-hashing": 1
+      },
+      "by_severity": {
+        "error": 2,
+        "recommendation": 5,
+        "warning": 3
+      },
+      "by_dataset": {
+        "CWE-078-0.jsonl": 1,
+        "CWE-295-0.jsonl": 2,
+        "CWE-295-1.jsonl": 1,
+        "CWE-367-0.jsonl": 3,
+        "CWE-400-0.jsonl": 2,
+        "CWE-502-0.jsonl": 1
+      }
+    }
+  },
+  "canonical_solution_findings_total": 173
+}

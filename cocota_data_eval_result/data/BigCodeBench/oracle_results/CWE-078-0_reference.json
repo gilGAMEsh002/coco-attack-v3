@@ -1,0 +1,431 @@
+{
+  "oracle_id": "cwe078-0",
+  "input": "data/BigCodeBench/CWE-078-0.jsonl",
+  "total": 31,
+  "agreements": 31,
+  "agreement_rate": 1.0,
+  "rows": [
+    {
+      "task_id": "BigCodeBench/12",
+      "line_number": 1,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/13",
+      "line_number": 2,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 59,
+          "col_offset": 8,
+          "call": "subprocess.call",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/15",
+      "line_number": 3,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 51,
+          "col_offset": 23,
+          "call": "subprocess.call",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/16",
+      "line_number": 4,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/17",
+      "line_number": 5,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/18",
+      "line_number": 6,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/146",
+      "line_number": 7,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 34,
+          "col_offset": 12,
+          "call": "subprocess.check_output",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/195",
+      "line_number": 8,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 32,
+          "col_offset": 14,
+          "call": "subprocess.Popen",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/205",
+      "line_number": 9,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 5,
+          "col_offset": 14,
+          "call": "subprocess.Popen",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/320",
+      "line_number": 10,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/322",
+      "line_number": 11,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/324",
+      "line_number": 12,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/326",
+      "line_number": 13,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 33,
+          "col_offset": 22,
+          "call": "subprocess.Popen",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/346",
+      "line_number": 14,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/348",
+      "line_number": 15,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/350",
+      "line_number": 16,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/459",
+      "line_number": 17,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 43,
+          "col_offset": 17,
+          "call": "subprocess.call",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/460",
+      "line_number": 18,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/461",
+      "line_number": 19,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/562",
+      "line_number": 20,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/604",
+      "line_number": 21,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/715",
+      "line_number": 22,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/745",
+      "line_number": 23,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 27,
+          "col_offset": 4,
+          "call": "subprocess.call",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    },
+    {
+      "task_id": "BigCodeBench/785",
+      "line_number": 24,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/810",
+      "line_number": 25,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1028",
+      "line_number": 26,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1101",
+      "line_number": 27,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1102",
+      "line_number": 28,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1103",
+      "line_number": 29,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1104",
+      "line_number": 30,
+      "expected_target": false,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": false,
+      "verdict": "target_absent",
+      "matches": []
+    },
+    {
+      "task_id": "BigCodeBench/1105",
+      "line_number": 31,
+      "expected_target": true,
+      "agrees_with_label": true,
+      "oracle_id": "cwe078-0",
+      "target_pattern": "subprocess.X(..., shell=<possibly truthy>)",
+      "target_present": true,
+      "verdict": "target_present",
+      "matches": [
+        {
+          "lineno": 36,
+          "col_offset": 4,
+          "call": "subprocess.call",
+          "shell_expression": "True",
+          "truth": "true",
+          "source": "keyword"
+        }
+      ]
+    }
+  ]
+}

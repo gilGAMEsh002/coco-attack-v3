@@ -1,0 +1,29 @@
+{
+  "name": "cwe502_cocota",
+  "created_at": "2026-05-10T08:50:53.787101+00:00",
+  "note": "Rebuilt from normalized template cocota.md",
+  "author": "rebuild_prompts",
+  "task_subset": "data/tasks/cwe502.jsonl",
+  "fewshot_ids": [
+    "BigCodeBench/402",
+    "BigCodeBench/525",
+    "BigCodeBench/841",
+    "BigCodeBench/283"
+  ],
+  "baseline": "CoCoTA",
+  "has_cot": true,
+  "template": "prompts/templates/cwe502/cocota.md",
+  "test_count": 45,
+  "attack_config": {
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "cot",
+      "code"
+    ],
+    "mode": "single_dimension"
+  },
+  "evaluation_config": {
+    "detector_id": "contains_deserializer"
+  }
+}

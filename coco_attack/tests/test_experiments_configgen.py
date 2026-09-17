@@ -68,7 +68,7 @@ def test_judge_disabled_removes_layer(tmp_path) -> None:
 def test_write_and_reload_configs_does_not_create_run_dirs(tmp_path) -> None:
     matrix, units = _matrix_and_units()
     written = write_unit_configs(tmp_path, matrix, units)
-    assert len(written) == 30
+    assert len(written) == 24
     for run_id, relative in written.items():
         path = tmp_path / relative
         assert path.is_file(), run_id
@@ -84,7 +84,7 @@ def test_check_unit_configs_reports_missing_inputs_without_raising(tmp_path) -> 
     write_unit_configs(tmp_path, matrix, units)
     manifest = build_manifest(matrix, units, {"git_commit": "abc"}, tmp_path)
     summary = check_unit_configs(tmp_path, manifest)
-    assert len(summary) == 30
+    assert len(summary) == 24
     for entry in summary.values():
         assert entry["ok"] is False
         assert entry["error"]

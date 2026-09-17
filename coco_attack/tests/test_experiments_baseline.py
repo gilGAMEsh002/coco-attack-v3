@@ -1,7 +1,7 @@
 """Baseline preparation and startup checks (phase 03, sub-task 01).
 
 The end-to-end test runs the real offline preparation chain (prepare-data +
-materialize-prompts + manifest + configs + lock) with the mock source.  It never
+materialize-prompts + manifest + configs) with the mock source.  It never
 calls a model and never starts a container.  Skipped when the read-only assets
 are unavailable.
 """
@@ -59,7 +59,10 @@ def test_prepare_baseline_end_to_end(tmp_path) -> None:
     manifest = load_manifest(root / "manifest" / "run-manifest.json")
     assert len(manifest["units"]) == 24
     runs = [run for unit in manifest["units"].values() for run in unit["runs"]]
-    assert len(runs) == 30
+    assert len(runs) == 24
+    # whole-set baseline: one 'search' stage per unit, no holdout lock
+    assert all(run["stage"] == "search" for run in runs)
+    assert all(unit["lock_ref"] is None for unit in manifest["units"].values())
 
     expected_counts = {"cwe078-0": 27, "cwe094-0": 4, "cwe295-0": 33, "cwe502-0": 45}
     for unit in manifest["units"].values():
@@ -73,21 +76,17 @@ def test_prepare_baseline_end_to_end(tmp_path) -> None:
         assert (root / "inputs" / "data" / combination_id / "split.json").is_file()
         assert (root / "inputs" / "prompts" / combination_id / "manifest.json").is_file()
 
-    # all 30 configs load and check-pipeline agrees with the manifest counts
+    # all 24 configs load and check-pipeline agrees with the manifest counts
     summary = check_unit_configs(root, manifest)
-    assert len(summary) == 30
+    assert len(summary) == 24
     assert all(entry["ok"] for entry in summary.values()), summary
 
-    # cwe078 lock exists with six locked units
-    lock = json.loads((root / "locks" / "baseline-lock.json").read_text(encoding="utf-8"))
-    assert lock["schema_version"] == "baseline-lock-v1"
-    assert lock["combination_id"] == "cwe078-0"
-    assert len(lock["unit_ids"]) == 6
-    assert set(lock["prompt_hashes"]) == {
-        "clean_0shot",
-        "clean_fewshot_cot",
-        "clean_fewshot_no_cot",
-    }
+    # static task_set precheck catches a manifest task-set mismatch
+    tampered = json.loads(json.dumps(manifest))
+    run0 = next(iter(tampered["units"].values()))["runs"][0]
+    run0["task_ids"] = run0["task_ids"][:-1]
+    issues = baseline_module._check_static_task_sets(root, tampered)
+    assert issues and "static task_set" in issues[0]
 
     # startup check is written and passes in a mock/no-cost configuration
     assert check_baseline(root) == 0
@@ -118,6 +117,17 @@ def test_prepare_baseline_refuses_non_fresh_root(tmp_path) -> None:
     root.mkdir()
     (root / "keep").write_text("occupied", encoding="utf-8")
     assert prepare_baseline(matrix_path, root) == 2
+
+
+def test_validate_prepared_requires_whole_set() -> None:
+    """The clean baseline runs every combination whole-set (Z)."""
+
+    from coco_attack.experiments.baseline import BaselineBlockedError, _validate_prepared
+    from test_experiments_matrix import _prepared
+
+    _validate_prepared("cwe078-0", _prepared("cwe078-0"))  # whole-set passes
+    with pytest.raises(BaselineBlockedError, match="whole-set"):
+        _validate_prepared("cwe078-0", _prepared("cwe078-0", split=True))
 
 
 def test_parse_dotenv_supports_export_and_quotes(tmp_path) -> None:

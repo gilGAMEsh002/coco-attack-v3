@@ -315,11 +315,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare_baseline_cmd = subparsers.add_parser(
         "prepare-baseline",
-        help="build a fresh clean-baseline root: inputs, manifest, configs and lock",
+        help="build a fresh clean-baseline root: inputs, manifest and configs",
         description=(
             "Read a baseline matrix config, snapshot the fixed data/prompt inputs, "
-            "expand the 24-unit/30-run manifest, write one pipeline config per run and "
-            "record the cwe078 lock. Never calls a model or a DMX API."
+            "expand the 24-unit/24-run whole-set manifest, write one pipeline config per "
+            "run. The clean baseline has no holdout and no lock. Never calls a model or a "
+            "DMX API."
         ),
     )
     prepare_baseline_cmd.add_argument("--matrix-config", required=True, help="baseline matrix config JSON")

@@ -24,6 +24,7 @@ from ..assets.artifacts import (
 from ..assets.issues import SEVERITY_ERROR, Issue
 from ..data.contracts import DataContractError, PreparedCombination
 from ..data.snapshot import load_prepared_data
+from ..protocol.stages import SplitMode
 from .contracts import (
     EvaluationConfig,
     EvaluationRecord,
@@ -201,14 +202,26 @@ def _load_cleaned(
 
 
 def _resolve_task_set(prepared: PreparedCombination, task_set: str) -> list[str]:
+    split = prepared.split
     if task_set == "evaluation":
         return list(prepared.selection.evaluation_ids)
     if task_set == "whole-set":
-        return list(prepared.split.input_ids)
+        return list(split.input_ids)
+    if split.mode is SplitMode.WHOLE_SET:
+        # Whole-set combinations have no partitions; they execute under the
+        # scheduling stage "search" over the full evaluation set.  This mirrors
+        # ``generation.inputs.select_stage_task_ids`` so the static layer sees the
+        # same tasks the generation/functional layers produced.
+        if task_set == "search":
+            return list(split.input_ids)
+        _fail(
+            "config.task_set_unavailable",
+            f"whole-set combination has no {task_set!r} partition",
+        )
     if task_set == "search":
-        return list(prepared.split.search_ids)
+        return list(split.search_ids)
     if task_set == "holdout":
-        return list(prepared.split.holdout_ids)
+        return list(split.holdout_ids)
     _fail("config.unknown_task_set", f"unknown task_set {task_set!r}")
     return []
 

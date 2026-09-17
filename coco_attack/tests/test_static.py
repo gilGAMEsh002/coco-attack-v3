@@ -309,3 +309,60 @@ def test_evaluate_static_rejects_wrong_config_combination(tmp_path: Path) -> Non
         "--config", str(config_path), "--output-dir", str(tmp_path / "out"),
     ])
     assert exit_code == 2
+
+
+def _synthetic_prepared(combination_id: str, ids: tuple[str, ...], *, split: bool):
+    from coco_attack.data.contracts import (
+        DatasetSelection,
+        PreparedCombination,
+        SplitManifest,
+    )
+    from coco_attack.protocol.stages import SplitMode
+
+    snapshot = "0" * 64
+    if split:
+        mode = SplitMode.SEARCH_HOLDOUT
+        search_ids, holdout_ids = ids[:18], ids[18:]
+        evaluation_ids: tuple[str, ...] = ()
+    else:
+        mode = SplitMode.WHOLE_SET
+        search_ids, holdout_ids = (), ()
+        evaluation_ids = ids
+    selection = DatasetSelection(
+        combination_id=combination_id, seed=42, example_ids=(),
+        evaluation_ids=ids, selection_source="test", selection_file="selection.json",
+        selection_file_sha256=snapshot, verification_sources=(),
+        task_snapshot_sha256=snapshot,
+    )
+    split_manifest = SplitManifest(
+        combination_id=combination_id, mode=mode, seed=42,
+        algorithm_version="sha256-seed-taskid-v1", split_config_sha256=snapshot,
+        input_ids=ids, input_ids_sha256=snapshot, task_snapshot_sha256=snapshot,
+        search_ids=search_ids, holdout_ids=holdout_ids, evaluation_ids=evaluation_ids,
+    )
+    return PreparedCombination(
+        combination_id=combination_id, registry_id=combination_id, oracle_id=combination_id,
+        data_contract="bigcodebench-screened-v1", records=(), selection=selection,
+        split=split_manifest, manifest_sha256=snapshot,
+    )
+
+
+def test_resolve_task_set_whole_set_search_selects_full_set() -> None:
+    """Regression: whole-set stage 'search' must mean the full evaluation set.
+
+    Before the fix this returned the (empty) ``split.search_ids`` and the pipeline
+    failed with "task_set 'search' resolved to no tasks" for cwe094/295/502.
+    """
+
+    from coco_attack.evaluation.run_static import EvaluationInputError, _resolve_task_set
+
+    ids = tuple(f"BigCodeBench/{index}" for index in range(33))
+    whole = _synthetic_prepared("cwe295-0", ids, split=False)
+    assert _resolve_task_set(whole, "search") == list(ids)
+    assert _resolve_task_set(whole, "whole-set") == list(ids)
+    with pytest.raises(EvaluationInputError):
+        _resolve_task_set(whole, "holdout")
+
+    split_prepared = _synthetic_prepared("cwe078-0", ids, split=True)
+    assert _resolve_task_set(split_prepared, "search") == list(ids[:18])
+    assert _resolve_task_set(split_prepared, "holdout") == list(ids[18:])

@@ -1,10 +1,11 @@
 """Baseline preparation and startup-condition checks (phase 03, sub-task 01).
 
 ``prepare_baseline`` builds a fresh, reviewable baseline root: fixed data/prompt
-input snapshots, the run manifest, one pipeline config per run and the cwe078
-lock.  It never issues a model request.  ``check_baseline`` re-verifies the
-inputs, configs, version freeze, Docker/image identity, DMX key presence and
-evaluator tool availability, and writes a machine-readable plus Markdown report.
+input snapshots, the run manifest and one pipeline config per run, all over a
+whole-set split for every combination.  It never issues a model request.
+``check_baseline`` re-verifies the inputs, configs, version freeze, Docker/image
+identity, DMX key presence and evaluator tool availability, and writes a
+machine-readable plus Markdown report.
 
 Exit codes mirror the CLI: ``0`` ok, ``1`` blocking, ``2`` usage.
 """
@@ -33,12 +34,17 @@ from ..assets.artifacts import (
 )
 from ..assets.paths import default_config_dir, resolve_within
 from ..data.combination import load_combination_specs
+from ..data.contracts import DataContractError
 from ..data.prepare import prepare_data
 from ..data.snapshot import load_prepared_data
 from ..evaluation.cleaning import CLEANER_VERSION
 from ..evaluation.functional import HARNESS_VERSION
 from ..evaluation.judge import JUDGE_DETECTION_VERSION, JUDGE_PROMPT_VERSION
-from ..evaluation.run_static import STATIC_SHELL_VERSION
+from ..evaluation.run_static import (
+    STATIC_SHELL_VERSION,
+    EvaluationInputError,
+    _resolve_task_set,
+)
 from ..evaluation.sast import (
     rule_mapping_trace,
     sast_coverage_matrix,
@@ -54,10 +60,6 @@ from .configgen import check_unit_configs, write_unit_configs
 from .manifest import build_manifest, load_manifest, write_manifest
 from .matrix import (
     EXPECTED_TASK_COUNTS,
-    LOCK_COMBINATION,
-    LOCKED_HOLDOUT_COUNT,
-    LOCKED_SEARCH_COUNT,
-    LOCK_REF,
     MatrixConfig,
     MatrixError,
     expand_units,
@@ -68,7 +70,6 @@ EXIT_OK = 0
 EXIT_BLOCKING = 1
 EXIT_USAGE = 2
 
-BASELINE_LOCK_SCHEMA_VERSION = "baseline-lock-v1"
 ASSET_MANIFEST_SCHEMA_VERSION = "baseline-asset-manifest-v1"
 BASELINE_CHECK_SCHEMA_VERSION = "baseline-check-v1"
 
@@ -294,7 +295,7 @@ def known_limitations_for(combination_id: str) -> list[str]:
             "stage-01: legacy BigCodeBench/215 prompt uses 'Thif function' vs "
             "standard 'This function'; recorded in prompt_diffs.json, not repaired"
         )
-    if combination_id == LOCK_COMBINATION:
+    if combination_id == "cwe078-0":
         limitations.append(
             "stage-01 D05: cwe078-0 static oracle v2 (branch-aware); ASR is defined "
             "as v2 and cross-version comparisons must note the oracle version"
@@ -320,31 +321,23 @@ def _validate_matrix_paths(matrix: MatrixConfig) -> None:
 
 def _validate_prepared(combination_id: str, prepared: Any) -> None:
     expected = EXPECTED_TASK_COUNTS[combination_id]
+    if prepared.split.mode is not SplitMode.WHOLE_SET:
+        raise BaselineBlockedError(
+            f"{combination_id}: the clean baseline requires a whole-set split for every "
+            f"combination, got {prepared.split.mode.value}; use configs/splits.baseline.json "
+            "or remove the combination override from matrix.split_config"
+        )
     actual = len(prepared.selection.evaluation_ids)
     if actual != expected:
         raise BaselineBlockedError(
             f"{combination_id}: EXPECTED_TASK_COUNTS says {expected} evaluation tasks, "
             f"prepared data has {actual}; the task set must not be adjusted"
         )
-    # For a search/holdout split ``split.evaluation_ids`` is intentionally empty;
-    # the full evaluation set lives in ``split.input_ids`` (see data/split.py).
     if len(prepared.split.input_ids) != expected:
         raise BaselineBlockedError(
             f"{combination_id}: split input_ids has "
             f"{len(prepared.split.input_ids)} tasks, expected {expected}"
         )
-    if combination_id == LOCK_COMBINATION:
-        if prepared.split.mode is not SplitMode.SEARCH_HOLDOUT:
-            raise BaselineBlockedError(
-                f"{combination_id}: expected a search_holdout split, got {prepared.split.mode.value}"
-            )
-        search_count = len(prepared.split.search_ids)
-        holdout_count = len(prepared.split.holdout_ids)
-        if search_count != LOCKED_SEARCH_COUNT or holdout_count != LOCKED_HOLDOUT_COUNT:
-            raise BaselineBlockedError(
-                f"{combination_id}: expected split search={LOCKED_SEARCH_COUNT}/"
-                f"holdout={LOCKED_HOLDOUT_COUNT}, got search={search_count}/holdout={holdout_count}"
-            )
 
 
 def _validate_prompt_manifest(
@@ -405,60 +398,6 @@ def _validate_prompt_manifest(
             raise BaselineBlockedError(
                 f"{combination_id}/{form}: meta.json sha256 does not match prompt manifest"
             )
-
-
-def _write_lock(
-    root: Path,
-    matrix: MatrixConfig,
-    fingerprint: dict[str, Any],
-    units: tuple[Any, ...],
-    prompts_root: Path,
-) -> None:
-    if LOCK_COMBINATION not in matrix.combinations:
-        return
-    combo_units = [unit for unit in units if unit.combination_id == LOCK_COMBINATION]
-    unit_ids = [unit.unit_id for unit in combo_units]
-    if len(unit_ids) != len(CLEAN_FORMS) * 2:
-        raise BaselineBlockedError(
-            f"{LOCK_COMBINATION}: expected {len(CLEAN_FORMS) * 2} locked units, got {len(unit_ids)}"
-        )
-
-    prompt_manifest = read_json(prompts_root / LOCK_COMBINATION / "manifest.json")
-    form_entries = prompt_manifest.get("forms") or {}
-    prompt_hashes = {form: form_entries[form]["prompt_hashes"] for form in CLEAN_FORMS}
-    meta_sha256 = {form: form_entries[form]["meta_sha256"] for form in CLEAN_FORMS}
-
-    unit_configs: dict[str, dict[str, str]] = {}
-    for unit in combo_units:
-        runs: dict[str, str] = {}
-        for entry in unit.entries:
-            config_path = root / entry.config_path
-            if not config_path.is_file():
-                raise BaselineBlockedError(f"locked unit config missing: {config_path}")
-            runs[entry.run_id] = sha256_file(config_path)
-        unit_configs[unit.unit_id] = runs
-
-    lock = {
-        "schema_version": BASELINE_LOCK_SCHEMA_VERSION,
-        "combination_id": LOCK_COMBINATION,
-        "oracle_id": combo_units[0].oracle_id,
-        "prompt_version": matrix.prompt_version,
-        "prompt_hashes": prompt_hashes,
-        "meta_sha256": meta_sha256,
-        "unit_ids": unit_ids,
-        "unit_configs": unit_configs,
-        "victim_model": matrix.victim_model,
-        "judge_model": matrix.judge_model,
-        "max_tokens": matrix.max_tokens,
-        "version_fingerprint": fingerprint,
-        "locked_at": datetime.now(timezone.utc).isoformat(),
-        "operator": matrix.operator,
-        "basis": (
-            "pre-holdout: cwe078 holdout was not sampled before this lock; "
-            "whole-set results do not claim holdout validation"
-        ),
-    }
-    write_json_atomic(root / LOCK_REF, lock)
 
 
 def _write_asset_manifest(
@@ -545,7 +484,7 @@ def _prepare_baseline_impl(matrix_config_path: Path, baseline_root: Path) -> Non
     split_config_path = (
         Path(matrix.split_config).expanduser()
         if matrix.split_config
-        else default_config_dir() / "splits.json"
+        else default_config_dir() / "splits.baseline.json"
     )
     if not split_config_path.is_file():
         raise BaselineUsageError(f"split config not found: {split_config_path}")
@@ -600,7 +539,6 @@ def _prepare_baseline_impl(matrix_config_path: Path, baseline_root: Path) -> Non
     except MatrixError as error:
         raise BaselineBlockedError(str(error)) from error
 
-    _write_lock(root, matrix, fingerprint, units, prompts_root)
     _write_asset_manifest(
         root, matrix, fingerprint, prepared_by_combination, prompts_root, specs, manifest_path
     )
@@ -695,6 +633,55 @@ def _verify_input_hashes(root: Path, manifest: dict[str, Any]) -> list[str]:
                     issues.append(
                         f"{combination_id}/{form}: prompt hash differs for {task_id}"
                     )
+    return issues
+
+
+def _check_static_task_sets(root: Path, manifest: dict[str, Any]) -> list[str]:
+    """Verify each manifest run's task set matches the static layer resolution.
+
+    ``run_static`` resolves a run's task set from the prepared data; a whole-set
+    combination executes its single ``search`` stage over the full evaluation set
+    (see ``run_static._resolve_task_set``).  Comparing that resolution against the
+    manifest catches a split/whole-set or prepared-data mismatch that a config
+    check alone would miss.  Returns blocking issue strings.
+    """
+
+    data_dir = root / "inputs" / "data"
+    issues: list[str] = []
+    prepared_cache: dict[str, Any] = {}
+    for unit in (manifest.get("units") or {}).values():
+        combination_id = unit["combination_id"]
+        if combination_id not in prepared_cache:
+            try:
+                prepared_cache[combination_id] = load_prepared_data(data_dir, combination_id)
+            except (OSError, ValueError, DataContractError) as error:
+                prepared_cache[combination_id] = error
+        prepared = prepared_cache[combination_id]
+        if isinstance(prepared, Exception):
+            issues.append(
+                f"{combination_id}: cannot load prepared data for the static task_set "
+                f"check: {prepared}"
+            )
+            continue
+        for run in unit.get("runs") or []:
+            stage = run["stage"]
+            try:
+                resolved = _resolve_task_set(prepared, stage)
+            except EvaluationInputError as error:
+                issues.append(
+                    f"{combination_id}/{stage}: static task_set {stage!r} is unavailable: {error}"
+                )
+                continue
+            if not resolved:
+                issues.append(
+                    f"{combination_id}/{stage}: static task_set {stage!r} resolved to no tasks"
+                )
+            elif tuple(resolved) != tuple(run["task_ids"]):
+                issues.append(
+                    f"{combination_id}/{stage}: static task_set {stage!r} resolves to "
+                    f"{len(resolved)} tasks that do not match the manifest's "
+                    f"{len(run['task_ids'])} task_ids"
+                )
     return issues
 
 
@@ -812,6 +799,9 @@ def _check_baseline_impl(root: Path) -> dict[str, Any]:
 
     # 1. input hashes
     blocking.extend(_verify_input_hashes(root, manifest))
+
+    # 1b. manifest task sets vs the static layer's own resolution
+    blocking.extend(_check_static_task_sets(root, manifest))
 
     # 2. per-run configs
     run_summary = check_unit_configs(root, manifest)
@@ -970,7 +960,6 @@ __all__ = [
     "EXIT_OK",
     "EXIT_BLOCKING",
     "EXIT_USAGE",
-    "BASELINE_LOCK_SCHEMA_VERSION",
     "ASSET_MANIFEST_SCHEMA_VERSION",
     "BASELINE_CHECK_SCHEMA_VERSION",
     "BaselineError",

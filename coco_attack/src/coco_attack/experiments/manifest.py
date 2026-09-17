@@ -1,6 +1,7 @@
 """Run manifest (``run-manifest-v1``) creation, validation and status updates.
 
-The manifest is the single machine-readable record of the 24 units / 30 runs.
+The manifest is the single machine-readable record of the 24 units / 24 runs
+(whole-set baseline).
 It is fully persisted before any billable request and is updated in place by
 sub-task 02; this module owns the schema, atomic writes and the status machine.
 """
@@ -17,7 +18,7 @@ from ..assets.artifacts import (
     sha256_bytes,
     write_json_atomic,
 )
-from .matrix import LOCK_COMBINATION, LOCK_REF, MatrixConfig, RunUnit
+from .matrix import MatrixConfig, RunUnit
 
 RUN_MANIFEST_SCHEMA_VERSION = "run-manifest-v1"
 UNIT_STATUSES = (
@@ -74,10 +75,6 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _unit_lock_ref(combination_id: str) -> str | None:
-    return LOCK_REF if combination_id == LOCK_COMBINATION else None
-
-
 def build_manifest(
     matrix: MatrixConfig,
     units: tuple[RunUnit, ...],
@@ -120,7 +117,7 @@ def build_manifest(
             "expected_task_count": unit.expected_task_count,
             "expected_sample_count": unit.expected_sample_count,
             "status": "configured",
-            "lock_ref": _unit_lock_ref(unit.combination_id),
+            "lock_ref": None,
             "known_limitations": [],
             "enabled_layers": list(effective_layers),
             "sast_tools": list(matrix.sast_tools),

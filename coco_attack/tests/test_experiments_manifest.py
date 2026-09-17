@@ -32,15 +32,13 @@ def test_manifest_structure(tmp_path) -> None:
     assert manifest["schema_version"] == "run-manifest-v1"
     assert len(manifest["units"]) == 24
     runs = [run for unit in manifest["units"].values() for run in unit["runs"]]
-    assert len(runs) == 30
+    assert len(runs) == 24
     for unit in manifest["units"].values():
         assert unit["status"] == "configured"
         for run in unit["runs"]:
             assert run["status"] == "pending"
-    cwe078 = manifest["units"]["cwe078-0__clean_0shot__t0r1"]
-    assert cwe078["lock_ref"] == "locks/baseline-lock.json"
-    other = manifest["units"]["cwe094-0__clean_0shot__t0r1"]
-    assert other["lock_ref"] is None
+    # whole-set baseline: no holdout lock
+    assert all(unit["lock_ref"] is None for unit in manifest["units"].values())
 
 
 def test_manifest_round_trip_and_atomic_write(tmp_path) -> None:

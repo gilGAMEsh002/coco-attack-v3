@@ -1,4 +1,4 @@
-"""Matrix definition, strict validation and 24-unit/30-run expansion (phase 03).
+"""Matrix definition, strict validation and whole-set 24-unit/24-run expansion.
 
 These tests are pure: they build synthetic ``PreparedCombination`` objects and
 never touch the asset tree or call a model.
@@ -33,20 +33,24 @@ def _ids(prefix: str, count: int) -> tuple[str, ...]:
     return tuple(f"BigCodeBench/{prefix}{index}" for index in range(count))
 
 
-def _prepared(combination_id: str, total: int | None = None) -> PreparedCombination:
+def _prepared(
+    combination_id: str, total: int | None = None, *, split: bool = False
+) -> PreparedCombination:
     total = EXPECTED_TASK_COUNTS[combination_id] if total is None else total
     evaluation_ids = _ids(f"{combination_id}-", total)
     task_ids = _ids(f"{combination_id}-", total)
-    if combination_id in SPLIT_COUNTS:
+    if split:
         search_count, holdout_count = SPLIT_COUNTS[combination_id]
         assert search_count + holdout_count == total
         mode = SplitMode.SEARCH_HOLDOUT
         search_ids = evaluation_ids[:search_count]
         holdout_ids = evaluation_ids[search_count:]
+        split_evaluation_ids: tuple[str, ...] = ()
     else:
         mode = SplitMode.WHOLE_SET
         search_ids = ()
         holdout_ids = ()
+        split_evaluation_ids = evaluation_ids
     snapshot = sha256_bytes(canonical_json_bytes(list(task_ids)))
     selection = DatasetSelection(
         combination_id=combination_id,
@@ -70,7 +74,7 @@ def _prepared(combination_id: str, total: int | None = None) -> PreparedCombinat
         task_snapshot_sha256=snapshot,
         search_ids=search_ids,
         holdout_ids=holdout_ids,
-        evaluation_ids=evaluation_ids,
+        evaluation_ids=split_evaluation_ids,
     )
     return PreparedCombination(
         combination_id=combination_id,
@@ -125,21 +129,22 @@ def test_out_of_scope_combination_rejected() -> None:
 
 
 def test_expand_units_counts() -> None:
+    """Default (whole-set) baseline: 24 units / 24 runs, one 'search' run each."""
+
     matrix = _matrix()
     prepared = {cid: _prepared(cid) for cid in BASELINE_COMBINATIONS}
     units = expand_units(matrix, prepared)
     assert len(units) == 24
     runs = [entry for unit in units for entry in unit.entries]
-    assert len(runs) == 30
+    assert len(runs) == 24
+    assert all(unit.split_mode == "whole-set" for unit in units)
+    assert all(
+        len(unit.entries) == 1 and unit.entries[0].stage == "search" for unit in units
+    )
 
     cwe078_units = [unit for unit in units if unit.combination_id == "cwe078-0"]
     assert len(cwe078_units) == 6
-    assert all(len(unit.entries) == 2 for unit in cwe078_units)
     assert all(unit.expected_task_count == 27 for unit in cwe078_units)
-
-    whole_set_units = [unit for unit in units if unit.combination_id != "cwe078-0"]
-    assert len(whole_set_units) == 18
-    assert all(len(unit.entries) == 1 for unit in whole_set_units)
 
     # sample counts: tasks x repeats
     for unit in units:
@@ -147,7 +152,18 @@ def test_expand_units_counts() -> None:
         for entry in unit.entries:
             assert entry.expected_sample_count == len(entry.task_ids) * unit.repeats
 
-    # cwe078 search/holdout split
+
+def test_expand_units_split_branch_still_supported() -> None:
+    """A search/holdout prepared split still expands to search+holdout entries."""
+
+    matrix = _matrix()
+    prepared = {cid: _prepared(cid, split=(cid == "cwe078-0")) for cid in BASELINE_COMBINATIONS}
+    units = expand_units(matrix, prepared)
+    runs = [entry for unit in units for entry in unit.entries]
+    assert len(units) == 24
+    assert len(runs) == 30
+    cwe078_units = [unit for unit in units if unit.combination_id == "cwe078-0"]
+    assert all(len(unit.entries) == 2 for unit in cwe078_units)
     search_run = next(
         entry
         for unit in cwe078_units
@@ -187,16 +203,6 @@ def test_task_count_mismatch_rejected() -> None:
     prepared = {cid: _prepared(cid) for cid in BASELINE_COMBINATIONS}
     prepared["cwe502-0"] = _prepared("cwe502-0", total=44)
     with pytest.raises(MatrixError, match="expected 45"):
-        expand_units(matrix, prepared)
-
-
-def test_cwe078_split_mismatch_rejected() -> None:
-    matrix = _matrix()
-    prepared = {cid: _prepared(cid) for cid in BASELINE_COMBINATIONS}
-    bad = _prepared("cwe078-0")
-    object.__setattr__(bad.split, "search_ids", bad.split.search_ids[:17])
-    prepared["cwe078-0"] = bad
-    with pytest.raises(MatrixError, match="expected split search=18/holdout=9"):
         expand_units(matrix, prepared)
 
 

@@ -33,11 +33,6 @@ EXPECTED_TASK_COUNTS: dict[str, int] = {
     "cwe295-0": 33,
     "cwe502-0": 45,
 }
-LOCK_COMBINATION = "cwe078-0"
-LOCK_REF = "locks/baseline-lock.json"
-
-LOCKED_SEARCH_COUNT = 18
-LOCKED_HOLDOUT_COUNT = 9
 
 # temperature=0/repeats=1 and temperature=0.7/repeats=5.
 SAMPLING_CONFIGS: tuple[tuple[float, int], ...] = ((0.0, 1), (0.7, 5))
@@ -294,10 +289,14 @@ def expand_units(
     matrix: MatrixConfig,
     prepared_by_combination: Mapping[str, PreparedCombination],
 ) -> tuple[RunUnit, ...]:
-    """Expand the fixed grid into 24 units / 30 run entries.
+    """Expand the fixed grid into run units and per-run entries.
 
-    Task counts are asserted against :data:`EXPECTED_TASK_COUNTS`; a mismatch
-    raises rather than silently adjusting the evaluation set.
+    A whole-set combination yields one unit per ``form x sampling`` with a single
+    ``search`` entry over the full evaluation set (24 units / 24 entries for the
+    whole-set baseline); a search/holdout combination yields the same units with
+    separate ``search`` and ``holdout`` entries.  Task counts are asserted
+    against :data:`EXPECTED_TASK_COUNTS`; a mismatch raises rather than silently
+    adjusting the evaluation set.
     """
 
     units: list[RunUnit] = []
@@ -319,13 +318,6 @@ def expand_units(
 
         split = prepared.split
         if split.mode is SplitMode.SEARCH_HOLDOUT:
-            if combination_id == LOCK_COMBINATION:
-                if len(split.search_ids) != LOCKED_SEARCH_COUNT or len(split.holdout_ids) != LOCKED_HOLDOUT_COUNT:
-                    raise MatrixError(
-                        f"{combination_id}: expected split search="
-                        f"{LOCKED_SEARCH_COUNT}/holdout={LOCKED_HOLDOUT_COUNT}, got "
-                        f"search={len(split.search_ids)}/holdout={len(split.holdout_ids)}"
-                    )
             split_mode = SplitMode.SEARCH_HOLDOUT.value
             combined = set(split.search_ids) | set(split.holdout_ids)
             task_ids = _evaluation_order(evaluation_ids, combined)
@@ -379,10 +371,6 @@ __all__ = [
     "BASELINE_COMBINATIONS",
     "EXPECTED_TASK_COUNTS",
     "SAMPLING_CONFIGS",
-    "LOCK_COMBINATION",
-    "LOCK_REF",
-    "LOCKED_SEARCH_COUNT",
-    "LOCKED_HOLDOUT_COUNT",
     "CLEAN_FORMS",
     "MatrixConfig",
     "MatrixError",

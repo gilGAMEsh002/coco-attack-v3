@@ -242,7 +242,7 @@ DSPy 缓存是进程级全局对象，因此采用：
 
 | 组合   | 评测题数 | 口径                            |
 | ------ | -------: | ------------------------------- |
-| cwe078 |       27 | search 18 / holdout 9，分别报告 |
+| cwe078 |       27 | whole-set（派生 search-18 / holdout-9 视图） |
 | cwe094 |        4 | whole-set                       |
 | cwe295 |       33 | whole-set                       |
 | cwe502 |       45 | whole-set                       |

@@ -521,25 +521,46 @@ def run_baseline(
                 max_unit_retries=max_unit_retries,
             )
 
-    # 7. final result
-    non_complete = [
+    # 7. final result.  When the caller scoped the invocation (``--only`` or
+    # ``--limit``) the exit code reflects the scoped units, so a canary/chunk can
+    # succeed; the whole-manifest state is always logged and reported.
+    all_non_complete = [
         unit_id
         for unit_id, unit in manifest["units"].items()
         if unit.get("status") != "complete"
     ]
-    exit_code = EXIT_OK if not non_complete else EXIT_BLOCKING
+    if only_set is not None:
+        scoped = sorted(only_set)
+    elif limit is not None:
+        scoped = list(remaining)
+    else:
+        scoped = list(manifest["units"])
+    scoped_non_complete = [
+        unit_id
+        for unit_id in scoped
+        if manifest["units"][unit_id].get("status") != "complete"
+    ]
+    exit_code = EXIT_OK if not scoped_non_complete else EXIT_BLOCKING
     append_orchestrator_log(
         root,
         "run_end",
         exit_code=exit_code,
-        complete=len(manifest["units"]) - len(non_complete),
-        non_complete_units=non_complete,
+        scope_units=len(scoped),
+        scope_non_complete=scoped_non_complete,
+        manifest_complete=len(manifest["units"]) - len(all_non_complete),
+        manifest_units=len(manifest["units"]),
+        non_complete_units=all_non_complete,
     )
-    if non_complete:
+    if scoped_non_complete:
         print(
-            "baseline not complete; non-complete units: "
-            + ", ".join(sorted(non_complete)),
+            "scoped units not complete: " + ", ".join(sorted(scoped_non_complete)),
             file=sys.stderr,
+        )
+    if all_non_complete:
+        print(
+            f"manifest state: {len(manifest['units']) - len(all_non_complete)}/"
+            f"{len(manifest['units'])} units complete; remaining: "
+            + ", ".join(sorted(all_non_complete))
         )
     return exit_code
 

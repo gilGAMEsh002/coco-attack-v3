@@ -82,6 +82,10 @@ class PipelineConfig:
     max_request_attempts: int = 3
     requests_per_minute: float | None = None
     tokens_per_minute: int | None = None
+    price_input_per_1k: float | None = None
+    price_output_per_1k: float | None = None
+    currency: str = "USD"
+    pricing_version: str = "unset"
     enabled_layers: tuple[str, ...] = ("sast", "judge", "dynamic", "realism")
     sast_tools: tuple[str, ...] = ("bandit", "semgrep", "codeql")
     semgrep_config: str | None = None
@@ -134,6 +138,10 @@ class PipelineConfig:
             "max_request_attempts": self.max_request_attempts,
             "requests_per_minute": self.requests_per_minute,
             "tokens_per_minute": self.tokens_per_minute,
+            "price_input_per_1k": self.price_input_per_1k,
+            "price_output_per_1k": self.price_output_per_1k,
+            "currency": self.currency,
+            "pricing_version": self.pricing_version,
             "enabled_layers": list(self.enabled_layers),
             "sast_tools": list(self.sast_tools),
             "semgrep_config": self.semgrep_config,
@@ -305,6 +313,10 @@ def _generation_config(config: PipelineConfig) -> GenerationConfig:
         max_request_attempts=config.max_request_attempts,
         requests_per_minute=config.requests_per_minute,
         tokens_per_minute=config.tokens_per_minute,
+        price_input_per_1k=config.price_input_per_1k,
+        price_output_per_1k=config.price_output_per_1k,
+        currency=config.currency,
+        pricing_version=config.pricing_version,
         max_sample_retries=0,
         mock_scenario=config.mock_scenario,
         task_ids=config.task_ids,

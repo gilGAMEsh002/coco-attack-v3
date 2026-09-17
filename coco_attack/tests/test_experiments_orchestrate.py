@@ -356,11 +356,23 @@ def test_limit_and_only_select_the_right_units(tmp_path, monkeypatch) -> None:
     assert str(tmp_path / first_run_dir) in runner.calls[0]
 
     runner.calls.clear()
-    assert run_baseline(tmp_path, only=[ids[2]]) == 1
-    # ids[0]/ids[1] are not complete (only one unit ran), but --only excludes them
+    # A scoped invocation reflects its own scope: ids[2] completes, so --only ids[2]
+    # exits 0 even though ids[0]/ids[1] remain incomplete.
+    assert run_baseline(tmp_path, only=[ids[2]]) == 0
     assert len(runner.calls) == 1
     third_run_dir = manifest["units"][ids[2]]["runs"][0]["run_dir"]
     assert str(tmp_path / third_run_dir) in runner.calls[0]
+
+
+def test_canary_scope_exit_code_reflects_selected_unit(tmp_path, monkeypatch) -> None:
+    _matrix_value, manifest, _path = _build_root(tmp_path)
+    _gate(monkeypatch)
+    runner = FakeRunner(_complete_handler())
+    monkeypatch.setattr(orchestrate, "_default_runner", runner)
+    ids = _unit_ids(manifest)
+    # a single-unit canary exits 0 even though the whole manifest is unfinished
+    assert run_baseline(tmp_path, only=[ids[0]]) == 0
+    assert len(runner.calls) == 1
 
 
 def test_unknown_only_is_usage_error(tmp_path, monkeypatch) -> None:

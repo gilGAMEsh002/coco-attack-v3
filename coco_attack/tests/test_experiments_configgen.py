@@ -88,3 +88,25 @@ def test_check_unit_configs_reports_missing_inputs_without_raising(tmp_path) -> 
     for entry in summary.values():
         assert entry["ok"] is False
         assert entry["error"]
+
+
+def test_victim_pricing_is_wired_into_generation_config(tmp_path) -> None:
+    """The matrix victim price must reach the generation config, or victim cost is unknown."""
+
+    from coco_attack.evaluation.pipeline import _generation_config
+
+    matrix = _matrix(
+        price_input_per_1k=0.00158,
+        price_output_per_1k=0.00237,
+        currency="CNY",
+        pricing_version="dmx-rmb-test",
+    )
+    prepared = {cid: _prepared(cid) for cid in BASELINE_COMBINATIONS}
+    unit = expand_units(matrix, prepared)[0]
+    config = build_pipeline_config(matrix, unit, unit.entries[0], tmp_path)
+    assert (config.price_input_per_1k, config.price_output_per_1k) == (0.00158, 0.00237)
+    assert (config.currency, config.pricing_version) == ("CNY", "dmx-rmb-test")
+
+    generation = _generation_config(config)
+    assert (generation.price_input_per_1k, generation.price_output_per_1k) == (0.00158, 0.00237)
+    assert (generation.currency, generation.pricing_version) == ("CNY", "dmx-rmb-test")

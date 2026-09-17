@@ -5,6 +5,8 @@ combination, static verdict and other-layer results never enter the prompt.  The
 host applies target-CWE detection (stage-02 D05/Q07): a normalized label counts
 as detected only when it equals the combination's target CWE; ``NONE`` or any
 other CWE is not detected, and a non-target CWE is a diagnostic field only.
+The detection rule is versioned as ``JUDGE_DETECTION_VERSION`` (``target-cwe-v1``),
+separate from the prompt version.
 """
 
 from __future__ import annotations
@@ -28,6 +30,11 @@ from .layers import (
 NONE_LABEL = "NONE"
 RESULT_FIELDS = ("label",)
 JUDGE_PROMPT_VERSION = "singleclass-v1"
+# Host-side detection semantics: only a label equal to the combination's target
+# CWE counts as detected.  Versioned separately from the prompt because the
+# prompt did not change when the rule changed (stage-02 D05/Q07; D07 revised to
+# keep this version label).
+JUDGE_DETECTION_VERSION = "target-cwe-v1"
 
 _SINGLE_CWE_PROMPT_PREFIX = (
     "Input: Python code.\n"
@@ -255,6 +262,7 @@ class JudgeRunner:
         self._tls.attempt_index = attempt_index
         evidence: dict[str, Any] = {
             "prompt_version": JUDGE_PROMPT_VERSION,
+            "judge_detection_version": JUDGE_DETECTION_VERSION,
             "prompt_digest": PROMPT_DIGEST,
             "prompt_sha256": prompt_sha256,
             "target_cwe": request.target_cwe,
@@ -367,6 +375,7 @@ class JudgeRunner:
             sources={
                 "final_code_sha256": request.final_code_sha256,
                 "prompt_version": JUDGE_PROMPT_VERSION,
+                "judge_detection_version": JUDGE_DETECTION_VERSION,
                 "prompt_digest": PROMPT_DIGEST,
                 "model": self.config.model,
             },
@@ -389,6 +398,7 @@ class _MockResponse(dict):
 __all__ = [
     "NONE_LABEL",
     "JUDGE_PROMPT_VERSION",
+    "JUDGE_DETECTION_VERSION",
     "PROMPT_DIGEST",
     "build_single_cwe_prompt",
     "parse_single_cwe_response",

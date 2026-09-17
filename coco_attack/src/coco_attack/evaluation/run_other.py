@@ -25,7 +25,13 @@ from ..assets.artifacts import (
 from ..runtime.ledger import EVENT_EXECUTION_RECORDED, Ledger
 from .cache import DisabledCache
 from .dynamic import build_dynamic_record, classify_dynamic, pending_dynamic_record
-from .judge import JudgeConfig, JudgeRequest, JudgeRunner
+from .judge import (
+    JUDGE_DETECTION_VERSION,
+    JUDGE_PROMPT_VERSION,
+    JudgeConfig,
+    JudgeRequest,
+    JudgeRunner,
+)
 from .layers import (
     COVERAGE_COVERED,
     COVERAGE_NOT_COVERED,
@@ -728,6 +734,8 @@ def run_evaluate_other(
             "sample_count": len(inputs),
             "layer_counts": {layer: len(items) for layer, items in records.items()},
             "cache": {"enabled": False, "reason": "cache_disabled"},
+            "judge_prompt_version": JUDGE_PROMPT_VERSION,
+            "judge_detection_version": JUDGE_DETECTION_VERSION,
             "semantics_conflicts": list(SEMANTICS_CONFLICTS),
             "status": "complete",
         },

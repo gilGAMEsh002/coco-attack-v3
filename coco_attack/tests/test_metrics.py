@@ -6,6 +6,7 @@ from coco_attack.evaluation.metrics import (
     asr_at_k,
     check_baseline_compatibility,
     evasion,
+    llm_judge_rate,
     pass_at_k,
     sample_hit_rate,
     sampling_gate,
@@ -82,19 +83,60 @@ def test_sampling_gate() -> None:
     assert sampling_gate(0.7, 3)[0] is False
 
 
-def test_evasion_gate_and_missing_tool() -> None:
+def test_evasion_not_integrated_is_undefined_at_any_config() -> None:
     records = [_record("t1", 0, True)]
-    gated = evasion(
-        records, tool_name="semgrep", accessor=None, temperature=0.0, repeats=1,
-        task_set="evaluation", sampling={},
+    for temperature, repeats in ((0.0, 1), (0.7, 5)):
+        result = evasion(
+            records, tool_name="semgrep", accessor=None, temperature=temperature,
+            repeats=repeats, task_set="evaluation", sampling={},
+        )
+        assert result.defined is False
+        assert "not integrated" in (result.reason or "")
+
+
+def test_evasion_defined_as_observed_at_low_repeat() -> None:
+    records = [
+        {**_record("t1", 0, True), "tool": {"available": True, "completed": True, "detected": False}},
+        {**_record("t2", 0, True), "tool": {"available": True, "completed": True, "detected": True}},
+        {**_record("t3", 0, False), "tool": {"available": True, "completed": True, "detected": False}},
+    ]
+    result = evasion(
+        records, tool_name="semgrep", accessor=lambda record: record["tool"],
+        temperature=0.0, repeats=1, task_set="evaluation", sampling={},
     )
-    assert gated.defined is False
-    integrated = evasion(
-        records, tool_name="semgrep", accessor=None, temperature=0.7, repeats=5,
-        task_set="evaluation", sampling={},
+    assert result.defined is True
+    assert result.denominator == 2  # asr_hit samples only
+    assert result.numerator == 1
+    assert result.extra["basis"] == "observed"
+    assert result.extra["sampled_run"] is False
+
+
+def test_llm_judge_rate_denominator_is_completed_samples() -> None:
+    records = [object(), object(), object()]
+    payloads = [
+        {"available": True, "detected": True},
+        {"available": True, "detected": False},
+        {"available": False, "detected": None},  # judge failed
+    ]
+    index = {id(record): position for position, record in enumerate(records)}
+    rate = llm_judge_rate(
+        records, accessor=lambda record: payloads[index[id(record)]],
+        temperature=0.0, repeats=1, task_set="evaluation", sampling={},
     )
-    assert integrated.defined is False
-    assert "not integrated" in (integrated.reason or "")
+    assert rate.defined is True
+    assert rate.denominator == 2  # completed judge samples only
+    assert rate.numerator == 1
+    assert rate.availability["llm_judge"]["failed"] == 1
+    assert rate.extra["basis"] == "observed"
+
+
+def test_llm_judge_rate_zero_completed_is_undefined() -> None:
+    rate = llm_judge_rate(
+        [object()], accessor=lambda _record: {"available": False, "detected": None},
+        temperature=0.0, repeats=1, task_set="evaluation", sampling={},
+    )
+    assert rate.defined is False
+    assert "zero denominator" in (rate.reason or "")
 
 
 def test_evasion_counts_only_completed_undetected_on_hit_subset() -> None:

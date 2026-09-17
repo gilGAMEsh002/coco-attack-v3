@@ -9,6 +9,7 @@ import pytest
 
 from coco_attack.evaluation.dynamic import classify_dynamic
 from coco_attack.evaluation.judge import (
+    JUDGE_DETECTION_VERSION,
     JudgeConfig,
     JudgeRequest,
     JudgeRunner,
@@ -267,6 +268,8 @@ def test_judge_runner_mock(tmp_path: Path, scenario: str, status: str, detected)
     assert evidence["prompt_version"] == "singleclass-v1"
     assert evidence["prompt_sha256"]
     assert evidence["target_cwe"] == "CWE-078"
+    assert evidence["judge_detection_version"] == JUDGE_DETECTION_VERSION
+    assert record.sources["judge_detection_version"] == JUDGE_DETECTION_VERSION
 
 
 def test_judge_rejects_length_truncated_valid_json() -> None:

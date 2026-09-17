@@ -43,6 +43,7 @@ from .evaluation.run_other import (
 )
 from .evaluation.run_static import EvaluationInputError, evaluate_static
 from .experiments.baseline import check_baseline, prepare_baseline
+from .experiments.orchestrate import run_baseline, status_baseline
 from .execution.contracts import ExecutionConfigError
 from .execution.preflight import (
     run_check_execution,
@@ -336,6 +337,40 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     check_baseline_cmd.add_argument("--baseline-root", required=True, help="prepared baseline root directory")
+
+    run_baseline_cmd = subparsers.add_parser(
+        "run-baseline",
+        help="execute or resume the clean-baseline manifest unit by unit",
+        description=(
+            "Re-run the check-baseline startup gate, verify the version freeze, then "
+            "walk the run manifest in order.  Each not-yet-complete unit is executed by "
+            "an independent python -m coco_attack run-pipeline subprocess (or "
+            "resume-pipeline when its run directory already holds state); the pipeline's "
+            "self-reported report state is written back to the manifest after every unit. "
+            "Never marks a unit complete unless its report is complete."
+        ),
+    )
+    run_baseline_cmd.add_argument("--baseline-root", required=True, help="prepared baseline root directory")
+    run_baseline_cmd.add_argument(
+        "--limit", type=int, default=None, help="execute at most N remaining units"
+    )
+    run_baseline_cmd.add_argument(
+        "--only",
+        action="append",
+        default=None,
+        help="restrict execution to this unit id (repeatable)",
+    )
+
+    status_baseline_cmd = subparsers.add_parser(
+        "status-baseline",
+        help="summarize per-unit status and cost without starting a run",
+        description=(
+            "Read the run manifest and each run's report artifacts; print per-unit status, "
+            "known/unknown cost totals, request counts and cache-reuse sources, and write "
+            "manifest/status.json.  Never calls a model or starts a pipeline."
+        ),
+    )
+    status_baseline_cmd.add_argument("--baseline-root", required=True, help="prepared baseline root directory")
     return parser
 
 
@@ -1073,6 +1108,32 @@ def _cmd_check_baseline(args: argparse.Namespace) -> int:
         return EXIT_BLOCKING
 
 
+def _cmd_run_baseline(args: argparse.Namespace) -> int:
+    try:
+        baseline_root = _resolve_dir(args.baseline_root, "--baseline-root")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_baseline(baseline_root, limit=args.limit, only=args.only)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: run-baseline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_status_baseline(args: argparse.Namespace) -> int:
+    try:
+        baseline_root = _resolve_dir(args.baseline_root, "--baseline-root")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return status_baseline(baseline_root)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: status-baseline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -1126,6 +1187,10 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_prepare_baseline(args)
     if args.command == "check-baseline":
         return _cmd_check_baseline(args)
+    if args.command == "run-baseline":
+        return _cmd_run_baseline(args)
+    if args.command == "status-baseline":
+        return _cmd_status_baseline(args)
     parser.error(f"unknown command: {args.command!r}")
     return EXIT_USAGE  # unreachable
 

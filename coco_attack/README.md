@@ -114,6 +114,8 @@ coco-attack report-pipeline --run-dir <existing-pipeline-run> [--output-dir <fre
 
 coco-attack prepare-baseline --matrix-config <baseline-matrix.json> --output-dir <fresh-baseline-root>
 coco-attack check-baseline --baseline-root <baseline-root>
+coco-attack run-baseline --baseline-root <baseline-root> [--limit N] [--only UNIT_ID ...]
+coco-attack status-baseline --baseline-root <baseline-root>
 ```
 
 All directories are mandatory. `--help` does not scan assets and does not
@@ -261,9 +263,8 @@ phase 03 sub-task 01) and writes a fresh baseline root:
 | `inputs/data/` | `prepare-data` snapshot for the configured combinations |
 | `inputs/prompts/<combination>/` | `materialize-prompts` snapshot (3 clean forms) |
 | `inputs/asset_manifest.json` | key asset/snapshot hashes for the baseline |
-| `manifest/run-manifest.json` | the 24-unit / 30-run manifest (`run-manifest-v1`) |
+| `manifest/run-manifest.json` | the 24-unit / 24-run whole-set manifest (`run-manifest-v1`), one `search` run per unit |
 | `configs/units/<run_id>.json` | one frozen `PipelineConfig` per run |
-| `locks/baseline-lock.json` | cwe078 template/config lock (`baseline-lock-v1`) |
 
 Config generation never pre-creates a run directory (an actual `run-pipeline`
 requires a fresh output dir). `prepare-baseline` refuses to run on a dirty
@@ -273,6 +274,29 @@ re-verifies input hashes, every run config (`check-pipeline`), the git/version
 freeze, Docker image identity, DMX key presence and evaluator tool availability,
 then writes `checks/baseline_check.json` and `checks/REPORT.md`. Neither command
 calls a model.
+
+### `run-baseline` / `status-baseline` outputs
+
+`run-baseline` re-runs the `check-baseline` startup gate first and stops without
+starting any pipeline if it is not clean. It then walks the run manifest in
+order (`complete`/`blocked` units are skipped) and executes each remaining unit
+as its own `python -m coco_attack run-pipeline` child process — or
+`resume-pipeline` when the run directory already holds state. After every unit
+the pipeline's self-reported state is read from `<run_dir>/manifest.json` and
+`<run_dir>/report/metrics.json` and written back to the manifest; a unit is
+`complete` only when the report says `complete: true` and the process exited 0.
+Per-unit `attempts` are recorded, and a unit still not complete after
+`matrix.max_unit_retries` retries is marked `blocked` (reason recorded) while
+the loop continues to the next unit. A tracked-code version change blocks all
+not-yet-complete units, while a doc-only commit advance does not. Every
+transition is appended to `manifest/orchestrator-log.jsonl` (single writer,
+fsync). The command exits 0 only when every manifest unit is complete, else 1.
+
+`status-baseline` is read-only over the pipeline artifacts: it prints per-unit
+status and, where present, each run's `report/cost_summary.json` totals, request
+counts, functional cache-hit counts and ledger reuse sources, plus the reasons
+for non-complete units. It writes `manifest/status.json` and never calls a
+model.
 
 ### Evaluator and cleaner versions
 

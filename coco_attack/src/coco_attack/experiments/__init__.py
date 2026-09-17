@@ -52,6 +52,14 @@ from .matrix import (
     expand_units,
     load_matrix_config,
 )
+from .orchestrate import (
+    ORCHESTRATOR_LOG,
+    STATUS_SCHEMA_VERSION,
+    STATUS_SNAPSHOT,
+    append_orchestrator_log,
+    run_baseline,
+    status_baseline,
+)
 
 __all__ = [
     "ASSET_MANIFEST_SCHEMA_VERSION",
@@ -61,8 +69,11 @@ __all__ = [
     "DMX_API_BASE",
     "EXPECTED_TASK_COUNTS",
     "MATRIX_SCHEMA_VERSION",
+    "ORCHESTRATOR_LOG",
     "RUN_MANIFEST_SCHEMA_VERSION",
     "SAMPLING_CONFIGS",
+    "STATUS_SCHEMA_VERSION",
+    "STATUS_SNAPSHOT",
     "UNIT_STATUSES",
     "BaselineBlockedError",
     "BaselineError",
@@ -73,6 +84,7 @@ __all__ = [
     "MatrixUsageError",
     "RunEntry",
     "RunUnit",
+    "append_orchestrator_log",
     "build_manifest",
     "build_pipeline_config",
     "check_baseline",
@@ -86,6 +98,8 @@ __all__ = [
     "load_matrix_config",
     "parse_dotenv",
     "prepare_baseline",
+    "run_baseline",
+    "status_baseline",
     "update_unit_status",
     "validate_manifest",
     "write_manifest",

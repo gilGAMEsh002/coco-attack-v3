@@ -98,6 +98,7 @@ class MatrixConfig:
     unit_concurrency: int = 1
     generation_max_concurrency: int = 1
     max_request_attempts: int = 3
+    max_unit_retries: int = 2
     request_timeout: float = 60.0
     judge_temperature: float = 0.0
     judge_request_timeout: float = 120.0
@@ -180,6 +181,15 @@ class MatrixConfig:
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise MatrixError(f"matrix.{name} must be an integer >= 1, got {value!r}")
+
+        if (
+            isinstance(self.max_unit_retries, bool)
+            or not isinstance(self.max_unit_retries, int)
+            or self.max_unit_retries < 0
+        ):
+            raise MatrixError(
+                f"matrix.max_unit_retries must be an integer >= 0, got {self.max_unit_retries!r}"
+            )
 
         for name in ("request_timeout", "judge_request_timeout"):
             value = getattr(self, name)

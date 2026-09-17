@@ -42,6 +42,7 @@ from .evaluation.run_other import (
     run_resume_other,
 )
 from .evaluation.run_static import EvaluationInputError, evaluate_static
+from .experiments.baseline import check_baseline, prepare_baseline
 from .execution.contracts import ExecutionConfigError
 from .execution.preflight import (
     run_check_execution,
@@ -311,6 +312,29 @@ def build_parser() -> argparse.ArgumentParser:
     )
     report_pipeline_cmd.add_argument("--run-dir", required=True)
     report_pipeline_cmd.add_argument("--output-dir", default=None)
+
+    prepare_baseline_cmd = subparsers.add_parser(
+        "prepare-baseline",
+        help="build a fresh clean-baseline root: inputs, manifest, configs and lock",
+        description=(
+            "Read a baseline matrix config, snapshot the fixed data/prompt inputs, "
+            "expand the 24-unit/30-run manifest, write one pipeline config per run and "
+            "record the cwe078 lock. Never calls a model or a DMX API."
+        ),
+    )
+    prepare_baseline_cmd.add_argument("--matrix-config", required=True, help="baseline matrix config JSON")
+    prepare_baseline_cmd.add_argument("--output-dir", required=True, help="fresh baseline root directory")
+
+    check_baseline_cmd = subparsers.add_parser(
+        "check-baseline",
+        help="re-verify a prepared baseline root and write a startup-check report",
+        description=(
+            "Re-verify input hashes, per-run pipeline configs, the version freeze, Docker/"
+            "image identity, DMX key presence and evaluator tool availability. Never starts "
+            "containers beyond docker info / image inspect and never calls a model."
+        ),
+    )
+    check_baseline_cmd.add_argument("--baseline-root", required=True, help="prepared baseline root directory")
     return parser
 
 
@@ -1021,6 +1045,33 @@ def _cmd_report_pipeline(args: argparse.Namespace) -> int:
         return EXIT_BLOCKING
 
 
+def _cmd_prepare_baseline(args: argparse.Namespace) -> int:
+    try:
+        matrix_config = _resolve_file(args.matrix_config, "--matrix-config")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return prepare_baseline(matrix_config, output_dir)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: prepare-baseline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_check_baseline(args: argparse.Namespace) -> int:
+    try:
+        baseline_root = _resolve_dir(args.baseline_root, "--baseline-root")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return check_baseline(baseline_root)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-baseline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -1070,6 +1121,10 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_resume_pipeline(args)
     if args.command == "report-pipeline":
         return _cmd_report_pipeline(args)
+    if args.command == "prepare-baseline":
+        return _cmd_prepare_baseline(args)
+    if args.command == "check-baseline":
+        return _cmd_check_baseline(args)
     parser.error(f"unknown command: {args.command!r}")
     return EXIT_USAGE  # unreachable
 

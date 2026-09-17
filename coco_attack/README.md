@@ -71,7 +71,7 @@ coco-attack check-generation \
 coco-attack generate \
   --config <generation-config.json> --data-dir <prepare-data-output> \
   --prompts-dir <materialize-prompts-output> --output-dir <fresh-run-dir> \
-  [--repo-dir <repo root with .env>] [--lock-state <holdout-lock.json>]
+  [--repo-dir <repo root with .env>]
 
 coco-attack resume-generation --run-dir <existing-run-dir> [--repo-dir <repo root>]
 
@@ -111,6 +111,9 @@ coco-attack run-pipeline --config <pipeline-config.json> --output-dir <fresh-run
   [--accept-existing-generation]
 coco-attack resume-pipeline --run-dir <existing-pipeline-run>
 coco-attack report-pipeline --run-dir <existing-pipeline-run> [--output-dir <fresh-report-dir>]
+
+coco-attack prepare-baseline --matrix-config <baseline-matrix.json> --output-dir <fresh-baseline-root>
+coco-attack check-baseline --baseline-root <baseline-root>
 ```
 
 All directories are mandatory. `--help` does not scan assets and does not
@@ -221,7 +224,7 @@ performs the input join and never runs a candidate.
 | `layers/sast.jsonl`, `layers/judge.jsonl` | one strict layer record per sample and tool/model, with raw alert/label evidence references |
 | `layers/dynamic.jsonl`, `layers/realism.jsonl` | coverage/status records; realism is `semantics_pending` until adjudicated |
 | `sast/<sample>/<tool>/`, `judge/<action>.json` | bounded raw tool output and judge prompt/response evidence |
-| `evaluator_metrics.json` | `*_evasion` (static asr_hit denominator) and `llm_judge_rate`, undefined when the F6 sampling gate or static hits are unavailable |
+| `evaluator_metrics.json` | `*_evasion` (observed ratio over static asr_hit denominator) and `llm_judge_rate` (detections over successfully judged samples); both are observed ratios with `basis="observed"` and `sampled_run` metadata, undefined only on zero denominator |
 
 All other-evaluator layers use the disabled evaluation cache: a new
 `evaluation_id` always re-evaluates. Only the judge's underlying DSPy model
@@ -247,6 +250,29 @@ copied into the image.
 
 `report-pipeline` performs no model or evaluator calls. A `task_ids` subset is
 reported as `scope=smoke_subset`; it never stands in for a full baseline.
+
+### `prepare-baseline` / `check-baseline` outputs
+
+`prepare-baseline` reads a `baseline-matrix-v1` config (one victim model; see
+phase 03 sub-task 01) and writes a fresh baseline root:
+
+| Path | Purpose |
+|---|---|
+| `inputs/data/` | `prepare-data` snapshot for the configured combinations |
+| `inputs/prompts/<combination>/` | `materialize-prompts` snapshot (3 clean forms) |
+| `inputs/asset_manifest.json` | key asset/snapshot hashes for the baseline |
+| `manifest/run-manifest.json` | the 24-unit / 30-run manifest (`run-manifest-v1`) |
+| `configs/units/<run_id>.json` | one frozen `PipelineConfig` per run |
+| `locks/baseline-lock.json` | cwe078 template/config lock (`baseline-lock-v1`) |
+
+Config generation never pre-creates a run directory (an actual `run-pipeline`
+requires a fresh output dir). `prepare-baseline` refuses to run on a dirty
+tracked-code worktree unless the matrix explicitly sets
+`allow_dirty_worktree: true`; the baseline root must be fresh. `check-baseline`
+re-verifies input hashes, every run config (`check-pipeline`), the git/version
+freeze, Docker image identity, DMX key presence and evaluator tool availability,
+then writes `checks/baseline_check.json` and `checks/REPORT.md`. Neither command
+calls a model.
 
 ### Evaluator and cleaner versions
 

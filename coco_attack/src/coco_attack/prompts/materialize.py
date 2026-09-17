@@ -26,9 +26,9 @@ from ..assets.artifacts import (
     write_json_atomic,
     write_text_atomic,
 )
-from ..assets.issues import SEVERITY_ERROR, Issue
+from ..assets.issues import Issue
 from ..assets.paths import relative_to_root, resolve_within
-from ..data.contracts import CombinationSpec, DataContractError, PreparedCombination
+from ..data.contracts import CombinationSpec, PreparedCombination
 from .contracts import PromptSource
 from .markdown import (
     CLEAN_FORMS,

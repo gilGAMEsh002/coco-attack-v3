@@ -30,6 +30,7 @@ class EvaluationConfig:
     split_ref: str | None = None
     experiment_ref: str | None = None
     notes: str | None = None
+    task_ids: tuple[str, ...] = ()
 
     @classmethod
     def from_json(cls, payload: dict[str, Any]) -> "EvaluationConfig":
@@ -57,6 +58,7 @@ class EvaluationConfig:
             split_ref=payload.get("split_ref"),
             experiment_ref=payload.get("experiment_ref"),
             notes=payload.get("notes"),
+            task_ids=tuple(payload.get("task_ids") or ()),
         )
 
     def to_json(self) -> dict[str, Any]:
@@ -71,6 +73,7 @@ class EvaluationConfig:
             "split_ref": self.split_ref,
             "experiment_ref": self.experiment_ref,
             "notes": self.notes,
+            "task_ids": list(self.task_ids),
         }
 
     @property

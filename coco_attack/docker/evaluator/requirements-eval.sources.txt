@@ -1,0 +1,38 @@
+# Import name -> distribution mapping for the evaluation image.
+#
+# Evidence sources:
+# - `cocota_data_eval_result/requirements-bigcodebench-local.txt` (task runtime
+#   dependencies) and the standard task files' `libs` metadata aggregated by
+#   `assets/audit.py::inspect_python_requirements`.
+# - `cocota_data_eval_result/third_party/bigcodebench/.../requirements-eval.txt`
+#   is only a read-only reference; its pins predate CPython 3.14 and are not
+#   copied.
+#
+# Verified on the host without Docker with:
+#   pip download --no-deps --only-binary=:all: \
+#     --python-version 3.14 --implementation cp --abi cp314 \
+#     --platform manylinux_2_28_x86_64 --platform manylinux_2_17_x86_64 \
+#     --platform manylinux2014_x86_64 <package>
+#
+# Classification:
+# - stdlib/builtin (no package): ast, base64, collections, configparser, csv,
+#   ctypes, datetime, email, ftplib, glob, gzip, hashlib, http, io, ipaddress,
+#   itertools, json, logging, math, multiprocessing, os, pathlib, platform,
+#   random, re, shlex, shutil, signal, smtplib, socket, sqlite3, ssl, string,
+#   subprocess, sys, threading, time, unicodedata, urllib, zipfile
+# - distribution mapping (import -> PyPI distribution):
+#   bs4            -> beautifulsoup4
+#   PIL            -> Pillow
+#   flask          -> Flask
+#   flask_restful  -> Flask-RESTful
+#   sklearn        -> scikit-learn
+#   cgi            -> legacy-cgi   (stdlib removed in Python 3.13+)
+#   requests_mock  -> requests-mock
+#   chardet, lxml, matplotlib, nltk, numpy, pandas, psutil, pyquery, requests,
+#   rsa, seaborn, Faker are imported under their distribution names.
+# - sdist-only pure-Python (not needed by the selected runtime imports; recorded
+#   because requirements-bigcodebench-local.txt lists them for the upstream tool):
+#   tempdir==0.7.1, wget==3.2
+#
+# Wheel availability (CPython 3.14, linux/amd64) was confirmed for every pinned
+# distribution in requirements-eval.lock at the time of writing.

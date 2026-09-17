@@ -1,0 +1,64 @@
+{
+  "schema_version": "pipeline-config-v1",
+  "run_id": "pipeline-smoke-1",
+  "combination_id": "cwe078-0",
+  "oracle_id": "cwe078-0",
+  "stage": "search",
+  "form": "clean_fewshot_cot",
+  "source": "mock",
+  "model": "openai/gpt-4o",
+  "temperature": 0.0,
+  "repeats": 1,
+  "batch_id": "pipeline-smoke-batch-1",
+  "prompt_version": "1",
+  "task_ids": [
+    "BigCodeBench/13",
+    "BigCodeBench/15"
+  ],
+  "data_dir": "<prepare-data-output>",
+  "prompts_dir": "<materialize-prompts-output>",
+  "assets_dir": "/home/sshuser/projects/dspy/cocota_data_eval_result",
+  "output_dir": "<fresh-run-dir>",
+  "execution_config": "/home/sshuser/projects/dspy/coco_attack/configs/execution.local.json",
+  "functional_cache_dir": "<persistent-functional-cache>",
+  "generation_run": null,
+  "repo_dir": null,
+  "ledger_path": null,
+  "mock_scenario": "normal",
+  "max_concurrency": 4,
+  "max_tokens": 1024,
+  "request_timeout": 60.0,
+  "max_request_attempts": 3,
+  "requests_per_minute": null,
+  "tokens_per_minute": null,
+  "enabled_layers": [
+    "sast",
+    "judge",
+    "dynamic",
+    "realism"
+  ],
+  "sast_tools": [
+    "bandit",
+    "semgrep",
+    "codeql"
+  ],
+  "semgrep_config": "/home/sshuser/projects/dspy/cocota_data_eval_result/third_party/semgrep",
+  "codeql_executable": "/home/sshuser/projects/dspy/cocota_data_eval_result/third_party/codeql/codeql",
+  "codeql_search_path": "/home/sshuser/projects/dspy/cocota_data_eval_result/third_party/codeql/qlpacks",
+  "judge": {
+    "source": "mock",
+    "model": "openai/gpt-4o",
+    "temperature": 0.0,
+    "max_tokens": 128,
+    "request_timeout": 30.0,
+    "api_base": "https://www.dmxapi.cn/v1",
+    "mock_scenario": "cwe"
+  },
+  "victim_temperature": 0.0,
+  "victim_repeats": 1,
+  "k": [
+    1,
+    3,
+    5
+  ]
+}

@@ -68,6 +68,15 @@ def evaluate_static(
 
     cleaned_manifest, cleaned_rows = _load_cleaned(cleaned_dir, config)
     task_ids = _resolve_task_set(prepared, config.task_set)
+    if config.task_ids:
+        allowed = set(task_ids)
+        unknown = [task_id for task_id in config.task_ids if task_id not in allowed]
+        if unknown:
+            _fail(
+                "config.task_ids_out_of_scope",
+                f"config task_ids are not in the {config.task_set} set: {unknown}",
+            )
+        task_ids = [task_id for task_id in task_ids if task_id in set(config.task_ids)]
     if not task_ids:
         _fail("config.empty_task_set", f"task_set {config.task_set!r} resolved to no tasks")
 

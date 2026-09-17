@@ -246,3 +246,16 @@ def _fail(code: str, detail: str, asset: str):
         detail,
         [Issue(code=code, severity=SEVERITY_ERROR, scope="prepared", detail=detail, asset=asset)],
     )
+
+
+def split_manifest_sha256(data_dir: Path | str, combination_id: str) -> str:
+    """Byte hash of the prepared split manifest for a combination."""
+
+    path = Path(data_dir) / combination_id / "split.json"
+    if not path.is_file():
+        _fail(
+            "prepared.split_manifest_missing",
+            f"prepared split manifest not found: {path}",
+            str(path),
+        )
+    return sha256_file(path)

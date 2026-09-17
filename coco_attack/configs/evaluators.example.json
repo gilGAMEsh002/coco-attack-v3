@@ -1,0 +1,38 @@
+{
+  "schema_version": "evaluators-config-v1",
+  "combination_id": "cwe078-0",
+  "oracle_id": "cwe078-0",
+  "stage": "search",
+  "enabled_layers": [
+    "sast",
+    "judge",
+    "dynamic",
+    "realism"
+  ],
+  "sast_tools": [
+    "bandit",
+    "semgrep",
+    "codeql"
+  ],
+  "judge": {
+    "source": "mock",
+    "model": "openai/gpt-4o",
+    "temperature": 0.0,
+    "max_tokens": 128,
+    "request_timeout": 30.0,
+    "api_base": "https://www.dmxapi.cn/v1",
+    "mock_scenario": "cwe"
+  },
+  "semgrep_config": "/home/sshuser/projects/dspy/cocota_data_eval_result/third_party/semgrep",
+  "codeql_database": null,
+  "codeql_query": null,
+  "k": [
+    1,
+    3,
+    5
+  ],
+  "victim_temperature": 0.0,
+  "victim_repeats": 1,
+  "codeql_executable": "/home/sshuser/projects/dspy/cocota_data_eval_result/third_party/codeql/codeql",
+  "codeql_search_path": "/home/sshuser/projects/dspy/cocota_data_eval_result/third_party/codeql/qlpacks"
+}

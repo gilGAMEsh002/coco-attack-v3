@@ -20,8 +20,40 @@ from .data.snapshot import load_prepared_data
 from .evaluation.calibration import CalibrationInputError, calibrate_references
 from .evaluation.contracts import EvaluationConfig
 from .evaluation.history import HistoryInputError, compare_history
+from .evaluation.functional_cache import FunctionalCacheError
+from .evaluation.run_functional import (
+    FunctionalInputError,
+    run_check_functional,
+    run_evaluate_functional,
+    run_resume_functional,
+)
 from .evaluation.run_cleaning import clean_generations
+from .evaluation.pipeline import (
+    PipelineConfigError,
+    check_pipeline,
+    report_pipeline,
+    resume_pipeline,
+    run_pipeline,
+)
+from .evaluation.run_other import (
+    load_evaluators_config,
+    run_check_evaluators,
+    run_evaluate_other,
+    run_resume_other,
+)
 from .evaluation.run_static import EvaluationInputError, evaluate_static
+from .execution.contracts import ExecutionConfigError
+from .execution.preflight import (
+    run_check_execution,
+    run_recover_executions,
+    run_verify_isolation,
+)
+from .generation.contracts import GenerationContractError
+from .generation.service import (
+    run_check_generation,
+    run_generate,
+    run_resume_generation,
+)
 from .prompts.markdown import CLEAN_FORMS
 from .prompts.materialize import PromptMaterializeError, materialize_combination
 
@@ -127,6 +159,158 @@ def build_parser() -> argparse.ArgumentParser:
     history.add_argument("--data-dir", required=True)
     history.add_argument("--config", required=True, help="history comparison config JSON")
     history.add_argument("--output-dir", required=True)
+
+    check_execution = subparsers.add_parser(
+        "check-execution",
+        help="verify Docker, image, dependency lock and resource preconditions",
+        description=(
+            "Trusted-operator check of the Docker execution environment. Never executes "
+            "generated code; writes dependency_inventory.json, image_manifest.json, "
+            "execution_profile.json, manifest.json and REPORT.md."
+        ),
+    )
+    check_execution.add_argument("--config", required=True, help="execution profile JSON")
+    check_execution.add_argument("--audit-dir", required=True, help="stage-01 audit directory")
+    check_execution.add_argument("--output-dir", required=True, help="fresh output directory")
+
+    verify_isolation = subparsers.add_parser(
+        "verify-isolation",
+        help="run the fixed isolation probes and write AC-01 evidence",
+        description=(
+            "Run the versioned, human-written probes through the production execution "
+            "backend and write isolation_checks.json, manifest.json and REPORT.md."
+        ),
+    )
+    verify_isolation.add_argument("--config", required=True, help="execution profile JSON")
+    verify_isolation.add_argument("--audit-dir", required=True, help="stage-01 audit directory")
+    verify_isolation.add_argument("--output-dir", required=True, help="fresh output directory")
+
+    recover_executions = subparsers.add_parser(
+        "recover-executions",
+        help="reconcile leftover containers owned by an existing execution run",
+        description=(
+            "Stop/remove containers labelled for the run bound by its manifest and update "
+            "the attempt records. Never prunes unrelated containers."
+        ),
+    )
+    recover_executions.add_argument("--config", required=True, help="execution profile JSON")
+    recover_executions.add_argument("--run-dir", required=True, help="existing execution run directory")
+
+    check_generation = subparsers.add_parser(
+        "check-generation",
+        help="validate generation config, tasks and materialized prompts without calling a model",
+    )
+    check_generation.add_argument("--config", required=True, help="generation config JSON")
+    check_generation.add_argument("--data-dir", required=True, help="prepare-data output directory")
+    check_generation.add_argument("--prompts-dir", required=True, help="materialize-prompts output directory")
+    check_generation.add_argument("--output-dir", required=True, help="fresh output directory")
+
+    generate = subparsers.add_parser(
+        "generate",
+        help="run generation over the sample manifest (mock or dmx source)",
+    )
+    generate.add_argument("--config", required=True, help="generation config JSON")
+    generate.add_argument("--data-dir", required=True, help="prepare-data output directory")
+    generate.add_argument("--prompts-dir", required=True, help="materialize-prompts output directory")
+    generate.add_argument("--output-dir", required=True, help="fresh run directory")
+    generate.add_argument("--repo-dir", default=None, help="repo root holding .env (required for dmx)")
+
+    resume_generation = subparsers.add_parser(
+        "resume-generation",
+        help="resume an existing generation run from its ledger",
+    )
+    resume_generation.add_argument("--run-dir", required=True, help="existing generation run directory")
+    resume_generation.add_argument("--repo-dir", default=None, help="repo root holding .env (required for dmx)")
+
+
+    check_functional = subparsers.add_parser(
+        "check-functional",
+        help="validate functional input join and tests without executing candidates",
+    )
+    check_functional.add_argument("--config", required=True, help="functional config JSON")
+    check_functional.add_argument("--data-dir", required=True, help="prepare-data output directory")
+    check_functional.add_argument("--generation-run", required=True, help="generation run directory")
+    check_functional.add_argument("--cleaned-dir", required=True, help="clean-generations output directory")
+    check_functional.add_argument("--execution-config", required=True, help="execution profile JSON")
+    check_functional.add_argument("--output-dir", required=True, help="fresh output directory")
+
+    evaluate_functional = subparsers.add_parser(
+        "evaluate-functional",
+        help="run functional tests in the isolation container with per-sample caching",
+    )
+    evaluate_functional.add_argument("--config", required=True, help="functional config JSON")
+    evaluate_functional.add_argument("--data-dir", required=True, help="prepare-data output directory")
+    evaluate_functional.add_argument("--generation-run", required=True, help="generation run directory")
+    evaluate_functional.add_argument("--cleaned-dir", required=True, help="clean-generations output directory")
+    evaluate_functional.add_argument("--execution-config", required=True, help="execution profile JSON")
+    evaluate_functional.add_argument("--cache-dir", required=True, help="persistent functional cache root")
+    evaluate_functional.add_argument("--ledger-path", default=None, help="ledger path (defaults to run dir)")
+    evaluate_functional.add_argument("--output-dir", required=True, help="fresh evaluation run directory")
+
+    resume_functional = subparsers.add_parser(
+        "resume-functional",
+        help="resume a functional evaluation run from its persisted references",
+    )
+    resume_functional.add_argument("--run-dir", required=True, help="existing functional evaluation run")
+
+    check_evaluators = subparsers.add_parser(
+        "check-evaluators",
+        help="check other-evaluator inputs, coverage and tool availability",
+    )
+    check_evaluators.add_argument("--config", required=True, help="evaluators config JSON")
+    check_evaluators.add_argument("--data-dir", required=True)
+    check_evaluators.add_argument("--generation-run", required=True)
+    check_evaluators.add_argument("--cleaned-dir", required=True)
+    check_evaluators.add_argument("--output-dir", required=True)
+
+    evaluate_other = subparsers.add_parser(
+        "evaluate-other",
+        help="run SAST/judge and record dynamic/realism coverage for the shared final_code",
+    )
+    evaluate_other.add_argument("--config", required=True)
+    evaluate_other.add_argument("--data-dir", required=True)
+    evaluate_other.add_argument("--generation-run", required=True)
+    evaluate_other.add_argument("--cleaned-dir", required=True)
+    evaluate_other.add_argument("--execution-config", required=True, help="reserved for dynamic/realism container wiring")
+    evaluate_other.add_argument("--ledger-path", default=None)
+    evaluate_other.add_argument("--output-dir", required=True)
+
+    resume_other = subparsers.add_parser(
+        "resume-other",
+        help="resume an other-evaluator run from its persisted references",
+    )
+    resume_other.add_argument("--run-dir", required=True)
+
+    check_pipeline = subparsers.add_parser(
+        "check-pipeline",
+        help="validate a unified pipeline config, inputs and sample subset",
+    )
+    check_pipeline.add_argument("--config", required=True)
+    check_pipeline.add_argument("--output-dir", required=True)
+
+    run_pipeline_cmd = subparsers.add_parser(
+        "run-pipeline",
+        help="run the unified generation->cleaning->static->core->evaluation->report pipeline",
+    )
+    run_pipeline_cmd.add_argument("--config", required=True)
+    run_pipeline_cmd.add_argument("--output-dir", required=True, help="fresh run directory")
+    run_pipeline_cmd.add_argument(
+        "--accept-existing-generation", action="store_true",
+        help="evaluate the generation_run declared in the config instead of generating",
+    )
+
+    resume_pipeline_cmd = subparsers.add_parser(
+        "resume-pipeline",
+        help="resume a pipeline run from its action log",
+    )
+    resume_pipeline_cmd.add_argument("--run-dir", required=True)
+
+    report_pipeline_cmd = subparsers.add_parser(
+        "report-pipeline",
+        help="rebuild the report from existing run artifacts (no model/evaluator calls)",
+    )
+    report_pipeline_cmd.add_argument("--run-dir", required=True)
+    report_pipeline_cmd.add_argument("--output-dir", default=None)
     return parser
 
 
@@ -137,6 +321,16 @@ def _resolve_dir(raw: str, label: str) -> Path:
         raise ValueError(f"cannot resolve {label}: {raw!r}: {error}") from error
     if not path.is_dir():
         raise ValueError(f"{label} is not an existing directory: {path}")
+    return path
+
+
+def _resolve_file(raw: str, label: str) -> Path:
+    try:
+        path = Path(raw).expanduser().resolve()
+    except (OSError, RuntimeError) as error:
+        raise ValueError(f"cannot resolve {label}: {raw!r}: {error}") from error
+    if not path.is_file():
+        raise ValueError(f"{label} is not an existing file: {path}")
     return path
 
 
@@ -437,6 +631,396 @@ def _cmd_compare_history(args: argparse.Namespace) -> int:
     )
 
 
+def _cmd_check_execution(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        audit_dir = _resolve_dir(args.audit_dir, "--audit-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    if not (audit_dir / "asset_manifest.json").is_file():
+        print(
+            f"error: --audit-dir has no asset_manifest.json "
+            f"(run audit-assets first): {audit_dir}",
+            file=sys.stderr,
+        )
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_check_execution(config, audit_dir, output_dir)
+    except ExecutionConfigError as error:
+        print(f"error: invalid execution config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-execution failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_verify_isolation(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        audit_dir = _resolve_dir(args.audit_dir, "--audit-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    if not (audit_dir / "asset_manifest.json").is_file():
+        print(
+            f"error: --audit-dir has no asset_manifest.json "
+            f"(run audit-assets first): {audit_dir}",
+            file=sys.stderr,
+        )
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_verify_isolation(config, audit_dir, output_dir)
+    except ExecutionConfigError as error:
+        print(f"error: invalid execution config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: verify-isolation failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_recover_executions(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        run_dir = _resolve_dir(args.run_dir, "--run-dir")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_recover_executions(config, run_dir)
+    except ExecutionConfigError as error:
+        print(f"error: invalid execution config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: recover-executions failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_check_generation(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        prompts_dir = _resolve_dir(args.prompts_dir, "--prompts-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_check_generation(
+            config, data_dir, prompts_dir, output_dir
+        )
+    except GenerationContractError as error:
+        print(f"error: invalid generation config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-generation failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_generate(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        prompts_dir = _resolve_dir(args.prompts_dir, "--prompts-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+        repo_dir = _resolve_dir(args.repo_dir, "--repo-dir") if args.repo_dir else None
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_generate(
+            config,
+            data_dir,
+            prompts_dir,
+            output_dir,
+            repo_dir=repo_dir,
+        )
+    except GenerationContractError as error:
+        print(f"error: invalid generation config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: generate failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_resume_generation(args: argparse.Namespace) -> int:
+    try:
+        run_dir = _resolve_dir(args.run_dir, "--run-dir")
+        repo_dir = _resolve_dir(args.repo_dir, "--repo-dir") if args.repo_dir else None
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_resume_generation(run_dir, repo_dir=repo_dir)
+    except GenerationContractError as error:
+        print(f"error: cannot resume generation: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: resume-generation failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_check_functional(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        generation_run = _resolve_dir(args.generation_run, "--generation-run")
+        cleaned_dir = _resolve_dir(args.cleaned_dir, "--cleaned-dir")
+        execution_config = _resolve_file(args.execution_config, "--execution-config")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_check_functional(
+            config, data_dir, generation_run, cleaned_dir, execution_config, output_dir,
+        )
+    except (FunctionalInputError, ExecutionConfigError) as error:
+        print(f"error: invalid functional input: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-functional failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_evaluate_functional(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        generation_run = _resolve_dir(args.generation_run, "--generation-run")
+        cleaned_dir = _resolve_dir(args.cleaned_dir, "--cleaned-dir")
+        execution_config = _resolve_file(args.execution_config, "--execution-config")
+        cache_dir = Path(args.cache_dir).expanduser().resolve()
+        output_dir = Path(args.output_dir).expanduser().resolve()
+        ledger_path = (
+            Path(args.ledger_path).expanduser().resolve() if args.ledger_path else None
+        )
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_evaluate_functional(
+            config,
+            data_dir,
+            generation_run,
+            cleaned_dir,
+            execution_config,
+            cache_dir,
+            output_dir,
+            ledger_path=ledger_path,
+        )
+    except (FunctionalInputError, ExecutionConfigError, FunctionalCacheError) as error:
+        print(f"error: invalid functional input: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: evaluate-functional failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_resume_functional(args: argparse.Namespace) -> int:
+    try:
+        run_dir = _resolve_dir(args.run_dir, "--run-dir")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_resume_functional(run_dir)
+    except (FunctionalInputError, ExecutionConfigError, FunctionalCacheError) as error:
+        print(f"error: cannot resume functional run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: resume-functional failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_check_evaluators(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        generation_run = _resolve_dir(args.generation_run, "--generation-run")
+        cleaned_dir = _resolve_dir(args.cleaned_dir, "--cleaned-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_check_evaluators(
+            config, data_dir, generation_run, cleaned_dir, output_dir
+        )
+    except (FunctionalInputError, GenerationContractError) as error:
+        print(f"error: invalid evaluator input: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-evaluators failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_evaluate_other(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        generation_run = _resolve_dir(args.generation_run, "--generation-run")
+        cleaned_dir = _resolve_dir(args.cleaned_dir, "--cleaned-dir")
+        _execution_config = _resolve_file(args.execution_config, "--execution-config")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+        ledger_path = Path(args.ledger_path).expanduser().resolve() if args.ledger_path else None
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_evaluate_other(
+            config,
+            data_dir,
+            generation_run,
+            cleaned_dir,
+            ledger_path,
+            output_dir,
+            execution_config_path=_execution_config,
+        )
+    except (FunctionalInputError, GenerationContractError) as error:
+        print(f"error: invalid evaluator input: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: evaluate-other failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_resume_other(args: argparse.Namespace) -> int:
+    try:
+        run_dir = _resolve_dir(args.run_dir, "--run-dir")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_resume_other(run_dir)
+    except (FunctionalInputError, GenerationContractError) as error:
+        print(f"error: cannot resume evaluator run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: resume-other failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_check_pipeline(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return check_pipeline(config, output_dir)
+    except PipelineConfigError as error:
+        print(f"error: invalid pipeline config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-pipeline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_run_pipeline(args: argparse.Namespace) -> int:
+    try:
+        config = _resolve_file(args.config, "--config")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        assert_fresh_dir(output_dir)
+    except (FileExistsError, NotADirectoryError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return run_pipeline(
+            config,
+            output_dir,
+            accept_existing_generation=args.accept_existing_generation,
+        )
+    except PipelineConfigError as error:
+        print(f"error: invalid pipeline config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: run-pipeline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_resume_pipeline(args: argparse.Namespace) -> int:
+    try:
+        run_dir = _resolve_dir(args.run_dir, "--run-dir")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return resume_pipeline(run_dir)
+    except PipelineConfigError as error:
+        print(f"error: cannot resume pipeline: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: resume-pipeline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
+def _cmd_report_pipeline(args: argparse.Namespace) -> int:
+    try:
+        run_dir = _resolve_dir(args.run_dir, "--run-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve() if args.output_dir else None
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return report_pipeline(run_dir, output_dir)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: report-pipeline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -454,6 +1038,38 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_calibrate_references(args)
     if args.command == "compare-history":
         return _cmd_compare_history(args)
+    if args.command == "check-execution":
+        return _cmd_check_execution(args)
+    if args.command == "verify-isolation":
+        return _cmd_verify_isolation(args)
+    if args.command == "recover-executions":
+        return _cmd_recover_executions(args)
+    if args.command == "check-generation":
+        return _cmd_check_generation(args)
+    if args.command == "generate":
+        return _cmd_generate(args)
+    if args.command == "resume-generation":
+        return _cmd_resume_generation(args)
+    if args.command == "check-functional":
+        return _cmd_check_functional(args)
+    if args.command == "evaluate-functional":
+        return _cmd_evaluate_functional(args)
+    if args.command == "resume-functional":
+        return _cmd_resume_functional(args)
+    if args.command == "check-evaluators":
+        return _cmd_check_evaluators(args)
+    if args.command == "evaluate-other":
+        return _cmd_evaluate_other(args)
+    if args.command == "resume-other":
+        return _cmd_resume_other(args)
+    if args.command == "check-pipeline":
+        return _cmd_check_pipeline(args)
+    if args.command == "run-pipeline":
+        return _cmd_run_pipeline(args)
+    if args.command == "resume-pipeline":
+        return _cmd_resume_pipeline(args)
+    if args.command == "report-pipeline":
+        return _cmd_report_pipeline(args)
     parser.error(f"unknown command: {args.command!r}")
     return EXIT_USAGE  # unreachable
 

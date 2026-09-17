@@ -1,0 +1,177 @@
+{
+  "schema_version": "1",
+  "profile_id": "dev-example",
+  "executor_version": "execution-supervisor-v1",
+  "executor_source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "image": {
+    "reference": "coco-attack-evaluator:dev",
+    "repo_digest": null,
+    "image_id": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "base_image": "python:3.14-slim",
+    "base_digest": "TO-BE-PINNED-BY-BUILD",
+    "platform": "linux/amd64",
+    "python_version": "3.14",
+    "dependency_lock_path": "docker/evaluator/requirements-eval.lock",
+    "dependency_lock_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "limits": {
+    "memory_bytes": 536870912,
+    "memory_swap_bytes": 536870912,
+    "cpu_quota": 1.0,
+    "pids_limit": 64,
+    "max_parallel_containers": 1,
+    "workspace_bytes": 67108864,
+    "shm_bytes": 16777216,
+    "output_storage_bytes": 67108864
+  },
+  "timeouts": {
+    "wall_clock_seconds": 30.0,
+    "sigterm_grace_seconds": 5.0,
+    "docker_control_timeout_seconds": 30.0
+  },
+  "output_limits": {
+    "stdout_bytes": 262144,
+    "stderr_bytes": 262144,
+    "result_file_bytes": 4194304,
+    "single_file_bytes": 4194304,
+    "total_artifact_bytes": 16777216
+  },
+  "sandbox": {
+    "uid": 10001,
+    "gid": 10001,
+    "network": "none",
+    "read_only_rootfs": true,
+    "cap_drop": [
+      "ALL"
+    ],
+    "no_new_privileges": true,
+    "allowed_env": [
+      "LANG",
+      "LC_ALL",
+      "TMPDIR",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUNBUFFERED"
+    ],
+    "tmpfs_paths": [
+      "/tmp",
+      "/work",
+      "/dev/shm"
+    ],
+    "input_mount": "/in",
+    "output_mount": "/out",
+    "workdir": "/work"
+  },
+  "entries": [
+    {
+      "entry_id": "probe",
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/probe_runner.py"
+      ]
+    },
+    {
+      "entry_id": "probe_raw",
+      "argv": [
+        "python",
+        "/opt/coco/probe_runner.py",
+        "--raw-envelope",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--nonce",
+        "__NONCE__"
+      ]
+    },
+    {
+      "entry_id": "dependency_probe",
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/probe_runner.py",
+        "--probe",
+        "dependencies"
+      ]
+    },
+    {
+      "entry_id": "functional",
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/functional_runner.py"
+      ]
+    },
+    {
+      "entry_id": "dynamic",
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/dynamic_runner.py"
+      ]
+    },
+    {
+      "entry_id": "realism",
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/realism_runner.py"
+      ]
+    }
+  ],
+  "output_tmpfs": {
+    "path": "/run/user/1000/coco-attack-output",
+    "budget_bytes": 268435456,
+    "max_files": 4096
+  }
+}

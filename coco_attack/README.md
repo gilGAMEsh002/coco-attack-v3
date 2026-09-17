@@ -63,6 +63,54 @@ coco-attack calibrate-references \
 coco-attack compare-history \
   --assets-dir <asset-root> --data-dir <prepare-data-output> \
   --config <history-config.json> --output-dir <fresh-output-dir>
+
+coco-attack check-generation \
+  --config <generation-config.json> --data-dir <prepare-data-output> \
+  --prompts-dir <materialize-prompts-output> --output-dir <fresh-output-dir>
+
+coco-attack generate \
+  --config <generation-config.json> --data-dir <prepare-data-output> \
+  --prompts-dir <materialize-prompts-output> --output-dir <fresh-run-dir> \
+  [--repo-dir <repo root with .env>] [--lock-state <holdout-lock.json>]
+
+coco-attack resume-generation --run-dir <existing-run-dir> [--repo-dir <repo root>]
+
+coco-attack verify-generation-boundary \
+  --config <generation-config.json> --execution-config <execution-profile.json> \
+  --data-dir <prepare-data-output> --prompts-dir <materialize-prompts-output> \
+  --output-dir <fresh-evidence-dir>
+
+coco-attack check-functional \
+  --config <functional-config.json> --data-dir <prepare-data-output> \
+  --generation-run <generation-run> --cleaned-dir <clean-generations-output> \
+  --execution-config <execution-profile.json> --output-dir <fresh-output-dir>
+
+coco-attack evaluate-functional \
+  --config <functional-config.json> --data-dir <prepare-data-output> \
+  --generation-run <generation-run> --cleaned-dir <clean-generations-output> \
+  --execution-config <execution-profile.json> --cache-dir <persistent-cache-root> \
+  --output-dir <fresh-run-dir> [--ledger-path <ledger>]
+
+coco-attack resume-functional --run-dir <existing-functional-run>
+
+coco-attack check-evaluators \
+  --config <evaluators-config.json> --data-dir <prepare-data-output> \
+  --generation-run <generation-run> --cleaned-dir <clean-generations-output> \
+  --output-dir <fresh-output-dir>
+
+coco-attack evaluate-other \
+  --config <evaluators-config.json> --data-dir <prepare-data-output> \
+  --generation-run <generation-run> --cleaned-dir <clean-generations-output> \
+  --execution-config <execution-profile.json> --output-dir <fresh-run-dir> \
+  [--ledger-path <ledger>]
+
+coco-attack resume-other --run-dir <existing-evaluator-run>
+
+coco-attack check-pipeline --config <pipeline-config.json> --output-dir <fresh-check-dir>
+coco-attack run-pipeline --config <pipeline-config.json> --output-dir <fresh-run-dir> \
+  [--accept-existing-generation]
+coco-attack resume-pipeline --run-dir <existing-pipeline-run>
+coco-attack report-pipeline --run-dir <existing-pipeline-run> [--output-dir <fresh-report-dir>]
 ```
 
 All directories are mandatory. `--help` does not scan assets and does not
@@ -134,6 +182,71 @@ verdict column is always `null`. Exit code 1 means blocking differences were
 recorded for review; AST-equivalent code differences (line-ending or
 boundary-whitespace canonicalization) are reported as cosmetic and are not
 blocking.
+
+### `generate` / `resume-generation` outputs
+
+| Path | Purpose |
+|---|---|
+| `run_config.json` | credential-free config, `run_config` hash, input snapshot refs, cache namespace path |
+| `ledger.jsonl` | append-only events: `attempt_started`, `response_received` (first usage/cost), `attempt_failed`, `sample_finalized` |
+| `generations.jsonl` | one final record per sample; top-level `task_id`/`repeat_id`/`status`/`generation` for `clean-generations`, full identity and provenance as extra fields |
+| `generation_summary.json`, `REPORT.md` | requested/generated/skipped counts, status counts, budget accounting, cache namespace |
+| `dspy-cache/<source>/<stage>/` | physically isolated DSPy response cache namespace per source and stage |
+
+`check-generation` writes `generation_check.json`/`REPORT.md` and never calls a
+model. `verify-generation-boundary` writes `generation_boundary.json`,
+`manifest.json` and `REPORT.md`; the mock source replaces only the LiteLLM
+completion boundary and still runs through
+`dspy.LM.forward -> DSPy response cache -> completion`.
+
+### `evaluate-functional` / `resume-functional` outputs
+
+| Path | Purpose |
+|---|---|
+| `functional_config.json` | frozen config plus explicit input references (data, generation run, cleaned dir, execution profile, cache root, ledger) |
+| `functional_results.jsonl` | one `FunctionalResult` per sample (cache hits included), with outcome/passed/tests counts/execution facts/fingerprint |
+| `functional_metrics.json` | per-task n/c and pass@1/@3/@5 (undefined when samples are missing or unresolved) |
+| `ledger.jsonl` | `execution_recorded` local_test events keyed by stable `accounting_id` |
+| `<cache-root>/functional-cache-v1/<stage>/` | SQLite index plus immutable per-sample artifacts |
+
+Generated code runs only inside the isolation container via the `functional`
+image entry; the host never imports or executes candidate code. `check-functional`
+performs the input join and never runs a candidate.
+
+### `evaluate-other` / `resume-other` outputs
+
+| Path | Purpose |
+|---|---|
+| `config.json`, `manifest.json` | frozen evaluator config, input references, coverage/tool availability and the realism semantics-conflict table |
+| `layers/sast.jsonl`, `layers/judge.jsonl` | one strict layer record per sample and tool/model, with raw alert/label evidence references |
+| `layers/dynamic.jsonl`, `layers/realism.jsonl` | coverage/status records; realism is `semantics_pending` until adjudicated |
+| `sast/<sample>/<tool>/`, `judge/<action>.json` | bounded raw tool output and judge prompt/response evidence |
+| `evaluator_metrics.json` | `*_evasion` (static asr_hit denominator) and `llm_judge_rate`, undefined when the F6 sampling gate or static hits are unavailable |
+
+All other-evaluator layers use the disabled evaluation cache: a new
+`evaluation_id` always re-evaluates. Only the judge's underlying DSPy model
+response cache can be reused, and that is reported separately.
+
+SAST uses the local read-only rule assets: Bandit's reviewed rule mapping,
+Semgrep via the rules directory in `third_party/semgrep`, and CodeQL via the
+bundled toolchain with per-combination queries from `third_party/codeql/qlpacks`
+(`codeql_executable` / `codeql_search_path` in the evaluators config). The
+CodeQL license forbids redistribution, so it is referenced in place and never
+copied into the image.
+
+### `run-pipeline` / `resume-pipeline` / `report-pipeline` outputs
+
+| Path | Purpose |
+|---|---|
+| `pipeline_config.json`, `sample_manifest.json` | frozen unified config and the expected sample ids (explicit `task_ids` subset supported) |
+| `generation/`, `cleaning/`, `static/` | per-step artifacts (generation records, cleaned code, static verdicts/metrics) |
+| `core/checkpoint.json` | batch barrier: published only after the core layers are complete |
+| `evaluation/`, `functional/` | SAST/judge/dynamic/realism layers and functional results |
+| `actions.jsonl` | append-only step status used by `resume-pipeline` |
+| `report/{records.jsonl,metrics.json,cost_summary.json,REPORT.md,manifest.json}` | combined join, metrics, role cost summary and evidence index |
+
+`report-pipeline` performs no model or evaluator calls. A `task_ids` subset is
+reported as `scope=smoke_subset`; it never stands in for a full baseline.
 
 ### Evaluator and cleaner versions
 

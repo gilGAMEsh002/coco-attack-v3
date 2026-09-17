@@ -129,3 +129,43 @@ def test_parse_dotenv_supports_export_and_quotes(tmp_path) -> None:
     values = parse_dotenv(env)
     assert values["DMX_API_KEY"] == "secret-value"
     assert values["OTHER"] == "quoted value"
+
+
+def _git(repo: Path, *args: str) -> None:
+    import subprocess
+
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, text=True)
+
+
+def test_code_tree_diff_tolerates_doc_only_advance(tmp_path) -> None:
+    """A later doc-only commit must not count as a code version change (plan §5.2.5)."""
+
+    repo = tmp_path / "repo"
+    (repo / "coco_attack").mkdir(parents=True)
+    (repo / "docs").mkdir()
+    (repo / "coco_attack" / "mod.py").write_text("VALUE = 1\n", encoding="utf-8")
+    (repo / "docs" / "note.md").write_text("v1\n", encoding="utf-8")
+    _git(repo, "init", "-q")
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "test")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "initial")
+    from coco_attack.experiments.baseline import code_tree_changed_since, git_commit
+
+    base = git_commit(repo)
+
+    # doc-only advance -> code tree unchanged
+    (repo / "docs" / "note.md").write_text("v2\n", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "docs only")
+    assert code_tree_changed_since(repo, base) is False
+
+    # code change -> detected
+    (repo / "coco_attack" / "mod.py").write_text("VALUE = 2\n", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "code change")
+    assert code_tree_changed_since(repo, base) is True
+
+    # unknown base commit -> cannot determine
+    assert code_tree_changed_since(repo, "0" * 40) is None
+    assert code_tree_changed_since(repo, None) is None

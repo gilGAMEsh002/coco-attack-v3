@@ -137,6 +137,26 @@ def git_worktree_status(repo_dir: Path) -> dict[str, Any]:
     }
 
 
+def code_tree_changed_since(repo_dir: Path, base_commit: str | None) -> bool | None:
+    """Whether ``coco_attack``/``dspy`` differ from ``base_commit``.
+
+    Compares the recorded baseline commit against the current worktree, so a
+    later doc-only commit does not count as a version change (plan §5.2.5).
+    Returns ``None`` when the comparison cannot be made.
+    """
+
+    if not base_commit:
+        return None
+    proc = _run(
+        ["git", "-C", str(repo_dir), "diff", "--quiet", base_commit, "--", *_TRACKED_CODE_PATHS]
+    )
+    if proc.returncode == 0:
+        return False
+    if proc.returncode == 1:
+        return True
+    return None
+
+
 def parse_dotenv(path: Path | str) -> dict[str, str]:
     """Parse a dotenv-style file without executing it (supports ``export``)."""
 
@@ -813,15 +833,29 @@ def _check_baseline_impl(root: Path) -> dict[str, Any]:
         blocking.append(str(error))
         git_report = {"error": str(error)}
     if "error" not in git_report:
-        if git_report["commit"] != version_fingerprint.get("git_commit"):
-            blocking.append(
-                f"git commit changed: {git_report['commit']!r} != recorded "
-                f"{version_fingerprint.get('git_commit')!r}"
-            )
+        recorded_commit = version_fingerprint.get("git_commit")
+        if git_report["commit"] != recorded_commit:
+            code_changed = code_tree_changed_since(repo_dir, recorded_commit)
+            if code_changed is True:
+                blocking.append(
+                    f"tracked code changed since preparation: {git_report['commit']!r} != "
+                    f"recorded {recorded_commit!r} (coco_attack/dspy diff is non-empty)"
+                )
+            elif code_changed is False:
+                git_report["doc_only_advance"] = True
+                limitations.append(
+                    "HEAD advanced after preparation with doc-only changes; the tracked "
+                    "code tree is unchanged, so the baseline version is unaffected (plan §5.2.5)"
+                )
+            else:
+                blocking.append(
+                    "git commit changed and the code-tree diff could not be verified: "
+                    f"{git_report['commit']!r} vs recorded {recorded_commit!r}"
+                )
         if git_report["dirty"] != version_fingerprint.get("worktree_dirty"):
-            blocking.append("worktree dirty state changed since preparation")
+            blocking.append("code worktree dirty state changed since preparation")
         if git_report["status_sha256"] != version_fingerprint.get("worktree_status_sha256"):
-            blocking.append("worktree status hash changed since preparation")
+            blocking.append("code worktree status hash changed since preparation")
 
     # 4. Docker / image identity
     docker_available, docker_detail = _docker_available()
@@ -944,6 +978,7 @@ __all__ = [
     "BaselineBlockedError",
     "git_commit",
     "git_worktree_status",
+    "code_tree_changed_since",
     "parse_dotenv",
     "collect_version_fingerprint",
     "known_limitations_for",

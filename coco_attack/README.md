@@ -116,6 +116,7 @@ coco-attack prepare-baseline --matrix-config <baseline-matrix.json> --output-dir
 coco-attack check-baseline --baseline-root <baseline-root>
 coco-attack run-baseline --baseline-root <baseline-root> [--limit N] [--only UNIT_ID ...]
 coco-attack status-baseline --baseline-root <baseline-root>
+coco-attack report-baseline --baseline-root <completed-baseline-root>
 ```
 
 All directories are mandatory. `--help` does not scan assets and does not
@@ -297,6 +298,23 @@ status and, where present, each run's `report/cost_summary.json` totals, request
 counts, functional cache-hit counts and ledger reuse sources, plus the reasons
 for non-complete units. It writes `manifest/status.json` and never calls a
 model.
+
+### `report-baseline` outputs
+
+`report-baseline` is offline and read-only over the completed run artifacts. It
+builds `baseline-index-v1` and the grouped report under the baseline root:
+
+| Path | Purpose |
+|---|---|
+| `index/baseline_index.json` | one strict-match entry per unit (`whole-set`) plus post-hoc `search`/`holdout` derived views for combinations with a method-stage split (`derived_from` links them to the whole-set run) |
+| `reports/baseline_report.json` / `.md` | coverage/denominator checks, metric applicability, matrix view, distributions, cost, versions and anomaly/human-review material |
+| `reports/coverage_check.json` | per-unit coverage and sample-count check (AC-01/AC-02) |
+
+Undefined metrics stay undefined with a reason (never zero-filled), and derived
+results are computed from the same run's per-sample records rather than copied.
+The three "no value" states — `configured_disabled`, `not_covered` and
+`environment_unavailable` — are reported separately. Whole-set results are never
+labelled as holdout validation.
 
 ### Evaluator and cleaner versions
 

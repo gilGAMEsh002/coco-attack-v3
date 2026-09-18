@@ -44,6 +44,7 @@ from .evaluation.run_other import (
 from .evaluation.run_static import EvaluationInputError, evaluate_static
 from .experiments.baseline import check_baseline, prepare_baseline
 from .experiments.orchestrate import run_baseline, status_baseline
+from .experiments.summary import report_baseline
 from .execution.contracts import ExecutionConfigError
 from .execution.preflight import (
     run_check_execution,
@@ -371,6 +372,17 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     status_baseline_cmd.add_argument("--baseline-root", required=True, help="prepared baseline root directory")
+
+    report_baseline_cmd = subparsers.add_parser(
+        "report-baseline",
+        help="build the baseline index and grouped report from completed run artifacts",
+        description=(
+            "Read the completed run artifacts, build the baseline-index-v1 and the "
+            "coverage/grouped report, and write index/ and reports/ under the baseline "
+            "root.  Offline: never calls a model or an evaluator."
+        ),
+    )
+    report_baseline_cmd.add_argument("--baseline-root", required=True, help="completed baseline root directory")
     return parser
 
 
@@ -1134,6 +1146,19 @@ def _cmd_status_baseline(args: argparse.Namespace) -> int:
         return EXIT_BLOCKING
 
 
+def _cmd_report_baseline(args: argparse.Namespace) -> int:
+    try:
+        baseline_root = _resolve_dir(args.baseline_root, "--baseline-root")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        return report_baseline(baseline_root)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: report-baseline failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -1191,6 +1216,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_run_baseline(args)
     if args.command == "status-baseline":
         return _cmd_status_baseline(args)
+    if args.command == "report-baseline":
+        return _cmd_report_baseline(args)
     parser.error(f"unknown command: {args.command!r}")
     return EXIT_USAGE  # unreachable
 

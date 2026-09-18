@@ -16,6 +16,7 @@ from __future__ import annotations
 import builtins
 import hashlib
 import json
+import multiprocessing
 import os
 import signal
 import sys
@@ -25,8 +26,21 @@ import unittest
 from pathlib import Path
 from typing import Any
 
+# Python 3.14 changed the Linux default multiprocessing start method from ``fork``
+# to ``forkserver``.  The harness executes the candidate + tests as a synthetic
+# ``__test__`` module that exists only in this process's ``sys.modules``; a
+# forkserver worker cannot unpickle a function defined there and dies with
+# ``ModuleNotFoundError: No module named '__test__'``, hanging the pool until the
+# wall-clock timeout (observed on BigCodeBench/205).  Force ``fork`` so workers
+# inherit the loaded module, matching pre-3.14 semantics.
+try:
+    multiprocessing.set_start_method("fork", force=True)
+    _START_METHOD_ERROR: str | None = None
+except (RuntimeError, ValueError) as _error:  # already set or unavailable
+    _START_METHOD_ERROR = f"{type(_error).__name__}: {_error}"
+
 PAYLOAD_SCHEMA = "functional-payload-v1"
-HARNESS_VERSION = "functional-harness-v2"
+HARNESS_VERSION = "functional-harness-v3"
 MAX_DETAILS = 10
 MAX_DETAIL_CHARS = 800
 
@@ -144,10 +158,20 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
         return _payload(request, code_sha256, tests_sha256, load, run, details)
 
     module = types.ModuleType("__test__")
+    module_file = Path(tempfile.gettempdir()) / "__test__.py"
+    if _START_METHOD_ERROR is not None or multiprocessing.get_start_method() != "fork":
+        # Fallback when ``fork`` is unavailable: make ``__test__`` importable from
+        # disk so spawn/forkserver workers can unpickle functions defined in it.
+        try:
+            module_file.write_text(full_code, encoding="utf-8")
+            if str(module_file.parent) not in sys.path:
+                sys.path.insert(0, str(module_file.parent))
+        except OSError:
+            module_file = Path("__test__.py")
     module.__dict__.update(
         {
             "__builtins__": builtins,
-            "__file__": "__test__.py",
+            "__file__": str(module_file),
             "__package__": None,
             "__doc__": None,
         }

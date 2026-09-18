@@ -73,7 +73,7 @@ class _FunctionalBackend:
         payload = {
             "schema_version": "1",
             "functional_schema": "functional-payload-v1",
-            "harness_version": "functional-harness-v2",
+            "harness_version": "functional-harness-v3",
             "sample_id": func_request["sample_id"],
             "attempt_id": func_request["attempt_id"],
             "entry_point": func_request["entry_point"],
@@ -203,7 +203,7 @@ def functional_env(tmp_path_factory) -> dict:
         json.dumps(
             {
                 "schema_version": "1", "combination_id": COMBINATION, "oracle_id": COMBINATION,
-                "stage": "search", "k": [1, 3, 5], "harness_version": "functional-harness-v2",
+                "stage": "search", "k": [1, 3, 5], "harness_version": "functional-harness-v3",
             }
         ),
         encoding="utf-8",

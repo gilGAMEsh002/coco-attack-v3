@@ -15,7 +15,7 @@ from ..assets.artifacts import canonical_json_bytes, sha256_bytes
 
 FUNCTIONAL_SCHEMA_VERSION = "functional-result-v1"
 FUNCTIONAL_PAYLOAD_SCHEMA = "functional-payload-v1"
-HARNESS_VERSION = "functional-harness-v2"
+HARNESS_VERSION = "functional-harness-v3"
 
 OUTCOME_PASSED = "passed"
 OUTCOME_FAILED = "failed"

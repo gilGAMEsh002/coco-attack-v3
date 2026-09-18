@@ -21,7 +21,7 @@ from coco_attack.evaluation.functional import (
 def _payload(**overrides) -> dict:
     payload = {
         "functional_schema": "functional-payload-v1",
-        "harness_version": "functional-harness-v2",
+        "harness_version": "functional-harness-v3",
         "sample_id": "s1",
         "attempt_id": "a1",
         "entry_point": "task_func",

@@ -149,3 +149,38 @@ def test_cleaner_v3_preserves_internal_whitespace_and_strings() -> None:
     text = '```python\nimport os\ndef task_func(x):\n    s = """a\n\n  b"""\n    return s\n```'
     result = clean_output(text, FakeTask(), "success")
     assert 's = """a\n\n  b"""' in result.final_code
+
+
+def test_cleaner_v4_inline_opening_fence_is_extracted() -> None:
+    text = (
+        "Here is code that extracts URLs and data:```python\n"
+        "import os\ndef task_func(x):\n    return x\n```\n"
+    )
+    result = clean_output(text, FakeTask(), "success")
+    assert result.extraction_path == EXTRACTION_PYTHON_FENCE
+    assert result.code.startswith("import os\ndef task_func(x):")
+    assert result.syntax_ok is True
+
+
+def test_cleaner_v4_inline_fence_without_closing_fence_is_full_text() -> None:
+    # model stopped mid-stream: no closing fence -> keep the full_text fallback
+    text = "Here is the code:```python\nimport os\ndef task_func(x):\n    return x"
+    result = clean_output(text, FakeTask(), "success")
+    assert result.extraction_path == EXTRACTION_FULL_TEXT
+
+
+def test_cleaner_v4_line_start_python_fence_still_wins() -> None:
+    text = (
+        "Here is the code:\n"
+        "```python\nimport os\ndef task_func(x):\n    return x\n```\n"
+    )
+    result = clean_output(text, FakeTask(), "success")
+    assert result.extraction_path == EXTRACTION_PYTHON_FENCE
+    assert "task_func" in result.code
+
+
+def test_cleaner_v4_inline_non_python_fence() -> None:
+    text = "snippet:```\nsome text\n```\n"
+    result = clean_output(text, FakeTask(), "success")
+    assert result.extraction_path == EXTRACTION_FENCE
+    assert result.code == "some text"

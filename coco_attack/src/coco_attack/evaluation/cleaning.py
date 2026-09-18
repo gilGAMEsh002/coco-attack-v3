@@ -14,7 +14,7 @@ import textwrap
 from dataclasses import dataclass, field
 from typing import Any
 
-CLEANER_VERSION = "cleaner-v3"
+CLEANER_VERSION = "cleaner-v4"
 
 EXTRACTION_PYTHON_FENCE = "python_fence"
 EXTRACTION_FENCE = "fence"
@@ -197,6 +197,45 @@ def _fenced_blocks(text: str) -> tuple[list[tuple[str, str]], bool]:
     return blocks, True
 
 
+def _inline_fence_blocks(text: str) -> list[tuple[str, str]]:
+    """Fallback for an opening fence written inline after prose.
+
+    ``cleaner-v3`` only recognised a fence at the start of a line, so a response
+    such as ``...data:```python`` fell back to ``full_text`` and the prose was
+    treated as code.  Here a candidate inline opening fence is accepted only when
+    a closing fence appears on its own line afterwards; otherwise nothing is
+    returned and the caller keeps its existing fallback.  Line-start fences are
+    handled by :func:`_fenced_blocks` and are skipped here.
+    """
+
+    lines = text.split("\n")
+    for index, line in enumerate(lines):
+        if _FENCE_RE.match(line) is not None:
+            continue
+        for match in re.finditer(r"(```|~~~)\s*([A-Za-z0-9_+.-]*)", line):
+            marker = match.group(1)
+            language = match.group(2).strip()
+            if line[match.end():].strip():
+                continue
+            body: list[str] = []
+            cursor = index + 1
+            closed = False
+            while cursor < len(lines):
+                if lines[cursor].strip().startswith(marker):
+                    closed = True
+                    break
+                body.append(lines[cursor])
+                cursor += 1
+            if not closed:
+                continue
+            while body and not body[0].strip():
+                body.pop(0)
+            while body and not body[-1].strip():
+                body.pop()
+            return [(language, "\n".join(body))]
+    return []
+
+
 def _structural_markers(text: str) -> list[tuple[int, str]]:
     lines = text.split("\n")
     markers: list[tuple[int, str]] = []
@@ -226,6 +265,15 @@ def _extract(text: str) -> tuple[str, str, list[str]]:
     if blocks:
         return blocks[0][1], EXTRACTION_FENCE, diagnostics
 
+    # Fallback: an opening fence written inline after prose (cleaner-v4).
+    inline = _inline_fence_blocks(text)
+    if inline:
+        diagnostics = [item for item in diagnostics if item != "unclosed_fence"]
+        for language, body in inline:
+            if language.lower().startswith("python"):
+                return body, EXTRACTION_PYTHON_FENCE, diagnostics
+        return inline[0][1], EXTRACTION_FENCE, diagnostics
+
     lines = text.split("\n")
     markers = [index for index, kind in _structural_markers(text) if kind == "code"]
     if markers:
@@ -244,7 +292,7 @@ def _extract(text: str) -> tuple[str, str, list[str]]:
 
 
 def _normalize_whitespace(code: str) -> str:
-    """Canonical code normalization for ``cleaner-v3``.
+    """Canonical code normalization for ``cleaner-v4``.
 
     * normalize line endings: ``\\r\\n`` and lone ``\\r`` become ``\\n``;
     * rstrip the extracted code tail (EOF whitespace).

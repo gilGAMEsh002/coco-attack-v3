@@ -40,7 +40,7 @@ except (RuntimeError, ValueError) as _error:  # already set or unavailable
     _START_METHOD_ERROR = f"{type(_error).__name__}: {_error}"
 
 PAYLOAD_SCHEMA = "functional-payload-v1"
-HARNESS_VERSION = "functional-harness-v3"
+HARNESS_VERSION = "functional-harness-v4"
 MAX_DETAILS = 10
 MAX_DETAIL_CHARS = 800
 
@@ -176,9 +176,39 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
             "__doc__": None,
         }
     )
+    timeout = request.get("candidate_timeout_seconds")
+    timeout_active = (
+        isinstance(timeout, (int, float)) and not isinstance(timeout, bool) and timeout > 0
+    )
+
+    def _on_alarm(signum, frame):  # noqa: ANN001 - signal signature
+        raise _CandidateTimeout()
+
+    def _arm_timeout() -> object | None:
+        if not timeout_active:
+            return None
+        previous = signal.signal(signal.SIGALRM, _on_alarm)
+        signal.setitimer(signal.ITIMER_REAL, float(timeout))
+        return previous
+
+    def _disarm_timeout(previous: object | None) -> None:
+        if previous is not None:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, previous)  # type: ignore[arg-type]
+
+    # The candidate timeout must also cover module load/exec: a candidate that
+    # calls a blocking function at module level (e.g. ``serve_forever()``) would
+    # otherwise escape the alarm and hang until the outer wall-clock kill, which
+    # produces no payload and is recorded as unresolved (fix A).
+    previous_handler = _arm_timeout()
     try:
         exec(compiled, module.__dict__)  # noqa: S102 - isolated container, by design
         sys.modules["__test__"] = module
+    except _CandidateTimeout:
+        run["candidate_timeout"] = True
+        run["failure_stage"] = "exec"
+        load["loader_error"] = "candidate_timeout_at_exec"
+        return _payload(request, code_sha256, tests_sha256, load, run, details)
     except ImportError as error:  # candidate/test import failure at load time
         load["missing_module"] = getattr(error, "name", None)
         load["loader_error"] = f"{type(error).__name__}: {error}"
@@ -188,6 +218,8 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
         load["loader_error"] = f"{type(error).__name__}: {error}"
         run["failure_stage"] = "exec"
         return _payload(request, code_sha256, tests_sha256, load, run, details)
+    finally:
+        _disarm_timeout(previous_handler)
 
     load["entry_present"] = callable(module.__dict__.get(entry_point))
     try:
@@ -206,14 +238,7 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
 
     load["tests_discovered"] = int(suite.countTestCases())
     result = unittest.TestResult()
-    timeout = request.get("candidate_timeout_seconds")
-    previous_handler = None
-    if isinstance(timeout, (int, float)) and not isinstance(timeout, bool) and timeout > 0:
-        def _on_alarm(signum, frame):  # noqa: ANN001 - signal signature
-            raise _CandidateTimeout()
-
-        previous_handler = signal.signal(signal.SIGALRM, _on_alarm)
-        signal.setitimer(signal.ITIMER_REAL, float(timeout))
+    previous_handler = _arm_timeout()
     try:
         suite.run(result)
         run["suite_completed"] = True
@@ -226,9 +251,7 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
         run["failure_stage"] = "run"
         load["loader_error"] = f"run:{type(error).__name__}: {error}"
     finally:
-        if previous_handler is not None:
-            signal.setitimer(signal.ITIMER_REAL, 0)
-            signal.signal(signal.SIGALRM, previous_handler)
+        _disarm_timeout(previous_handler)
     run["tests_run"] = int(result.testsRun)
     run["failures"] = len(result.failures)
     run["errors"] = len(result.errors)

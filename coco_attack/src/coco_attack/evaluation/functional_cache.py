@@ -40,6 +40,7 @@ FINGERPRINT_FIELDS = (
     "fixture_sha256",
     "cleaner_version",
     "harness_version",
+    "classifier_version",
     "result_schema",
     "image_id",
     "dependency_lock_sha256",

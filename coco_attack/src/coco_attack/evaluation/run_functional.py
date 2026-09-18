@@ -26,6 +26,7 @@ from ..generation.inputs import select_stage_task_ids
 from ..runtime.ledger import EVENT_EXECUTION_RECORDED, Ledger
 from .cleaning import CLEANER_VERSION
 from .functional import (
+    FUNCTIONAL_CLASSIFIER_VERSION,
     FUNCTIONAL_PAYLOAD_SCHEMA,
     HARNESS_VERSION,
     FunctionalResult,
@@ -290,6 +291,7 @@ def _fingerprint(
         fixture_sha256=sha256_bytes(canonical_json_bytes([])),
         cleaner_version=CLEANER_VERSION,
         harness_version=config.harness_version,
+        classifier_version=FUNCTIONAL_CLASSIFIER_VERSION,
         result_schema=FUNCTIONAL_PAYLOAD_SCHEMA,
         image_id=profile.image.image_id,
         dependency_lock_sha256=profile.image.dependency_lock_sha256,

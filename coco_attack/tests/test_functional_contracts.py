@@ -81,10 +81,23 @@ def test_classify_candidate_load_error_and_declared_dependency() -> None:
     assert (outcome, passed, eligible) == (OUTCOME_UNAVAILABLE, None, False)
     assert reason.startswith("declared_dependency_missing")
 
-    # Without declared dependencies the import failure is not attributable.
+    # Without declared dependencies the exec failure is still candidate-side and
+    # is counted as a failed functional result (D04, 2026-09-18).
     outcome, passed, reason, eligible = _classify(payload)
-    assert (outcome, passed, eligible) == (OUTCOME_ERROR, None, False)
-    assert reason.startswith("import_error_unattributable")
+    assert (outcome, passed, eligible) == (OUTCOME_FAILED, False, False)
+    assert reason.startswith("candidate_load_error")
+
+
+def test_classify_candidate_exec_name_error_is_failed() -> None:
+    # A candidate-side NameError is a failed result, not an indeterminate error,
+    # so it stays in the denominator instead of making pass@k undefined.
+    payload = _payload()
+    payload["run"]["failure_stage"] = "exec"
+    payload["load"]["loader_error"] = "NameError: name 'x' is not defined"
+    payload["load"]["entry_present"] = False
+    outcome, passed, reason, eligible = _classify(payload)
+    assert (outcome, passed, eligible) == (OUTCOME_FAILED, False, False)
+    assert reason.startswith("candidate_load_error")
 
 
 def test_classify_candidate_timeout_is_failed() -> None:

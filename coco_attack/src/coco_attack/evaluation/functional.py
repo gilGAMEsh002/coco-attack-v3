@@ -15,6 +15,7 @@ from ..assets.artifacts import canonical_json_bytes, sha256_bytes
 
 FUNCTIONAL_SCHEMA_VERSION = "functional-result-v1"
 FUNCTIONAL_PAYLOAD_SCHEMA = "functional-payload-v1"
+FUNCTIONAL_CLASSIFIER_VERSION = "functional-classifier-v2"
 HARNESS_VERSION = "functional-harness-v3"
 
 OUTCOME_PASSED = "passed"
@@ -257,12 +258,13 @@ def classify_payload(
         declared_roots = {str(name).split(".")[0] for name in declared_modules}
         if isinstance(missing, str) and missing.split(".")[0] in declared_roots:
             return OUTCOME_UNAVAILABLE, None, f"declared_dependency_missing:{missing}", False
-        if missing is not None and declared_roots:
-            return OUTCOME_FAILED, False, f"candidate_load_error:{load.get('loader_error')}", False
+        # Any other executable-load failure (e.g. NameError, AttributeError, an
+        # undeclared ImportError) is candidate-side: count it as a failed
+        # functional result, not an indeterminate error (D04, 2026-09-18).
         return (
-            OUTCOME_ERROR,
-            None,
-            f"import_error_unattributable:{load.get('loader_error')}",
+            OUTCOME_FAILED,
+            False,
+            f"candidate_load_error:{load.get('loader_error')}",
             False,
         )
     if (
@@ -321,6 +323,7 @@ def deterministic_input_outcome(
 __all__ = [
     "FUNCTIONAL_SCHEMA_VERSION",
     "FUNCTIONAL_PAYLOAD_SCHEMA",
+    "FUNCTIONAL_CLASSIFIER_VERSION",
     "HARNESS_VERSION",
     "FUNCTIONAL_OUTCOMES",
     "OUTCOME_PASSED",

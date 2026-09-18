@@ -34,6 +34,7 @@ def _fingerprint(stage: str = "search", **overrides) -> dict:
         fixture_sha256="x" * 64,
         cleaner_version="cleaner-v3",
         harness_version="functional-harness-v1",
+        classifier_version="functional-classifier-v2",
         result_schema="functional-payload-v1",
         image_id="sha256:" + "i" * 64,
         dependency_lock_sha256="d" * 64,

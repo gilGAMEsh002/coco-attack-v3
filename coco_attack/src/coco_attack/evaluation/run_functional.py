@@ -740,6 +740,8 @@ def _finish(
             "result_count": len(results),
             "cache_hits": sum(1 for r in results if r.reuse_source),
             "executed": sum(1 for r in results if not r.reuse_source and r.execution),
+            "harness_version": config.harness_version,
+            "classifier_version": FUNCTIONAL_CLASSIFIER_VERSION,
             "status": "complete" if len(results) == len(inputs) else "incomplete",
         },
     )

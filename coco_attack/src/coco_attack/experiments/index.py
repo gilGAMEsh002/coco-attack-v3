@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
+import json
 from pathlib import Path
 from typing import Any
 
@@ -950,6 +951,12 @@ def build_index(
                     },
                 )
 
+    # Per-run versions override the global prepare-time fingerprint: the D03/D04
+    # revision re-ran some units under a newer image/cleaner/harness/classifier,
+    # so the index must record the versions actually used by each run.
+    for entry in entries.values():
+        entry.update(_per_run_versions(root, str(entry.get("run_dir") or "")))
+
     models = sorted({entry["model"] for entry in entries.values() if entry.get("model")})
     return {
         "schema_version": INDEX_SCHEMA_VERSION,
@@ -961,6 +968,46 @@ def build_index(
         "gaps": gaps,
         "query_semantics": "strict-match",
     }
+
+
+def _per_run_versions(root: Path, run_dir: str) -> dict[str, Any]:
+    """Read the evaluation versions actually used by one run.
+
+    The clean baseline was prepared before the D03/D04 revision, then some units
+    were re-run under a newer image/cleaner/harness/classifier; the index must
+    reflect the per-run reality rather than the global prepare-time fingerprint.
+    """
+
+    run = root / run_dir
+    cleaning = _read_json_optional(run / "cleaning" / "manifest.json") or {}
+    functional = _read_json_optional(run / "functional" / "manifest.json") or {}
+    static = _read_json_optional(run / "static" / "manifest.json") or {}
+    versions: dict[str, Any] = {}
+    if cleaning.get("cleaner_version"):
+        versions["cleaner_version"] = cleaning["cleaner_version"]
+    functional_config = functional.get("config") or {}
+    harness = functional.get("harness_version") or functional_config.get("harness_version")
+    if harness:
+        versions["harness_version"] = harness
+    if functional.get("classifier_version"):
+        versions["classifier_version"] = functional["classifier_version"]
+    shell = (static.get("evaluator_fingerprint") or {}).get("shell_version")
+    if shell:
+        versions["static_shell_version"] = shell
+    results = run / "functional" / "functional_results.jsonl"
+    if results.is_file():
+        for raw in results.read_bytes().split(b"\n"):
+            if not raw.strip():
+                continue
+            try:
+                row = json.loads(raw.decode("utf-8"))
+            except ValueError:
+                continue
+            image_id = (row.get("execution") or {}).get("image_id")
+            if image_id:
+                versions["image_digest"] = image_id
+            break
+    return versions
 
 
 def _resolve_prepared(

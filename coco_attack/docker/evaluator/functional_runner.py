@@ -40,7 +40,7 @@ except (RuntimeError, ValueError) as _error:  # already set or unavailable
     _START_METHOD_ERROR = f"{type(_error).__name__}: {_error}"
 
 PAYLOAD_SCHEMA = "functional-payload-v1"
-HARNESS_VERSION = "functional-harness-v4"
+HARNESS_VERSION = "functional-harness-v5"
 MAX_DETAILS = 10
 MAX_DETAIL_CHARS = 800
 
@@ -180,15 +180,23 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
     timeout_active = (
         isinstance(timeout, (int, float)) and not isinstance(timeout, bool) and timeout > 0
     )
+    alarm = {"fired": False}
 
     def _on_alarm(signum, frame):  # noqa: ANN001 - signal signature
+        # A candidate may catch KeyboardInterrupt (a common pattern around
+        # ``serve_forever``); record the firing so the harness can still attribute
+        # the run to a candidate timeout even if the exception is swallowed.
+        alarm["fired"] = True
         raise _CandidateTimeout()
 
     def _arm_timeout() -> object | None:
         if not timeout_active:
             return None
+        alarm["fired"] = False
         previous = signal.signal(signal.SIGALRM, _on_alarm)
-        signal.setitimer(signal.ITIMER_REAL, float(timeout))
+        # Re-arm every second: a candidate that swallows KeyboardInterrupt and
+        # blocks again on a later call is still interrupted repeatedly.
+        signal.setitimer(signal.ITIMER_REAL, float(timeout), 1.0)
         return previous
 
     def _disarm_timeout(previous: object | None) -> None:
@@ -220,6 +228,12 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
         return _payload(request, code_sha256, tests_sha256, load, run, details)
     finally:
         _disarm_timeout(previous_handler)
+    if alarm["fired"]:
+        # The candidate caught KeyboardInterrupt during load/exec.
+        run["candidate_timeout"] = True
+        run["failure_stage"] = "exec"
+        load["loader_error"] = "candidate_timeout_at_exec"
+        return _payload(request, code_sha256, tests_sha256, load, run, details)
 
     load["entry_present"] = callable(module.__dict__.get(entry_point))
     try:
@@ -252,6 +266,14 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
         load["loader_error"] = f"run:{type(error).__name__}: {error}"
     finally:
         _disarm_timeout(previous_handler)
+    if alarm["fired"]:
+        # A candidate swallowed KeyboardInterrupt (e.g. its own
+        # ``except KeyboardInterrupt`` around a blocking call).  Even if the
+        # suite completed, attribute the run to a candidate timeout so it is
+        # counted as a failure rather than passing silently.
+        run["candidate_timeout"] = True
+        if run.get("failure_stage") is None:
+            run["failure_stage"] = "run"
     run["tests_run"] = int(result.testsRun)
     run["failures"] = len(result.failures)
     run["errors"] = len(result.errors)

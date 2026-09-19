@@ -7,6 +7,7 @@ than using 0/NaN to hide an undefined quantity.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from math import comb
 from typing import Any, Callable, Iterable, Sequence
 
@@ -14,6 +15,96 @@ from .contracts import MetricResult
 
 FORMAL_ASR1 = {"temperature": 0.0, "repeats": 1}
 FORMAL_ASR5 = {"temperature": 0.7, "repeats": 5}
+
+#: Identity fields that must match (or be present on both sides) for a candidate
+#: to be comparable with a baseline at all.
+BASELINE_BLOCKING_KEYS = (
+    "combination_id",
+    "split_mode",
+    "task_set",
+    "model",
+    "temperature",
+    "repeats",
+    "k",
+    "data_contract",
+)
+
+#: Evaluation-version / environment / context-hash fields.  A difference here is
+#: surfaced as a warning but never blocks the comparison.
+BASELINE_WARNING_KEYS = (
+    "form",
+    "prompt_version",
+    "materialize_version",
+    "static_shell_version",
+    "cleaner_version",
+    "harness_version",
+    "image_digest",
+    "classifier_version",
+    "oracle_fingerprint_sha256",
+    "judge_prompt_version",
+    "judge_detection_version",
+    "task_snapshot_sha256",
+    "split_manifest_sha256",
+)
+
+
+def _compat_field(payload: Mapping[str, Any], key: str) -> Any:
+    """Read one comparison field, keeping the historical ``prompt_form`` alias."""
+
+    if key == "form":
+        value = payload.get("form")
+        if value is None:
+            value = payload.get("prompt_form")
+        return value
+    return payload.get(key)
+
+
+def _normalize_task_set(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return [value]
+    try:
+        return sorted(str(item) for item in value)
+    except TypeError:
+        return value
+
+
+def _normalize_k(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return [int(value)]
+    if isinstance(value, str):
+        try:
+            return [int(value)]
+        except ValueError:
+            return value
+    try:
+        return sorted(int(item) for item in value)
+    except (TypeError, ValueError):
+        return value
+
+
+def _normalize_temperature(value: Any) -> Any:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return value
+
+
+def _normalize_compat_value(key: str, value: Any) -> Any:
+    if key == "task_set":
+        return _normalize_task_set(value)
+    if key == "k":
+        return _normalize_k(value)
+    if key == "temperature":
+        return _normalize_temperature(value)
+    return value
 
 
 def _get(record: Any, name: str, default: Any = None) -> Any:
@@ -322,29 +413,102 @@ def llm_judge_rate(
     )
 
 
+def assess_baseline_compatibility(
+    baseline: Mapping[str, Any], candidate: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Grade baseline compatibility into blocking and warning findings.
+
+    Blocking findings (identity口径: combination/split/task set/model/sampling/
+    data contract) make the candidate non-comparable.  Warning findings
+    (evaluation version, environment and context hashes) are reported but never
+    block the comparison, so an evaluator revision is a warning rather than a
+    refusal.  A missing warning field on *both* sides is still reported
+    (``missing_on_both``) and never silently treated as agreement.
+    """
+
+    blocking: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
+
+    for key in BASELINE_BLOCKING_KEYS:
+        baseline_value = _compat_field(baseline, key)
+        candidate_value = _compat_field(candidate, key)
+        if baseline_value is None or candidate_value is None:
+            blocking.append(
+                {
+                    "key": key,
+                    "baseline": baseline_value,
+                    "candidate": candidate_value,
+                    "reason": "missing",
+                }
+            )
+            continue
+        if _normalize_compat_value(key, baseline_value) != _normalize_compat_value(
+            key, candidate_value
+        ):
+            blocking.append(
+                {
+                    "key": key,
+                    "baseline": baseline_value,
+                    "candidate": candidate_value,
+                    "reason": "mismatch",
+                }
+            )
+
+    for key in BASELINE_WARNING_KEYS:
+        baseline_value = _compat_field(baseline, key)
+        candidate_value = _compat_field(candidate, key)
+        if baseline_value is None and candidate_value is None:
+            warnings.append(
+                {
+                    "key": key,
+                    "baseline": baseline_value,
+                    "candidate": candidate_value,
+                    "reason": "missing_on_both",
+                }
+            )
+            continue
+        if baseline_value is None or candidate_value is None:
+            warnings.append(
+                {
+                    "key": key,
+                    "baseline": baseline_value,
+                    "candidate": candidate_value,
+                    "reason": "missing_on_one_side",
+                }
+            )
+            continue
+        if _normalize_compat_value(key, baseline_value) != _normalize_compat_value(
+            key, candidate_value
+        ):
+            warnings.append(
+                {
+                    "key": key,
+                    "baseline": baseline_value,
+                    "candidate": candidate_value,
+                    "reason": "mismatch",
+                }
+            )
+
+    return {"compatible": not blocking, "blocking": blocking, "warnings": warnings}
+
+
 def check_baseline_compatibility(
     baseline: dict[str, Any], candidate: dict[str, Any]
 ) -> tuple[bool, list[str]]:
-    """Reject mismatched baselines instead of picking the closest one."""
+    """Backward-compatible wrapper over :func:`assess_baseline_compatibility`.
 
-    keys = (
-        "combination_id",
-        "task_set",
-        "split_manifest_sha256",
-        "task_snapshot_sha256",
-        "prompt_form",
-        "k",
-        "temperature",
-        "model",
-        "repeats",
-        "data_contract",
-        "cleaner_version",
-        "oracle_fingerprint_sha256",
-    )
+    Only blocking (identity) findings are returned as reasons; version/environment
+    differences are warnings and never make the result ``False``.
+    """
+
+    assessment = assess_baseline_compatibility(baseline, candidate)
     reasons: list[str] = []
-    for key in keys:
-        if baseline.get(key) != candidate.get(key):
+    for item in assessment["blocking"]:
+        if item["reason"] == "missing":
+            reasons.append(f"{item['key']}: missing")
+        else:
             reasons.append(
-                f"{key}: baseline={baseline.get(key)!r} candidate={candidate.get(key)!r}"
+                f"{item['key']}: baseline={item['baseline']!r} "
+                f"candidate={item['candidate']!r}"
             )
-    return (not reasons), reasons
+    return assessment["compatible"], reasons

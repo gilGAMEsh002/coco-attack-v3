@@ -26,12 +26,20 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..assets.artifacts import read_json, sha256_file, write_json_atomic
+from ..assets.artifacts import (
+    canonical_json_bytes,
+    read_json,
+    sha256_bytes,
+    sha256_file,
+    write_json_atomic,
+)
 from ..assets.paths import default_config_dir
 from ..data.snapshot import load_prepared_data
 from ..data.split import build_split
 from ..evaluation.contracts import MetricResult
 from ..evaluation.metrics import (
+    BASELINE_BLOCKING_KEYS,
+    BASELINE_WARNING_KEYS,
     asr_at_k,
     evasion,
     llm_judge_rate,
@@ -46,6 +54,17 @@ INDEX_SCHEMA_VERSION = "baseline-index-v1"
 INDEX_DIRNAME = "index"
 INDEX_FILENAME = "baseline_index.json"
 SPLIT_MODES = ("whole-set", "search", "holdout")
+
+#: Optional root-level decision file that normalizes the *compared* version labels.
+VERSION_NORMALIZATION_FILENAME = "version_normalization.json"
+
+#: The only per-entry version fields a normalization may unify.
+_NORMALIZED_VERSION_KEYS = (
+    "cleaner_version",
+    "harness_version",
+    "image_digest",
+    "classifier_version",
+)
 
 #: Required files inside ``<run_dir>/report`` before an entry may be emitted.
 REQUIRED_REPORT_ARTIFACTS = ("records.jsonl", "metrics.json", "cost_summary.json", "manifest.json")
@@ -89,6 +108,7 @@ _REQUIRED_ENTRY_FIELDS = (
     "image_digest",
     "judge_prompt_version",
     "judge_detection_version",
+    "oracle_fingerprint_sha256",
     "split_mode",
     "task_set",
     "split_manifest_sha256",
@@ -124,6 +144,97 @@ def _sha256_or_none(path: Path) -> str | None:
     if not path.is_file():
         return None
     return sha256_file(path)
+
+
+def _oracle_fingerprint(
+    version_fingerprint: Mapping[str, Any] | None, oracle_id: Any
+) -> str | None:
+    """Deterministically derive the oracle fingerprint from a version fingerprint.
+
+    The fingerprint covers exactly the oracle identity (``oracle_id``),
+    ``oracle_version`` and the per-file hashes, canonicalized with the shared
+    ``canonical_json_bytes``/``sha256_bytes`` helpers so the same
+    ``version_fingerprint`` always yields the same value.
+    """
+
+    if not isinstance(version_fingerprint, Mapping) or oracle_id is None:
+        return None
+    oracles = version_fingerprint.get("oracles")
+    if not isinstance(oracles, Mapping):
+        return None
+    info = oracles.get(oracle_id)
+    if not isinstance(info, Mapping):
+        return None
+    payload = {
+        "oracle_id": info.get("oracle_id"),
+        "oracle_version": info.get("oracle_version"),
+        "files": info.get("files"),
+    }
+    return sha256_bytes(canonical_json_bytes(payload))
+
+
+def _sorted_task_set(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return [value]
+    try:
+        return sorted(str(item) for item in value)
+    except TypeError:
+        return value
+
+
+def _sorted_k(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return [int(value)]
+    if isinstance(value, str):
+        try:
+            return [int(value)]
+        except ValueError:
+            return value
+    try:
+        return sorted(int(item) for item in value)
+    except (TypeError, ValueError):
+        return value
+
+
+def _as_float(value: Any) -> Any:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return value
+
+
+def _load_version_normalization(root: Path) -> dict[str, Any] | None:
+    """Load the optional comparison-version normalization decision.
+
+    The baseline is a mix of revisions; the decision document unifies the
+    compared version labels to the latest target while the original per-unit
+    versions are kept in each entry's ``source_versions``.  A missing/empty file
+    means no normalization (the caller must leave the index untouched).
+    """
+
+    payload = _read_json_optional(root / VERSION_NORMALIZATION_FILENAME)
+    if payload is None:
+        return None
+    target = payload.get("target")
+    if not isinstance(target, dict) or not target:
+        raise BaselineIndexError(
+            f"{VERSION_NORMALIZATION_FILENAME} 'target' must be a non-empty object"
+        )
+    unknown = [key for key in target if key not in _NORMALIZED_VERSION_KEYS]
+    if unknown:
+        raise BaselineIndexError(
+            f"version_normalization target keys must be a subset of "
+            f"{_NORMALIZED_VERSION_KEYS}; got unknown keys {unknown}"
+        )
+    return payload
 
 
 # --------------------------------------------------------------------------- #
@@ -668,6 +779,7 @@ def _build_entry(
         "image_digest": version_fingerprint.get("image_digest"),
         "judge_prompt_version": judge_prompt_version,
         "judge_detection_version": judge_detection_version,
+        "oracle_fingerprint_sha256": _oracle_fingerprint(version_fingerprint, oracle_id),
         "split_mode": split_mode,
         "task_set": list(task_set),
         "split_manifest_sha256": split_manifest_sha256,
@@ -957,8 +1069,26 @@ def build_index(
     for entry in entries.values():
         entry.update(_per_run_versions(root, str(entry.get("run_dir") or "")))
 
+    # Comparison-version normalization (opt-in via a root-level decision file):
+    # every entry keeps its original per-unit values in ``source_versions`` and
+    # the compared labels are unified to the decision's target.
+    normalization = _load_version_normalization(root)
+    normalization_summary: dict[str, Any] | None = None
+    if normalization is not None:
+        target = normalization["target"]
+        for entry in entries.values():
+            entry["source_versions"] = {key: entry.get(key) for key in target}
+            entry.update(target)
+        normalization_summary = {
+            "source": VERSION_NORMALIZATION_FILENAME,
+            "sha256": sha256_file(root / VERSION_NORMALIZATION_FILENAME),
+            "decision": normalization.get("decision"),
+            "assumption": normalization.get("assumption"),
+            "target": dict(target),
+        }
+
     models = sorted({entry["model"] for entry in entries.values() if entry.get("model")})
-    return {
+    index: dict[str, Any] = {
         "schema_version": INDEX_SCHEMA_VERSION,
         "baseline_root": str(root),
         "generated_at": registered_at,
@@ -968,6 +1098,9 @@ def build_index(
         "gaps": gaps,
         "query_semantics": "strict-match",
     }
+    if normalization_summary is not None:
+        index["version_normalization"] = normalization_summary
+    return index
 
 
 def _per_run_versions(root: Path, run_dir: str) -> dict[str, Any]:
@@ -1008,6 +1141,103 @@ def _per_run_versions(root: Path, run_dir: str) -> dict[str, Any]:
                 versions["image_digest"] = image_id
             break
     return versions
+
+
+# --------------------------------------------------------------------------- #
+# Baseline comparison key
+# --------------------------------------------------------------------------- #
+
+
+def baseline_key_from_entry(entry: Mapping[str, Any]) -> dict[str, Any]:
+    """Project an index entry onto the baseline comparison key.
+
+    Every blocking and warning field is returned in its canonical comparison
+    form (``task_set`` sorted, ``k`` a sorted int list, ``temperature`` a float)
+    so a baseline entry and a freshly collected run key compare field-for-field.
+    """
+
+    key: dict[str, Any] = {}
+    for name in (*BASELINE_BLOCKING_KEYS, *BASELINE_WARNING_KEYS):
+        if name == "form":
+            value = entry.get("form")
+            if value is None:
+                value = entry.get("prompt_form")
+        else:
+            value = entry.get(name)
+        if name == "task_set":
+            value = _sorted_task_set(value)
+        elif name == "k":
+            value = _sorted_k(value)
+        elif name == "temperature":
+            value = _as_float(value)
+        key[name] = value
+    return key
+
+
+def collect_baseline_key(
+    run_dir: Path | str,
+    *,
+    input_split_path: Path | str | None = None,
+    version_fingerprint: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Collect the baseline comparison key directly from a run directory.
+
+    Identity fields come from ``pipeline_config.json``; the actual per-run
+    evaluation versions come from the run's own manifests; the split/task
+    snapshot hashes come from the configured input split.  Anything unavailable
+    is left ``None`` rather than guessed.
+    """
+
+    run = Path(run_dir)
+    config = _read_json_optional(run / "pipeline_config.json") or {}
+    evaluation_manifest = _read_json_optional(run / "evaluation" / "manifest.json") or {}
+    fingerprint = version_fingerprint if isinstance(version_fingerprint, Mapping) else {}
+
+    input_split: dict[str, Any] = {}
+    split_manifest_sha256: str | None = None
+    if input_split_path is not None:
+        split_path = Path(input_split_path)
+        input_split = _read_json_optional(split_path) or {}
+        split_manifest_sha256 = _sha256_or_none(split_path)
+    task_snapshot_sha256 = input_split.get("task_snapshot_sha256")
+    input_split_mode = input_split.get("mode")
+    input_ids = input_split.get("input_ids")
+
+    if input_split_mode == "whole-set":
+        split_mode: Any = "whole-set"
+    else:
+        split_mode = config.get("stage")
+
+    task_ids = config.get("task_ids")
+    task_set = task_ids if task_ids else input_ids
+
+    per_run = _per_run_versions(run, ".")
+
+    return {
+        "combination_id": config.get("combination_id"),
+        "split_mode": split_mode,
+        "task_set": _sorted_task_set(task_set),
+        "model": config.get("model"),
+        "temperature": _as_float(config.get("temperature")),
+        "repeats": config.get("repeats"),
+        "k": _sorted_k(config.get("k")),
+        "data_contract": fingerprint.get("data_contract"),
+        "form": config.get("form"),
+        "prompt_version": config.get("prompt_version"),
+        "materialize_version": fingerprint.get("materialize_version"),
+        "static_shell_version": per_run.get("static_shell_version"),
+        "cleaner_version": per_run.get("cleaner_version"),
+        "harness_version": per_run.get("harness_version"),
+        "image_digest": per_run.get("image_digest"),
+        "classifier_version": per_run.get("classifier_version"),
+        "oracle_fingerprint_sha256": _oracle_fingerprint(
+            fingerprint, config.get("oracle_id")
+        ),
+        "judge_prompt_version": evaluation_manifest.get("judge_prompt_version"),
+        "judge_detection_version": evaluation_manifest.get("judge_detection_version"),
+        "task_snapshot_sha256": task_snapshot_sha256,
+        "split_manifest_sha256": split_manifest_sha256,
+    }
 
 
 def _resolve_prepared(
@@ -1188,7 +1418,10 @@ __all__ = [
     "INDEX_SCHEMA_VERSION",
     "REQUIRED_REPORT_ARTIFACTS",
     "SPLIT_MODES",
+    "VERSION_NORMALIZATION_FILENAME",
+    "baseline_key_from_entry",
     "build_index",
+    "collect_baseline_key",
     "index_path",
     "load_index",
     "query_index",

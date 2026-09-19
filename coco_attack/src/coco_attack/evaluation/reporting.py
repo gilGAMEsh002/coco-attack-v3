@@ -22,7 +22,7 @@ from ..assets.artifacts import (
 )
 from ..runtime.ledger import EVENT_EXECUTION_RECORDED, EVENT_RESPONSE_RECEIVED
 from .generation_source import resolve_generation_run
-from .metrics import check_baseline_compatibility
+from .metrics import assess_baseline_compatibility
 
 REPORT_SCHEMA_VERSION = "pipeline-report-v1"
 
@@ -286,8 +286,12 @@ def _render_report(run: Path, records: list[dict[str, Any]], metrics: dict[str, 
     return "\n".join(lines)
 
 
-def check_report_compatibility(baseline: dict[str, Any], candidate: dict[str, Any]) -> tuple[bool, list[str]]:
-    return check_baseline_compatibility(baseline, candidate)
+def check_report_compatibility(
+    baseline: dict[str, Any], candidate: dict[str, Any]
+) -> dict[str, Any]:
+    """Report graded baseline compatibility (blocking vs warning findings)."""
+
+    return assess_baseline_compatibility(baseline, candidate)
 
 
 __all__ = [

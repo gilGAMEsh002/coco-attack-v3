@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from coco_attack.evaluation.metrics import (
+    BASELINE_BLOCKING_KEYS,
+    BASELINE_WARNING_KEYS,
     asr_at_k,
+    assess_baseline_compatibility,
     check_baseline_compatibility,
     evasion,
     llm_judge_rate,
@@ -158,32 +161,177 @@ def test_evasion_counts_only_completed_undetected_on_hit_subset() -> None:
     assert result.numerator == 1
 
 
-def test_baseline_compatibility_rejects_mismatch() -> None:
-    baseline = {
+def _baseline_payload(**overrides) -> dict:
+    payload = {
         "combination_id": "cwe078-0",
-        "task_set": "evaluation",
-        "split_manifest_sha256": "split-a",
-        "task_snapshot_sha256": "snap-a",
-        "prompt_form": "clean_fewshot_cot",
-        "k": 5,
-        "temperature": 0.7,
+        "split_mode": "whole-set",
+        "task_set": ["BigCodeBench/2", "BigCodeBench/1"],
         "model": "gpt-4o",
+        "temperature": 0.7,
         "repeats": 5,
+        "k": [5, 1, 3],
         "data_contract": "bigcodebench-screened-v1",
+        # historical tests / callers use `prompt_form`; the new key is `form`
+        "prompt_form": "clean_fewshot_cot",
+        "prompt_version": "1",
+        "materialize_version": "prompt-materialize-v1",
+        "static_shell_version": "static-shell-v1",
         "cleaner_version": "cleaner-v3",
-        "oracle_fingerprint_sha256": "abc",
+        "harness_version": "functional-harness-v2",
+        "image_digest": "sha256:abc",
+        "classifier_version": "functional-classifier-v1",
+        "oracle_fingerprint_sha256": "a" * 64,
+        "judge_prompt_version": "singleclass-v1",
+        "judge_detection_version": "target-cwe-v1",
+        "task_snapshot_sha256": "snap-a",
+        "split_manifest_sha256": "split-a",
     }
-    ok, reasons = check_baseline_compatibility(baseline, dict(baseline))
-    assert ok and not reasons
-    candidate = {**baseline, "model": "gpt-5"}
-    ok, reasons = check_baseline_compatibility(baseline, candidate)
+    payload.update(overrides)
+    return payload
+
+
+def test_assess_baseline_compatibility_identical_is_clean() -> None:
+    baseline = _baseline_payload()
+    assessment = assess_baseline_compatibility(baseline, dict(baseline))
+    assert assessment["compatible"] is True
+    assert assessment["blocking"] == []
+    assert assessment["warnings"] == []
+
+
+def test_baseline_compatibility_rejects_identity_mismatch() -> None:
+    baseline = _baseline_payload()
+    # Only identity (blocking) mismatches make the baseline non-comparable.
+    ok, reasons = check_baseline_compatibility(baseline, {**baseline, "model": "gpt-5"})
     assert not ok
     assert any("model" in reason for reason in reasons)
-    # Split revision and prompt form are part of compatibility.
-    ok, reasons = check_baseline_compatibility(
-        baseline, {**baseline, "split_manifest_sha256": "split-b"}
+    assessment = assess_baseline_compatibility(baseline, {**baseline, "model": "gpt-5"})
+    assert assessment["compatible"] is False
+    assert [(item["key"], item["reason"]) for item in assessment["blocking"]] == [
+        ("model", "mismatch")
+    ]
+
+
+def test_baseline_compatibility_warns_on_version_difference() -> None:
+    baseline = _baseline_payload()
+    # Evaluation-version / context-hash differences are warnings, never blocking.
+    candidate = {
+        **baseline,
+        "split_manifest_sha256": "split-b",
+        "task_snapshot_sha256": "snap-b",
+        "cleaner_version": "cleaner-v4",
+    }
+    ok, reasons = check_baseline_compatibility(baseline, candidate)
+    assert ok is True
+    assert reasons == []
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is True
+    assert assessment["blocking"] == []
+    warned = {(item["key"], item["reason"]) for item in assessment["warnings"]}
+    assert ("split_manifest_sha256", "mismatch") in warned
+    assert ("task_snapshot_sha256", "mismatch") in warned
+    assert ("cleaner_version", "mismatch") in warned
+
+
+def test_baseline_compatibility_blocking_missing_is_rejected() -> None:
+    baseline = _baseline_payload()
+    candidate = _baseline_payload()
+    del candidate["repeats"]
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is False
+    assert [(item["key"], item["reason"]) for item in assessment["blocking"]] == [
+        ("repeats", "missing")
+    ]
+    ok, reasons = check_baseline_compatibility(baseline, candidate)
+    assert ok is False
+    assert reasons == ["repeats: missing"]
+
+
+def test_baseline_compatibility_blocking_missing_on_both_is_rejected() -> None:
+    baseline = _baseline_payload()
+    candidate = _baseline_payload()
+    del baseline["combination_id"]
+    del candidate["combination_id"]
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is False
+    assert [
+        (item["key"], item["reason"]) for item in assessment["blocking"]
+    ] == [("combination_id", "missing")]
+
+
+def test_baseline_compatibility_warning_missing_both_is_not_silent() -> None:
+    baseline = _baseline_payload()
+    candidate = _baseline_payload()
+    del baseline["cleaner_version"]
+    del candidate["cleaner_version"]
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is True
+    assert assessment["blocking"] == []
+    assert [
+        (item["key"], item["reason"]) for item in assessment["warnings"]
+    ] == [("cleaner_version", "missing_on_both")]
+    # compatibility wrapper never surfaces warning-only findings
+    ok, reasons = check_baseline_compatibility(baseline, candidate)
+    assert ok is True and reasons == []
+
+
+def test_baseline_compatibility_warning_missing_on_one_side() -> None:
+    baseline = _baseline_payload()
+    candidate = _baseline_payload()
+    del baseline["oracle_fingerprint_sha256"]
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is True
+    assert [
+        (item["key"], item["reason"]) for item in assessment["warnings"]
+    ] == [("oracle_fingerprint_sha256", "missing_on_one_side")]
+
+
+def test_baseline_compatibility_form_and_prompt_form_are_equivalent() -> None:
+    baseline = _baseline_payload(form="clean_fewshot_cot")
+    candidate = _baseline_payload(form="clean_fewshot_cot")
+    candidate.pop("form")
+    candidate["prompt_form"] = "clean_fewshot_cot"
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is True
+    assert assessment["blocking"] == []
+    assert assessment["warnings"] == []
+    # A genuine form difference is only a warning.
+    assessment = assess_baseline_compatibility(
+        baseline, {**candidate, "prompt_form": "clean_0shot"}
     )
-    assert not ok and any("split_manifest_sha256" in reason for reason in reasons)
+    assert assessment["compatible"] is True
+    assert [(item["key"], item["reason"]) for item in assessment["warnings"]] == [
+        ("form", "mismatch")
+    ]
+
+
+def test_baseline_compatibility_normalizes_task_set_k_and_temperature() -> None:
+    baseline = _baseline_payload(
+        task_set=["t2", "t1", "t3"], k=[5, 1, 3], temperature=0.0
+    )
+    candidate = _baseline_payload(
+        task_set=["t1", "t2", "t3"], k=[3, 5, 1], temperature=0
+    )
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert assessment["compatible"] is True
+    assert assessment["blocking"] == []
+    assert assessment["warnings"] == []
+    # A genuine set difference still blocks.
+    assessment = assess_baseline_compatibility(
+        baseline, {**candidate, "task_set": ["t1", "t2"]}
+    )
+    assert assessment["compatible"] is False
+    assert [item["key"] for item in assessment["blocking"]] == ["task_set"]
+
+
+def test_assess_baseline_compatibility_structure() -> None:
+    baseline = _baseline_payload()
+    candidate = _baseline_payload(model="gpt-5", cleaner_version="cleaner-v4")
+    assessment = assess_baseline_compatibility(baseline, candidate)
+    assert set(assessment) == {"compatible", "blocking", "warnings"}
+    for finding in (*assessment["blocking"], *assessment["warnings"]):
+        assert set(finding) == {"key", "baseline", "candidate", "reason"}
+    assert {item["key"] for item in assessment["blocking"]} <= set(BASELINE_BLOCKING_KEYS)
+    assert {item["key"] for item in assessment["warnings"]} <= set(BASELINE_WARNING_KEYS)
 
 
 def test_asr_formal_flag_ignores_extra_sampling_keys() -> None:

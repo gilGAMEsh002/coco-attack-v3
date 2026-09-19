@@ -333,6 +333,11 @@ def _cost(index: dict[str, Any]) -> dict[str, Any]:
 
 
 def _versions(index: dict[str, Any]) -> dict[str, Any]:
+    target = (index.get("version_normalization") or {}).get("target")
+    if target:
+        # Comparison口径: normalized dimensions override the prepare-time
+        # fingerprint; dimensions that were not mixed keep the original value.
+        return {**(index.get("version_fingerprint") or {}), **target}
     return index.get("version_fingerprint") or {}
 
 
@@ -407,7 +412,7 @@ def build_summary(baseline_root: Path | str, index: dict[str, Any] | None = None
     validate_index(index)
     coverage = _coverage(root, index)
     distributions = _distributions(root, index)
-    return {
+    summary: dict[str, Any] = {
         "schema_version": SUMMARY_SCHEMA_VERSION,
         "baseline_root": str(root),
         "index_schema_version": index.get("schema_version"),
@@ -421,6 +426,10 @@ def build_summary(baseline_root: Path | str, index: dict[str, Any] | None = None
         "declarations": _declarations(index),
         "gaps": index.get("gaps") or [],
     }
+    normalization = index.get("version_normalization")
+    if normalization:
+        summary["version_normalization"] = normalization
+    return summary
 
 
 def _render_markdown(summary: dict[str, Any]) -> str:
@@ -505,9 +514,17 @@ def _render_markdown(summary: dict[str, Any]) -> str:
     for key in (
         "git_commit", "dspy_version", "data_contract", "cleaner_version",
         "static_shell_version", "harness_version", "image_digest",
+        "classifier_version",
         "judge_prompt_version", "judge_detection_version",
     ):
         lines.append(f"- {key}: `{summary['versions'].get(key)}`")
+    normalization = summary.get("version_normalization")
+    if normalization:
+        lines.append(
+            "- version normalization: compared version labels are unified to "
+            f"{normalization.get('target')}; the original per-unit versions are "
+            "preserved in each index entry's `source_versions`"
+        )
     lines.append("")
     lines.append("## Anomalies / human review")
     lines.append("")

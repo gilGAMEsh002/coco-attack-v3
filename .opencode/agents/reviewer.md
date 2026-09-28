@@ -1,7 +1,7 @@
 ---
 description: Independent read-only reviewer for correctness, regressions, data leakage, metric errors, caching issues, and experimental validity
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4.1-flash
 steps: 20
 permissions:
   - action: read

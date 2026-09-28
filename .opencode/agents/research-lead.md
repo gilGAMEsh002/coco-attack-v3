@@ -1,7 +1,7 @@
 ---
 description: Primary research coding agent that coordinates repository analysis, implementation, debugging, review, and experiments
 mode: primary
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4.1-flash
 steps: 60
 permissions:
   - action: read

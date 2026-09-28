@@ -1,7 +1,7 @@
 ---
 description: Diagnoses runtime, test, timeout, evaluation, caching, and experiment failures before applying minimal fixes
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4.1-flash
 steps: 30
 permissions:
   - action: read

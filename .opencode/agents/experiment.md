@@ -1,7 +1,7 @@
 ---
 description: Runs existing experiments and analyzes artifacts without changing source code or experiment definitions
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4.1-flash
 steps: 40
 permissions:
   - action: read

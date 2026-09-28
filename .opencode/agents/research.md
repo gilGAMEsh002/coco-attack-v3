@@ -1,7 +1,7 @@
 ---
 description: Read-only repository investigator for tracing implementations, architecture, metrics, data flow, and research pipelines
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4.1-flash
 steps: 25
 permissions:
   - action: read

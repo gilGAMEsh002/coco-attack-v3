@@ -47,6 +47,7 @@ phase-04 convention `cocota_runs/phase04/methods/single_candidate_ab/runs/<run_n
   "assets_root": "<ASSETS_ROOT>/cocota_data_eval_result",
   "data_dir": "<STAGE03_ROOT>/inputs/data",
   "repo_dir": "<REPO_ROOT>",
+  "prompt_version": "2",
   "max_rounds": 5,
   "semgrep_config": "<ASSETS_ROOT>/cocota_data_eval_result/third_party/semgrep",
   "mutator": {

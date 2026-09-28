@@ -1743,12 +1743,13 @@ class MethodRun:
         if kind == "B":
             text = (
                 f"B \u8865\u4e01\u672a\u5e94\u7528\uff08{result.get('status')}: {result.get('reason')}\uff09\uff1b"
-                "\u672c\u8f6e\u673a\u4f1a\u5df2\u6d88\u8017\uff0c\u4e0d\u81ea\u52a8\u4fee\u590d\u3002"
+                "\u672a\u6539\u53d8\u5f53\u524d\u6a21\u677f\uff0cB \u9636\u6bb5\u672c\u8f6e\u673a\u4f1a\u5df2\u4f7f\u7528\u3002"
             )
         else:
             text = (
                 f"A \u8865\u4e01\u672a\u5e94\u7528\uff08{result.get('status')}: {result.get('reason')}\uff09\uff1b"
-                "\u672a\u6539\u53d8\u5f53\u524d\u6a21\u677f\uff0c\u7ee7\u7eed\u5728 A\u3002"
+                "\u672a\u6539\u53d8\u5f53\u524d\u6a21\u677f\uff0c\u7ee7\u7eed\u4fee\u6539\u793a\u4f8b 2\u20134 \u7684\u4ee3\u7801"
+                "\uff08A \u9636\u6bb5\uff09\u3002"
             )
         self.history.append_unit(
             HistoryUnit(

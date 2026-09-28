@@ -31,6 +31,17 @@ from .runtime import A_FIELD, B_FIELD, MethodConfig, MutatorRole, VictimRole
 
 PREFLIGHT_SCHEMA_VERSION = "method-preflight-v1"
 
+#: Warning-only headroom (tokens) for the mutator input budget.  ``fixed_tokens``
+#: (the assembled system block + a representative current-template request) plus
+#: the configured ``max_tokens`` is compared against ``context_window_tokens``
+#: minus ``context_margin_tokens``.  The frozen run's R5 prompt grew to ~23.3k
+#: tokens once history accumulated, leaving very little slack against a 32768
+#: window with ``max_tokens=8192``; preflight cannot know the future history, so
+#: it flags a fixed block that already leaves less than this headroom.  This
+#: threshold only decides whether a ``warnings`` entry is emitted: it never
+#: produces an error and never changes readiness or the exit code.
+_MUTATOR_INPUT_HEADROOM_TOKENS = 2048
+
 
 def _safe_load(path: str | None) -> Any:
     if not path:
@@ -365,6 +376,33 @@ def build_preflight_report(
         if fixed_tokens > available:
             report["errors"].append(
                 f"fixed material needs {fixed_tokens} tokens but only {available} are available"
+            )
+        # B1-c: warning-only projection of the whole mutator request budget.
+        # ``fixed_tokens`` (system block + a representative current-template
+        # request) plus the configured output budget is compared against the
+        # window minus the optional safety margin.  This never adds an error and
+        # is not part of readiness; it only flags a budget that is so tight that
+        # a truncated/empty mutator response becomes likely.
+        window_after_margin = (
+            config.mutator.context_window_tokens - config.mutator.context_margin_tokens
+        )
+        projected = fixed_tokens + config.mutator.max_tokens
+        headroom = window_after_margin - projected
+        report["context"]["mutator_input_estimate_tokens"] = fixed_tokens
+        report["context"]["mutator_input_plus_max_tokens"] = projected
+        report["context"]["window_after_margin_tokens"] = window_after_margin
+        report["context"]["mutator_input_headroom_tokens"] = headroom
+        report["context"]["mutator_input_headroom_threshold_tokens"] = (
+            _MUTATOR_INPUT_HEADROOM_TOKENS
+        )
+        if projected > window_after_margin or headroom < _MUTATOR_INPUT_HEADROOM_TOKENS:
+            report["warnings"].append(
+                "mutator input budget is tight: estimated input "
+                f"{fixed_tokens} + max_tokens {config.mutator.max_tokens} = {projected} tokens "
+                f"vs context_window {config.mutator.context_window_tokens} - margin "
+                f"{config.mutator.context_margin_tokens} = {window_after_margin} "
+                f"(headroom {headroom} < threshold {_MUTATOR_INPUT_HEADROOM_TOKENS}); "
+                "a truncated/empty mutator response becomes more likely"
             )
     except Exception as error:  # noqa: BLE001 - report, never crash
         report["context"] = {"error": f"{type(error).__name__}: {error}"}

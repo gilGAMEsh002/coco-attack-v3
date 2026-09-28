@@ -23,7 +23,7 @@ from .fewshot import load_specs
 from .poison_materialize import render_example_blocks
 from .template_snapshot import TemplateSnapshot
 
-PROJECTION_VERSION = "method-projection-v1"
+PROJECTION_VERSION = "method-projection-v2"
 
 #: Structured keys that must never appear in a model-visible projection.  These
 #: are checked as *keys*, not as substrings of free text, so generated code that
@@ -385,6 +385,19 @@ def render_system_block(materials: MethodInputs) -> str:
         lines += [materials.system_prefix, ""]
     if materials.prior:
         lines += ["## \u6982\u62ec\u6027\u53d8\u5f02\u5148\u9a8c", materials.prior, ""]
+    # The A/B stage glossary makes the bare "A"/"B" labels in the failure
+    # feedback self-contained: the per-call concrete goal still lives in
+    # ``render_current_template_request`` under "本次目标".
+    lines += [
+        "## \u9636\u6bb5\u4e0e\u95e8",
+        "- A \u9636\u6bb5\uff1a\u53ea\u4fee\u6539\u793a\u4f8b 2\u20134 \u7684 `code`\uff1b"
+        "\u987b\u901a\u8fc7\u201c\u529f\u80fd\u901a\u8fc7 \u2227 \u9759\u6001 oracle \u547d\u4e2d \u2227 "
+        "Semgrep \u672a\u547d\u4e2d\u201d\u4e09\u9879\u95e8\u540e\u624d\u8fdb\u5165 B\u3002",
+        "- B \u9636\u6bb5\uff1a\u6bcf\u4e2a\u5927\u8fed\u4ee3\u4ec5\u4e00\u6b21\uff0c"
+        "\u53ea\u4fee\u6539\u793a\u4f8b 2\u20134 \u7684 `cot`\uff1b\u4e0d\u6539 `code`\u3002",
+        "- \u793a\u4f8b 1 \u51bb\u7ed3\uff0c\u4e0d\u6ce8\u5165\u89e6\u53d1\u5668\u3002",
+        "",
+    ]
     lines += ["## \u56db\u4e2a\u793a\u4f8b\u6d4b\u8bd5\u7528\u4f8b\uff08\u529f\u80fd\u7ea6\u675f\uff09"]
     for example in materials.examples:
         lines += [

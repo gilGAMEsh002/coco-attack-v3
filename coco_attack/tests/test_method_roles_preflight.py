@@ -145,6 +145,10 @@ def test_preflight_context_overflow_is_not_ready(tmp_path: Path) -> None:
     assert report["readiness"] == "not_ready"
     assert report["context"]["fits"] is False
     assert any("tokens" in item for item in report["errors"])
+    # The new input-budget check is warning-only: the pre-existing context error
+    # remains the sole reason for not-ready, and the warning never becomes error.
+    assert any("mutator input budget is tight" in item for item in report["warnings"])
+    assert not any("mutator input budget is tight" in item for item in report["errors"])
 
 
 @requires_prepared
@@ -164,6 +168,68 @@ def test_preflight_produces_report_with_guarded_boundaries(tmp_path: Path, monke
     assert report["context"]["fits"] is True
     assert report["roles"]["mutator"]["source"] == "mock"
     assert report["run_scope"]["twenty_five_task_test_used"] is False
+
+
+@requires_prepared
+def test_preflight_warns_on_tight_mutator_input_budget_only(tmp_path: Path) -> None:
+    """A tight input+max_tokens budget warns without changing readiness/errors."""
+
+    snapshot, store = _snapshot(tmp_path)
+    # A roomy window first, only to measure the assembled fixed block.
+    roomy = _config(
+        tmp_path, snapshot, store,
+        mutator=MutatorRole(source="mock", model="m", max_tokens=8192,
+                            output_reserve_tokens=8192, context_window_tokens=10_000_000),
+    )
+    roomy_report = build_preflight_report(roomy)
+    fixed = roomy_report["context"]["fixed_block_tokens"]
+    assert fixed > 0
+    # Comfortably within budget: no tight-budget warning here.
+    assert not any("mutator input budget is tight" in w for w in roomy_report["warnings"])
+
+    # Tight: the fixed block still fits the existing reserve check (no context
+    # error) but leaves less than the documented headroom, so the warning fires.
+    tight_window = fixed + 8192 + 100
+    tight = _config(
+        tmp_path, snapshot, store,
+        mutator=MutatorRole(source="mock", model="m", max_tokens=8192,
+                            output_reserve_tokens=8192, context_window_tokens=tight_window),
+    )
+    report = build_preflight_report(tight)
+    assert report["context"]["fits"] is True
+    assert not any("tokens" in error for error in report["errors"])
+    assert any("mutator input budget is tight" in w for w in report["warnings"])
+    context = report["context"]
+    assert context["mutator_input_estimate_tokens"] == fixed
+    assert context["mutator_input_plus_max_tokens"] == fixed + 8192
+    assert context["mutator_input_headroom_tokens"] < context["mutator_input_headroom_threshold_tokens"]
+    # Warning-only: readiness is driven by errors, which stay absent.
+    assert report["offline_preflight_passed"] is True
+    assert report["readiness"] in (
+        "offline_ready",
+        "offline_ready_with_undecided_runtime_parameters",
+    )
+
+
+@requires_prepared
+def test_preflight_no_tight_budget_warning_when_comfortable(tmp_path: Path) -> None:
+    snapshot, store = _snapshot(tmp_path)
+    config = _config(
+        tmp_path, snapshot, store,
+        mutator=MutatorRole(source="mock", model="m", max_tokens=8192,
+                            output_reserve_tokens=8192, context_window_tokens=1_000_000),
+    )
+    report = build_preflight_report(config)
+    assert not any("mutator input budget is tight" in w for w in report["warnings"])
+    assert report["context"]["mutator_input_headroom_tokens"] >= report["context"][
+        "mutator_input_headroom_threshold_tokens"
+    ]
+    # The absence of the warning does not change readiness either.
+    assert report["offline_preflight_passed"] is True
+    assert report["readiness"] in (
+        "offline_ready",
+        "offline_ready_with_undecided_runtime_parameters",
+    )
 
 
 # -- lightweight doubles (avoid importing the full test module) -------------- #

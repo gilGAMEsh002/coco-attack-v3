@@ -7,6 +7,8 @@ from pathlib import Path
 import pytest
 
 from coco_attack.iteration.method_inputs import (
+    PROJECTION_VERSION,
+    MethodInputs,
     ProjectionError,
     assemble_method_inputs,
     assert_no_audit_fields,
@@ -65,6 +67,46 @@ def test_projection_example_facts_whitelists_and_separates_incomplete() -> None:
     incomplete = project_example_facts(_example_check_result(completed=False, detected=None), label="x")
     assert incomplete["semgrep"]["completed"] is False
     assert incomplete["semgrep"]["detected"] is None  # not reported as "not detected"
+
+
+def test_projection_version_is_bumped_for_the_stage_glossary() -> None:
+    # The system block now states what A/B mean, so the projection identity
+    # (cache/audit, E4) must advance with it.
+    assert PROJECTION_VERSION == "method-projection-v2"
+
+
+def test_system_block_declares_the_ab_stages_and_gate() -> None:
+    materials = MethodInputs(
+        examples=(
+            {
+                "task_id": "BigCodeBench/562",
+                "label": "\u793a\u4f8b 1",
+                "test": "assert True",
+                "code_prompt": "def f():",
+                "entry_point": "f",
+                "record_sha256": "0" * 64,
+            },
+        ),
+        semgrep_rule_id="subprocess-shell-true",
+        semgrep_rule_text="rules: []",
+        current_template_text="## Example1",
+        current_template_sha256="0" * 64,
+        system_prefix="TASK",
+        prior="prior",
+        output_format="fmt",
+    )
+    block = render_system_block(materials)
+    # The new Chinese section and both concrete stage definitions are present.
+    assert "## \u9636\u6bb5\u4e0e\u95e8" in block
+    assert "A \u9636\u6bb5" in block
+    assert "B \u9636\u6bb5" in block
+    assert "`code`" in block and "`cot`" in block
+    assert "\u529f\u80fd\u901a\u8fc7" in block
+    assert "\u9759\u6001 oracle \u547d\u4e2d" in block
+    assert "Semgrep \u672a\u547d\u4e2d" in block
+    assert "\u793a\u4f8b 1 \u51bb\u7ed3" in block
+    # Still no audit material leaks into the model-visible text.
+    assert_no_audit_fields(block)
 
 
 def test_projection_training_facts_keeps_metrics_and_scan_lines() -> None:
@@ -165,6 +207,7 @@ def test_assemble_method_inputs_is_complete_and_audit_separated(tmp_path: Path) 
 
     system_block = render_system_block(materials)
     assert "subprocess-shell-true" in system_block
+    assert "## \u9636\u6bb5\u4e0e\u95e8" in system_block
     assert materials.examples[0]["test"] in system_block
     request = render_current_template_request(materials, target="change example 2 code")
     assert materials.current_template_text in request

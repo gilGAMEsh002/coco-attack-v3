@@ -28,6 +28,7 @@ from coco_attack.iteration.action_runtime import (
     HistoryUnit,
     RoleActionRequest,
     RoleCallConfig,
+    SPARSE_PATCH_PARSER_VERSION,
     ScriptedMockSource,
     assemble_history,
     commit_mutator_result,
@@ -47,6 +48,12 @@ PREPARED_DIR = REPO_DIR / "cocota_runs/phase03/baseline-DeepSeek-V3.2/inputs/dat
 COMBINATION = "cwe078-0"
 EXPERIMENT = "cwe078_clean_fewshot"
 FORM = "poisoned_fewshot_cot"
+
+#: Stored evidence from the R1-A1 run whose code values contain ```python fences.
+R1_A1_RESPONSE_DIR = (
+    REPO_DIR
+    / "cocota_runs/phase04/method-ab-flash-v32-concurrent-r1/run/actions/R1-A1/responses"
+)
 
 ASSETS_AVAILABLE = ASSETS_DIR.is_dir() and (REPO_DIR / "dspy").is_dir()
 PREPARED_AVAILABLE = ASSETS_AVAILABLE and PREPARED_DIR.is_dir()
@@ -239,6 +246,116 @@ def test_permanent_failure_is_failed_without_persisted_response(tmp_path: Path) 
     assert store.durable_response("a1") is None
 
 
+def test_empty_response_is_retried_and_wasted_attempt_is_audited(tmp_path: Path) -> None:
+    """An empty first response is incomplete: retry, audited usage, durable success."""
+
+    store = ActionStore(tmp_path)
+    source = ScriptedMockSource(
+        ["", VALID_PATCH],
+        usage={"prompt_tokens": 100, "completion_tokens": 0},
+    )
+    outcome = run_role_call(store, _request("a1"), source=source)
+
+    assert outcome.state == STATE_RESPONSE_SAVED
+    assert outcome.response_status == "success"
+    assert outcome.response["content"] == VALID_PATCH
+    assert outcome.attempts == 2
+    assert len(source.calls) == 2
+
+    failed = [e for e in store.events("a1") if e["event_type"] == "attempt_failed"]
+    assert len(failed) == 1
+    payload = failed[0]["payload"]
+    assert payload["error_type"] == "IncompleteResponseError"
+    assert payload["retryable"] is True
+    assert payload["attempt_index"] == 0
+    # The wasted tokens/cost are audited rather than dropped.
+    assert payload["usage"] == {"prompt_tokens": 100, "completion_tokens": 0}
+    assert payload["cost"]["basis"] == "mock"
+    # No response was persisted for the incomplete attempt.
+    assert store.response_events("a1")[0]["payload"]["attempt_index"] == 1
+    durable = store.durable_response("a1")
+    assert durable is not None and durable["content"] == VALID_PATCH
+    assert store.orphan_attempts("a1") == []
+
+
+def test_always_empty_response_is_never_a_silent_success(tmp_path: Path) -> None:
+    """Exhausted attempts persist the last incomplete response (visible status)."""
+
+    store = ActionStore(tmp_path)
+    source = ScriptedMockSource([""], finish_reason="length")
+    outcome = run_role_call(
+        store, _request("a1", config=_config(max_request_attempts=2)), source=source
+    )
+
+    assert len(source.calls) == 2
+    assert outcome.attempts == 2
+    assert outcome.response_status == "truncated"
+    assert outcome.response_status != "success"
+    assert outcome.error  # explicit, not a silent success
+    assert outcome.response is not None and outcome.response["content"] == ""
+
+    event_types = [e["event_type"] for e in store.events("a1")]
+    assert event_types.count("attempt_started") == 2
+    assert event_types.count("attempt_failed") == 2
+    assert event_types.count("response_saved") == 1
+    assert store.orphan_attempts("a1") == []
+
+    durable = store.durable_response("a1")
+    assert durable["status"] == "truncated"
+    assert durable["finish_reason"] == "length"
+    assert durable["content"] == ""
+
+    # Stable resume: the durable empty response is reused, never retried again.
+    again = run_role_call(store, _request("a1"), source=ScriptedMockSource([VALID_PATCH]))
+    assert again.state == STATE_RESPONSE_REUSED
+    assert again.response_status == "truncated"
+    assert again.attempts == 0
+
+
+def test_always_whitespace_response_is_empty_not_success(tmp_path: Path) -> None:
+    """Whitespace-only content must not be persisted with status ``success``."""
+
+    store = ActionStore(tmp_path)
+    source = ScriptedMockSource(["   \n  "], finish_reason="stop")
+    outcome = run_role_call(
+        store, _request("a1", config=_config(max_request_attempts=2)), source=source
+    )
+
+    assert len(source.calls) == 2
+    assert outcome.attempts == 2
+    assert outcome.response_status == "empty"
+    assert outcome.response_status != "success"
+    assert outcome.error  # explicit, not a silent success
+
+    durable = store.durable_response("a1")
+    assert durable is not None
+    assert durable["status"] == "empty"
+    assert durable["finish_reason"] == "stop"
+    assert durable["content"].strip() == ""
+
+    failed = [e for e in store.events("a1") if e["event_type"] == "attempt_failed"]
+    assert len(failed) == 2
+    assert {e["payload"]["error_type"] for e in failed} == {"IncompleteResponseError"}
+
+
+def test_resume_after_empty_retry_does_not_double_count_cost(tmp_path: Path) -> None:
+    store = ActionStore(tmp_path)
+    source = ScriptedMockSource(["", VALID_PATCH])
+    run_role_call(store, _request("a1"), source=source)
+    response_events_before = len(store.response_events("a1"))
+    failed_before = [e for e in store.events("a1") if e["event_type"] == "attempt_failed"]
+
+    class _Forbidden(ScriptedMockSource):
+        def generate(self, messages, *, rollout_id, attempt_index):  # type: ignore[override]
+            raise AssertionError("resume must not call the provider")
+
+    resumed = run_role_call(store, _request("a1"), source=_Forbidden())
+    assert resumed.state == STATE_RESPONSE_REUSED
+    assert len(store.response_events("a1")) == response_events_before
+    assert [e for e in store.events("a1") if e["event_type"] == "attempt_failed"] == failed_before
+    assert resumed.cost["basis"] == "mock"
+
+
 # --------------------------------------------------------------------------- #
 # 2. Patch post-processing
 # --------------------------------------------------------------------------- #
@@ -252,6 +369,84 @@ def test_parse_sparse_patch_variants() -> None:
     assert parse_sparse_patch("[]").patch == ()
     assert parse_sparse_patch('{"other": []}').error
     assert parse_sparse_patch("[1, 2]").error
+
+
+def test_sparse_patch_parser_version_is_exported() -> None:
+    assert SPARSE_PATCH_PARSER_VERSION == "sparse-patch-v2"
+
+
+def test_parse_sparse_patch_keeps_fences_inside_string_values() -> None:
+    """R1-A1 regression: a valid array whose code values contain fences parses."""
+
+    patch = json.dumps(
+        [
+            {"example": 2, "code": "```python\n    return 1\n```"},
+            {"example": 3, "code": "```python\n    return 2\n```"},
+        ]
+    )
+    result = parse_sparse_patch(patch)
+    assert result.error is None
+    assert result.patch is not None
+    assert [entry["example"] for entry in result.patch] == [2, 3]
+    assert result.patch[0]["code"].startswith("```python")
+    assert result.patch[1]["code"].endswith("```")
+
+
+def test_parse_sparse_patch_only_unwraps_a_whole_response_fence() -> None:
+    body = json.dumps([{"example": 2, "code": "x"}])
+    # Whole-response fences (with and without the json tag) are unwrapped.
+    assert parse_sparse_patch(f"```json\n{body}\n```").patch is not None
+    assert parse_sparse_patch(f"```\n{body}\n```").patch == parse_sparse_patch(body).patch
+    # Prose around an embedded fence is not search-anywhere unwrapped.
+    assert parse_sparse_patch(f"here it is:\n```json\n{body}\n```\nthanks").error
+    assert parse_sparse_patch(f"prefix {body} suffix").error
+
+
+def test_parse_sparse_patch_error_shapes_are_preserved() -> None:
+    assert parse_sparse_patch("").error == "response is empty"
+    assert parse_sparse_patch("   \n\t").error == "response is empty"
+    prose = parse_sparse_patch("just some prose, no json here")
+    assert prose.patch is None
+    assert prose.error is not None and prose.error.startswith("invalid JSON: ")
+    assert parse_sparse_patch(json.dumps({"patch": [{"example": 2}]})).patch is not None
+    assert (
+        parse_sparse_patch(json.dumps({"other": []})).error
+        == "JSON object must contain only a 'patch' list"
+    )
+    assert parse_sparse_patch("[]").patch == ()
+    assert parse_sparse_patch("[1, 2]").error == "each patch entry must be an object"
+    assert parse_sparse_patch('["x"]').error == "each patch entry must be an object"
+    assert parse_sparse_patch('{"patch": 3}').error == "patch must be a JSON list"
+
+
+@pytest.mark.skipif(
+    not R1_A1_RESPONSE_DIR.is_dir(),
+    reason="stored R1-A1 run response is not present",
+)
+def test_parse_sparse_patch_accepts_stored_r1a1_response() -> None:
+    """Read-only replay: the stored R1-A1 response is accepted by the new parser."""
+
+    import hashlib
+
+    files = sorted(R1_A1_RESPONSE_DIR.glob("*.json"))
+    assert files
+    before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
+
+    content = None
+    for path in files:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("content"):
+            content = payload["content"]
+            break
+    assert content, "no stored content found"
+    result = parse_sparse_patch(content)
+    assert result.error is None
+    assert result.patch is not None
+    assert len(result.patch) == 3
+    assert all("```python" in str(entry.get("code") or "") for entry in result.patch)
+
+    after = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
+    assert before == after  # read-only: the evidence was not modified
 
 
 @requires_prepared

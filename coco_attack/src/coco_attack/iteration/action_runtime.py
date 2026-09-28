@@ -14,7 +14,12 @@ common layer knowing anything about A/B stages, gates or iteration counts:
 * ``run_role_call`` -- drives plan -> attempt(s) -> response persistence and
   refuses to call the provider again when a durable response already exists.
   An ``attempt_started`` with no durable response is reported as ``unknown``
-  (no silent retry, no zero cost).
+  (no silent retry, no zero cost).  A returned response whose content is empty
+  or whitespace is *incomplete*: it is recorded as a retryable ``attempt_failed``
+  carrying its usage/cost and retried against the same messages/rollout; only
+  when attempts are exhausted is the last incomplete response saved durable
+  (status ``empty``/``truncated``), so an empty response is never persisted as a
+  completed decision and resume stays stable.
 * ``parse_sparse_patch`` / ``commit_mutator_result`` -- patch parsing is pure
   post-processing; an invalid/out-of-range patch is recorded as a failure and
   never triggers a second "repair" request.
@@ -91,6 +96,14 @@ class ActionRuntimeError(ValueError):
 
 class ActionConflictError(ActionRuntimeError):
     """Same action_id was reused with different request content."""
+
+
+class IncompleteResponseError(ActionRuntimeError):
+    """The provider returned no usable content (empty/whitespace).
+
+    The attempt is treated as retryable; it is never persisted as a completed
+    decision unless every request attempt is exhausted.
+    """
 
 
 class ContextAssemblyError(ActionRuntimeError):
@@ -293,7 +306,10 @@ def resolve_role_source(
 def _status_for_response(response: ExtractedResponse) -> str:
     if response.finish_reason == "length":
         return "truncated"
-    if not response.content:
+    # Whitespace-only content is as unusable as empty content: it must not be
+    # classified as a successful decision (the retry guard in ``run_role_call``
+    # uses the same predicate, so the two stay consistent).
+    if not str(response.content or "").strip():
         return "empty"
     return "success"
 
@@ -479,19 +495,36 @@ class ActionStore:
         return attempt_id
 
     def record_attempt_failed(
-        self, action_id: str, attempt_id: str, attempt_index: int, error: BaseException, retryable: bool
+        self,
+        action_id: str,
+        attempt_id: str,
+        attempt_index: int,
+        error: BaseException,
+        retryable: bool,
+        *,
+        usage: Mapping[str, Any] | None = None,
+        cost: Mapping[str, Any] | None = None,
     ) -> None:
-        self._append(
-            ATTEMPT_FAILED,
-            action_id,
-            {
-                "attempt_index": attempt_index,
-                "request_attempt_id": attempt_id,
-                "error_type": type(error).__name__,
-                "error_reason": str(error),
-                "retryable": retryable,
-            },
-        )
+        """Record a non-completing attempt.
+
+        ``usage``/``cost`` are optional payload fields used when an attempt
+        consumed provider tokens but produced no usable content, so the wasted
+        spend is audited rather than dropped.  Omitting them keeps the historical
+        payload shape.
+        """
+
+        payload: dict[str, Any] = {
+            "attempt_index": attempt_index,
+            "request_attempt_id": attempt_id,
+            "error_type": type(error).__name__,
+            "error_reason": str(error),
+            "retryable": retryable,
+        }
+        if usage is not None:
+            payload["usage"] = dict(usage)
+        if cost is not None:
+            payload["cost"] = dict(cost)
+        self._append(ATTEMPT_FAILED, action_id, payload)
 
     def save_response(
         self,
@@ -749,6 +782,43 @@ def run_role_call(
                 attempts=attempts,
             )
         cost = estimate_cost(request.config, response.usage)
+        if not str(response.content or "").strip():
+            # An empty/whitespace response is not a completed decision: the
+            # provider may have been truncated or failed to answer.  Record the
+            # wasted attempt (with its usage/cost) and retry against the same
+            # request/rollout instead of persisting a bogus response.
+            incomplete = IncompleteResponseError(
+                "provider returned empty/whitespace content "
+                f"(status={_status_for_response(response)}, "
+                f"finish_reason={response.finish_reason!r})"
+            )
+            store.record_attempt_failed(
+                request.action_id,
+                attempt_id,
+                attempt_index,
+                incomplete,
+                True,
+                usage=response.usage,
+                cost=cost,
+            )
+            if attempt_index + 1 < request.config.max_request_attempts:
+                continue
+            # Attempts exhausted: fall back to the terminal behavior and save the
+            # last incomplete response so its status is visible and resume is
+            # stable.  It is never reported as a successful decision.
+            payload = store.save_response(
+                request.action_id, attempt_id, attempt_index, response, cost=cost
+            )
+            return RoleCallOutcome(
+                action_id=request.action_id,
+                state=STATE_RESPONSE_SAVED,
+                response_status=payload["status"],
+                response=payload,
+                usage=dict(payload["usage"]),
+                cost=dict(payload["cost"]),
+                error=str(incomplete),
+                attempts=attempts,
+            )
         payload = store.save_response(
             request.action_id, attempt_id, attempt_index, response, cost=cost
         )
@@ -779,7 +849,16 @@ def run_role_call(
 # Patch parsing and mutation commit
 # --------------------------------------------------------------------------- #
 
-_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
+#: Version of the sparse-patch parser algorithm.  Bumped when the accepted input
+#: grammar changes, so a run can be tied to the parsing rule it was produced with.
+SPARSE_PATCH_PARSER_VERSION = "sparse-patch-v2"
+
+#: Matches a response that is *entirely* one fenced block.  Anchored at both ends
+#: so a fence embedded inside a JSON string value is never mistaken for the
+#: response wrapper.
+_WHOLE_FENCE_RE = re.compile(
+    r"\A\s*```(?:json)?[ \t]*\n?(?P<body>.*?)\n?```\s*\Z", re.DOTALL
+)
 
 
 @dataclass(frozen=True)
@@ -792,23 +871,33 @@ def parse_sparse_patch(text: str) -> PatchParseResult:
     """Extract the sparse patch JSON; never repairs or guesses.
 
     Accepts a JSON array of ``{"example": int, "code"?: str, "cot"?: str}``
-    objects, optionally inside a single fenced block or under a ``patch`` key.
-    Field-level validity is enforced by :func:`apply_patch`, which is a separate
-    post-processing step.
+    objects, optionally inside a single whole-response fenced block or under a
+    ``patch`` key.  Field-level validity is enforced by :func:`apply_patch`,
+    which is a separate post-processing step.
+
+    The raw text is parsed first.  Only when that fails *and* the entire response
+    is exactly one fenced block is the outer fence stripped and parsing retried;
+    fences inside JSON string values are therefore never mis-stripped.
     """
 
     if not isinstance(text, str):
         return PatchParseResult(None, "response is not text")
     candidate = text.strip()
-    match = _FENCE_RE.search(candidate)
-    if match:
-        candidate = match.group(1).strip()
     if not candidate:
         return PatchParseResult(None, "response is empty")
     try:
         parsed = json.loads(candidate)
-    except ValueError as error:
-        return PatchParseResult(None, f"invalid JSON: {error}")
+    except ValueError as first_error:
+        match = _WHOLE_FENCE_RE.fullmatch(candidate)
+        if match is None:
+            return PatchParseResult(None, f"invalid JSON: {first_error}")
+        candidate = match.group("body").strip()
+        if not candidate:
+            return PatchParseResult(None, "response is empty")
+        try:
+            parsed = json.loads(candidate)
+        except ValueError as error:
+            return PatchParseResult(None, f"invalid JSON: {error}")
     if isinstance(parsed, Mapping):
         if set(parsed) == {"patch"}:
             parsed = parsed["patch"]
@@ -1259,12 +1348,14 @@ __all__ = [
     "HistoryAssembly",
     "HistoryStore",
     "HistoryUnit",
+    "IncompleteResponseError",
     "MutationOutcome",
     "PatchParseResult",
     "RoleActionRequest",
     "RoleCallConfig",
     "RoleCallOutcome",
     "RoleCallSource",
+    "SPARSE_PATCH_PARSER_VERSION",
     "ScriptedMockSource",
     "assemble_history",
     "commit_mutator_result",

@@ -7,10 +7,13 @@ subcommand actually selected performs work.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from dataclasses import replace
 from pathlib import Path
+from typing import Mapping
 
-from .assets.artifacts import assert_fresh_dir, read_json
+from .assets.artifacts import assert_fresh_dir, read_json, write_json_atomic
 from .assets.audit import run_audit
 from .assets.paths import PathResolutionError, assert_assets_output_separation
 from .data.combination import legacy_alias_for, load_combination_specs
@@ -57,8 +60,52 @@ from .generation.service import (
     run_generate,
     run_resume_generation,
 )
+from .iteration.action_demo import DemoConfig, run_offline_demo
+from .iteration.code_check import (
+    CodeCheckInputError,
+    ExampleCheckRequest,
+    load_fewshot_example,
+    run_example_code_check,
+)
+from .iteration.poison_materialize import (
+    DEFAULT_POISON_FORM,
+    PoisonMaterializeError,
+    materialize_poisoned,
+    verify_poisoned_inputs,
+)
+from .iteration.message_export import MessageExportError, export_mutator_messages
+from .iteration.template_snapshot import (
+    PatchPolicy,
+    TemplateSnapshot,
+    TemplateSnapshotError,
+    apply_patch,
+    read_snapshot,
+    snapshot_from_clean,
+    write_snapshot,
+)
+from .iteration.training_loop import (
+    TrainingLoopError,
+    load_training_loop_config,
+    run_training_loop,
+)
+from .method.preflight import build_preflight_report
+from .method.single_candidate_ab import (
+    MockGateChecker,
+    MockTraining,
+    MethodError,
+    MethodInterrupted,
+    ScriptedMutator,
+    dmx_mutator_source_factory,
+    load_method_config,
+    mutator_cache_configurer,
+    run_method,
+)
 from .prompts.markdown import CLEAN_FORMS
-from .prompts.materialize import PromptMaterializeError, materialize_combination
+from .prompts.materialize import (
+    PromptMaterializeError,
+    materialize_combination,
+    task_id_to_prompt_filename,
+)
 
 EXIT_OK = 0
 EXIT_BLOCKING = 1
@@ -383,6 +430,219 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     report_baseline_cmd.add_argument("--baseline-root", required=True, help="completed baseline root directory")
+
+    check_example = subparsers.add_parser(
+        "check-example-code",
+        help="directly check one example task+code and report per-layer facts",
+        description=(
+            "Run the functional, static-oracle and Semgrep layers for one explicit "
+            "example task and code, and write request.json, check_result.json and "
+            "REPORT.md. This is a generic fact service: it returns independent layer "
+            "facts, never a combined gate verdict, and never adds the example task to "
+            "evaluation_ids/search_ids. Exit 0 means a structured result was produced, "
+            "not that any research condition passed."
+        ),
+    )
+    check_example.add_argument("--assets-dir", required=True, help="read-only asset root (cocota_data_eval_result)")
+    check_example.add_argument("--combination", required=True, help="full combination id")
+    check_example.add_argument("--task-id", required=True, help="task id inside the combination")
+    check_example.add_argument("--action-id", required=True, help="audit action id for this check")
+    check_example.add_argument("--output-dir", required=True, help="output directory for the check")
+    check_example.add_argument("--code-source", required=True, help="audit description of the code origin")
+    check_source = check_example.add_mutually_exclusive_group(required=True)
+    check_source.add_argument("--code-file", default=None, help="path to a file holding the code bytes")
+    check_source.add_argument(
+        "--fewshot-experiment",
+        default=None,
+        help="clean experiment name whose few-shot example supplies the code",
+    )
+    check_example.add_argument(
+        "--example-index",
+        type=int,
+        default=None,
+        help="index into the experiment's fewshot.json (requires --fewshot-experiment)",
+    )
+    check_example.add_argument(
+        "--code-input-mode",
+        default="example_body",
+        choices=["example_body", "final_code"],
+        help="assemble the code under the registry code_prompt, or treat it as final code",
+    )
+    check_example.add_argument("--execution-config", default=None, help="execution profile JSON (functional layer)")
+    check_example.add_argument("--semgrep-config", default=None, help="directory holding the Semgrep rule files")
+    check_example.add_argument(
+        "--semgrep-timeout-seconds",
+        type=float,
+        default=60.0,
+        help="per-scan Semgrep timeout; raise it for a cold rule cache",
+    )
+    check_example.add_argument(
+        "--candidate-timeout-seconds",
+        type=float,
+        default=20.0,
+        help="candidate timeout handed to the functional harness",
+    )
+    check_example.add_argument("--stage", default="search", help="execution namespace (search/holdout)")
+    check_example.add_argument("--no-functional", action="store_true", help="skip the functional container layer")
+    check_example.add_argument("--no-static", action="store_true", help="skip the static oracle layer")
+    check_example.add_argument("--no-semgrep", action="store_true", help="skip the Semgrep layer")
+
+    materialize_poisoned_cmd = subparsers.add_parser(
+        "materialize-poisoned",
+        help="render a poisoned few-shot prompt tree from a template snapshot",
+        description=(
+            "Build a clean template snapshot (optionally patched), render the "
+            "poisoned few-shot prompt tree and (unless --skip-verify) re-read it "
+            "with the real generation input loader. Exit 0 means a structured "
+            "poisoned tree was produced, not that any research gate passed."
+        ),
+    )
+    materialize_poisoned_cmd.add_argument("--assets-dir", required=True, help="read-only asset root")
+    materialize_poisoned_cmd.add_argument("--data-dir", required=True, help="prepare-data output directory")
+    materialize_poisoned_cmd.add_argument("--combination", required=True, help="full combination id")
+    materialize_poisoned_cmd.add_argument(
+        "--task-id", action="append", required=True, help="task id to materialize (repeatable)"
+    )
+    materialize_poisoned_cmd.add_argument("--output-dir", required=True, help="output directory for the poisoned tree")
+    materialize_poisoned_cmd.add_argument(
+        "--experiment", default=None, help="clean few-shot experiment (default: registry clean_assets)"
+    )
+    materialize_poisoned_cmd.add_argument("--snapshot-store", default=None, help="optional content-addressed snapshot store")
+    materialize_poisoned_cmd.add_argument(
+        "--input-snapshot",
+        default=None,
+        help="read an existing snapshot version dir/JSON instead of building c0 from clean "
+        "(enables chaining patches on the current candidate)",
+    )
+    materialize_poisoned_cmd.add_argument("--patch-file", default=None, help="optional JSON patch (a list or {'examples': [...]})")
+    materialize_poisoned_cmd.add_argument(
+        "--allow-example", action="append", type=int, default=None,
+        help="1-based example numbers the patch may touch (default: all but example 1)",
+    )
+    materialize_poisoned_cmd.add_argument(
+        "--allow-field", action="append", choices=["code", "cot"], default=None,
+        help="patch fields allowed (default: code)",
+    )
+    materialize_poisoned_cmd.add_argument(
+        "--form", default=None, help=f"poisoned prompt form (default: {DEFAULT_POISON_FORM})"
+    )
+    materialize_poisoned_cmd.add_argument(
+        "--trigger", default=None, help="trigger token to inject (default: cf)"
+    )
+    materialize_poisoned_cmd.add_argument(
+        "--injection-position", default=None,
+        help="injection position (default: first_sentence_end; only supported value)",
+    )
+    materialize_poisoned_cmd.add_argument(
+        "--mode", default=None, help="attack mode label (default: instruction_injection)"
+    )
+    materialize_poisoned_cmd.add_argument("--action-id", default=None, help="audit action id for the snapshot store")
+    materialize_poisoned_cmd.add_argument("--skip-verify", action="store_true", help="skip the generation-input read check")
+
+    training_loop = subparsers.add_parser(
+        "run-training-loop",
+        help="run the single-candidate mock training loop (materialize->generate->clean->static->semgrep->feedback)",
+        description=(
+            "Wire one explicit template snapshot through the existing generation, "
+            "cleaning, static and Semgrep services and write feedback plus a "
+            "read-only clean-baseline slice. No candidate pool or A/B gate. Exit 0 "
+            "means a mock wiring closure completed, not that a research condition "
+            "passed."
+        ),
+    )
+    training_loop.add_argument("--config", required=True, help="training loop config JSON")
+    training_loop.add_argument(
+        "--force-rerun",
+        action="store_true",
+        help="re-run every step even when a complete manifest already exists",
+    )
+
+    action_demo = subparsers.add_parser(
+        "mutator-action-mock",
+        help="offline two-interaction mock showing durable responses, interrupt/resume, patch and history commits",
+        description=(
+            "Run two ordinary mock mutator interactions through the task-04 action "
+            "runtime. The first raw response is made durable, the provider is then "
+            "simulated as dead, and resume must reuse the durable response without "
+            "calling the provider; the template diff and shared-history unit are "
+            "committed exactly once. No real model, Docker or Semgrep is used."
+        ),
+    )
+    action_demo.add_argument("--snapshot", required=True, help="stored template snapshot directory")
+    action_demo.add_argument("--run-dir", required=True, help="action run directory")
+    action_demo.add_argument("--assets-root", required=True, help="read-only assets root")
+    action_demo.add_argument("--snapshot-store", required=True, help="snapshot store root for new template versions")
+    action_demo.add_argument("--context-window", type=int, default=32768)
+    action_demo.add_argument(
+        "--output-reserve",
+        type=int,
+        default=8192,
+        help="tokens reserved for the response; must be >= the per-call max_tokens (8192)",
+    )
+    action_demo.add_argument("--task-id", action="append", default=None, help="example task id (repeatable)")
+    action_demo.add_argument("--report", default=None, help="optional path to write the JSON report")
+
+    method_ab = subparsers.add_parser(
+        "run-method-ab",
+        help="run/resume the single-candidate A/B method (task 05) with an explicit mock mutator script",
+        description=(
+            "Compose the task-01..04 services into the current method: initial functional "
+            "check, A code gate with accumulated pending examples, one training evaluation, "
+            "one-shot B cot edit, shared history and big-iteration state. By default the "
+            "external example checks and training are explicit test doubles (--mock-gate / "
+            "--mock-training); pass --allow-real-checks/--allow-real-training to use the real "
+            "services. No real model is called for source='mock'."
+        ),
+    )
+    method_ab.add_argument("--config", required=True, help="method config JSON")
+    method_ab.add_argument(
+        "--mutator-source",
+        choices=("mock", "dmx"),
+        default=None,
+        help="mutator role source; defaults to config.mutator.source",
+    )
+    method_ab.add_argument(
+        "--mutator-script",
+        default=None,
+        help="scripted mock mutator responses: a JSON list or an {action_id: response} object (mock only)",
+    )
+    method_ab.add_argument("--repo-dir", default=None, help="repo dir for the deferred DMX key loader (dmx mutator only)")
+    method_ab.add_argument("--mock-gate", action="store_true", help="use the explicit always-pass mock example check")
+    method_ab.add_argument("--mock-training", action="store_true", help="use the explicit mock training runner")
+    method_ab.add_argument("--allow-real-checks", action="store_true", help="opt into the real Docker/Semgrep example checks")
+    method_ab.add_argument("--allow-real-training", action="store_true", help="opt into the real training loop (does not imply a real mutator)")
+    method_ab.add_argument("--resume-paused", action="store_true", help="clear a saved pause and continue")
+    method_ab.add_argument("--allow-unknown-retry", action="store_true", help="explicitly retry a paused unknown window")
+    method_ab.add_argument("--report", default=None, help="optional path to write the final state JSON")
+
+    preflight = subparsers.add_parser(
+        "preflight-method",
+        help="offline preflight for the single-candidate A/B method (no model/Docker/Semgrep/key)",
+        description=(
+            "Read and validate the method configuration, read-only assets and interfaces and "
+            "write a reviewable report. It performs no model request, no credential load and no "
+            "Docker/Semgrep execution, and does not create a resumable run state."
+        ),
+    )
+    preflight.add_argument("--config", required=True, help="method config JSON")
+    preflight.add_argument("--report", default=None, help="optional path to write the preflight JSON report")
+    preflight.add_argument("--mock-gate", action="store_true", help="declare that the offline mock example-check double is intended")
+    preflight.add_argument("--allow-real-checks", action="store_true", help="declare that real Docker/Semgrep example checks are intended")
+    preflight.add_argument("--mock-training", action="store_true", help="declare that the mock training double is intended")
+    preflight.add_argument("--allow-real-training", action="store_true", help="declare that the real training loop is intended")
+
+    export_messages = subparsers.add_parser(
+        "export-mutator-messages",
+        help="read-only export of mutator role messages to HTML + JSONL + manifest",
+        description=(
+            "Reconstruct what was sent to and received from the mutator role for an existing "
+            "run directory and write a fresh export directory (index.html, messages.jsonl, "
+            "manifest.json). This is a pure reader: it never calls a recovery function, model, "
+            "credential loader, Docker or Semgrep, and never writes into the run directory."
+        ),
+    )
+    export_messages.add_argument("--run-dir", required=True, help="existing method run directory (contains actions.jsonl)")
+    export_messages.add_argument("--output-dir", required=True, help="new, non-overlapping directory to write the export")
     return parser
 
 
@@ -1159,6 +1419,528 @@ def _cmd_report_baseline(args: argparse.Namespace) -> int:
         return EXIT_BLOCKING
 
 
+def _cmd_check_example_code(args: argparse.Namespace) -> int:
+    try:
+        assets_dir = _resolve_dir(args.assets_dir, "--assets-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+
+    execution_config = (
+        Path(args.execution_config).expanduser().resolve() if args.execution_config else None
+    )
+    if execution_config is not None and not execution_config.is_file():
+        print(f"error: --execution-config is not a file: {execution_config}", file=sys.stderr)
+        return EXIT_USAGE
+    semgrep_config = (
+        Path(args.semgrep_config).expanduser().resolve() if args.semgrep_config else None
+    )
+
+    code: str
+    if args.code_file is not None:
+        if args.example_index is not None:
+            print(
+                "error: --example-index is only valid with --fewshot-experiment",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+        try:
+            code_path = _resolve_file(args.code_file, "--code-file")
+        except ValueError as error:
+            print(f"error: {error}", file=sys.stderr)
+            return EXIT_USAGE
+        try:
+            code = code_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as error:
+            print(f"error: cannot read --code-file {code_path}: {error}", file=sys.stderr)
+            return EXIT_USAGE
+    else:
+        if args.example_index is None:
+            print(
+                "error: --example-index is required with --fewshot-experiment",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+        try:
+            example = load_fewshot_example(
+                assets_root=assets_dir,
+                combination_id=args.combination,
+                experiment=args.fewshot_experiment,
+                index=args.example_index,
+            )
+        except CodeCheckInputError as error:
+            print(f"error: {error}", file=sys.stderr)
+            return EXIT_USAGE
+        code = example.code
+
+    request = ExampleCheckRequest(
+        combination_id=args.combination,
+        task_id=args.task_id,
+        code=code,
+        code_source=args.code_source,
+        action_id=args.action_id,
+        output_dir=output_dir,
+        assets_root=assets_dir,
+        code_input_mode=args.code_input_mode,
+        stage=args.stage,
+        execution_config_path=execution_config,
+        semgrep_config=semgrep_config,
+        semgrep_timeout_seconds=args.semgrep_timeout_seconds,
+        candidate_timeout_seconds=args.candidate_timeout_seconds,
+        run_functional=not args.no_functional,
+        run_static=not args.no_static,
+        run_semgrep=not args.no_semgrep,
+    )
+    try:
+        run_example_code_check(request)
+    except CodeCheckInputError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-example-code failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    print(str(output_dir / "check_result.json"))
+    return EXIT_OK
+
+
+def _load_patch_file(path: Path) -> list[dict]:
+    """Parse a patch file that is either a list or ``{"examples": [...]}``."""
+
+    payload = read_json(path)
+    if isinstance(payload, dict):
+        examples = payload.get("examples")
+    elif isinstance(payload, list):
+        examples = payload
+    else:
+        raise ValueError(
+            "patch file must be a JSON list of entries or an object with an "
+            "'examples' list"
+        )
+    if not isinstance(examples, list):
+        raise ValueError("patch file 'examples' must be a list")
+    return examples
+
+
+def _cmd_materialize_poisoned(args: argparse.Namespace) -> int:
+    try:
+        assets_dir = _resolve_dir(args.assets_dir, "--assets-dir")
+        data_dir = _resolve_dir(args.data_dir, "--data-dir")
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+
+    store_path = (
+        Path(args.snapshot_store).expanduser().resolve() if args.snapshot_store else None
+    )
+    try:
+        assert_assets_output_separation(assets_dir, output_dir)
+        _assert_isolated_output(output_dir, [assets_dir, data_dir])
+        if store_path is not None:
+            assert_assets_output_separation(assets_dir, store_path)
+            _assert_isolated_output(store_path, [assets_dir, data_dir])
+    except PathResolutionError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+
+    if args.allow_example and 1 in args.allow_example:
+        print("error: example 1 is frozen and cannot be patched", file=sys.stderr)
+        return EXIT_USAGE
+
+    patch: list[dict] | None = None
+    if args.patch_file:
+        try:
+            patch_path = _resolve_file(args.patch_file, "--patch-file")
+            patch = _load_patch_file(patch_path)
+        except ValueError as error:
+            print(f"error: {error}", file=sys.stderr)
+            return EXIT_USAGE
+
+    try:
+        specs, _config_path, _taxonomy = load_combination_specs(assets_dir)
+    except DataContractError as error:
+        print(f"error: cannot load the combination registry: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    spec = specs.get(args.combination)
+    if spec is None:
+        print(f"error: unknown combination {args.combination!r}", file=sys.stderr)
+        return EXIT_USAGE
+
+    if args.input_snapshot:
+        for flag in ("experiment", "trigger", "injection_position", "mode"):
+            if getattr(args, flag) is not None:
+                print(
+                    f"error: --{flag.replace('_', '-')} cannot be combined with "
+                    "--input-snapshot (the stored snapshot already fixes it)",
+                    file=sys.stderr,
+                )
+                return EXIT_USAGE
+        try:
+            base_snapshot: TemplateSnapshot = read_snapshot(
+                Path(args.input_snapshot).expanduser().resolve()
+            )
+        except TemplateSnapshotError as error:
+            print(f"error: cannot read --input-snapshot: {error}", file=sys.stderr)
+            return EXIT_BLOCKING
+        if base_snapshot.combination_id != args.combination:
+            print(
+                f"error: --input-snapshot is for combination "
+                f"{base_snapshot.combination_id!r}, not {args.combination!r}",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+        if args.form is not None and args.form != base_snapshot.form:
+            print(
+                f"error: --input-snapshot stores form {base_snapshot.form!r}, not "
+                f"{args.form!r}",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+    else:
+        if spec.clean_assets is None:
+            print(
+                f"error: {args.combination} has no clean assets; not covered",
+                file=sys.stderr,
+            )
+            return EXIT_BLOCKING
+        experiment = args.experiment or spec.clean_assets.get("fewshot_experiment")
+        if not experiment:
+            print(
+                "error: --experiment is required (registry declares no "
+                "fewshot_experiment)",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+        try:
+            base_snapshot = snapshot_from_clean(
+                assets_root=assets_dir,
+                combination_id=args.combination,
+                form=args.form if args.form is not None else DEFAULT_POISON_FORM,
+                experiment=experiment,
+                trigger=args.trigger if args.trigger is not None else "cf",
+                injection_position=(
+                    args.injection_position
+                    if args.injection_position is not None
+                    else "first_sentence_end"
+                ),
+                mode=args.mode if args.mode is not None else "instruction_injection",
+                prompt_version="1",
+            )
+        except TemplateSnapshotError as error:
+            print(f"error: cannot build the template snapshot: {error}", file=sys.stderr)
+            return EXIT_USAGE
+
+    patch_result = None
+    if patch is not None:
+        allowed_examples = (
+            tuple(args.allow_example)
+            if args.allow_example
+            else tuple(range(2, len(base_snapshot.examples) + 1))
+        )
+        allowed_fields = tuple(args.allow_field) if args.allow_field else ("code",)
+        try:
+            patch_result = apply_patch(
+                base_snapshot,
+                patch,
+                PatchPolicy(allowed_examples, allowed_fields),
+            )
+        except TemplateSnapshotError as error:
+            print(f"error: invalid patch: {error}", file=sys.stderr)
+            return EXIT_USAGE
+    final_snapshot = patch_result.snapshot if patch_result is not None else base_snapshot
+
+    try:
+        if store_path is not None:
+            write_snapshot(
+                store_path,
+                final_snapshot,
+                action_id=args.action_id,
+                parent_sha256=(
+                    base_snapshot.content_sha256()
+                    if patch_result is not None and patch_result.changed
+                    else None
+                ),
+                diff=patch_result.diff if patch_result is not None else None,
+            )
+        summary = materialize_poisoned(
+            snapshot=final_snapshot,
+            data_dir=data_dir,
+            task_ids=args.task_id,
+            output_dir=output_dir,
+            prompt_version=final_snapshot.prompt_version,
+        )
+    except (PoisonMaterializeError, TemplateSnapshotError, DataContractError, OSError) as error:
+        print(f"error: materialize-poisoned failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+    print(f"combination_id={summary['combination_id']}")
+    print(f"form={summary['form']}")
+    print(f"template_sha256={summary['template_sha256']}")
+    print(f"manifest={output_dir / 'manifest.json'}")
+    for task_id in summary["task_ids"]:
+        print(f"prompt[{task_id}]={summary['prompt_hashes'][task_id]}")
+        print(f"prompt_file[{task_id}]={output_dir / summary['combination_id'] / summary['form'] / 'test_prompts' / task_id_to_prompt_filename(task_id)}")
+
+    if not args.skip_verify:
+        try:
+            inputs = verify_poisoned_inputs(
+                prompts_dir=output_dir,
+                data_dir=data_dir,
+                combination_id=summary["combination_id"],
+                form=summary["form"],
+                stage="search",
+                repeats=5,
+                batch_id="poison-materialize-check",
+                prompt_version=final_snapshot.prompt_version,
+                task_ids=summary["task_ids"],
+            )
+        except (GenerationContractError, DataContractError) as error:
+            print(f"error: produced tree is not loadable: {error}", file=sys.stderr)
+            return EXIT_BLOCKING
+        except (OSError, ValueError) as error:
+            print(f"error: verify failed: {error}", file=sys.stderr)
+            return EXIT_BLOCKING
+        print(f"sample_count={len(inputs.samples)}")
+        print(f"candidate_hash={inputs.candidate_hash}")
+    return EXIT_OK
+
+
+def _cmd_run_training_loop(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        config = load_training_loop_config(config_path)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid training loop config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        manifest = run_training_loop(config, force_rerun=args.force_rerun)
+    except TrainingLoopError as error:
+        print(f"error: training loop failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: run-training-loop failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+    output = Path(config.output_dir).expanduser().resolve()
+    print(f"manifest={output / 'manifest.json'}")
+    for name, entry in (manifest.get("steps") or {}).items():
+        print(f"step[{name}]={entry.get('status')}")
+    print(f"completion={manifest.get('completion')}")
+    print(f"candidate_hash={manifest.get('candidate_hash')}")
+    return EXIT_OK
+
+
+def _cmd_mutator_action_mock(args: argparse.Namespace) -> int:
+    try:
+        snapshot = _resolve_dir(args.snapshot, "--snapshot")
+        run_dir = Path(args.run_dir).expanduser().resolve()
+        assets_root = _resolve_dir(args.assets_root, "--assets-root")
+        snapshot_store = Path(args.snapshot_store).expanduser().resolve()
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    task_ids = tuple(args.task_id) if args.task_id else (
+        "BigCodeBench/562",
+        "BigCodeBench/348",
+        "BigCodeBench/322",
+        "BigCodeBench/810",
+    )
+    demo = DemoConfig(
+        snapshot_path=str(snapshot),
+        run_dir=str(run_dir),
+        assets_root=str(assets_root),
+        snapshot_store=str(snapshot_store),
+        example_task_ids=task_ids,
+        context_window_tokens=args.context_window,
+        output_reserve_tokens=args.output_reserve,
+    )
+    try:
+        report = run_offline_demo(demo)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: mutator-action-mock failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, report)
+        print(f"report={report_path}")
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return EXIT_OK
+
+
+def _cmd_run_method_ab(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        config = load_method_config(config_path)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid method config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+
+    mutator_source_name = args.mutator_source or config.mutator.source
+
+    # Resolve one effective repo_dir from CLI + config for both real roles.
+    cli_repo_dir: Path | None = None
+    if args.repo_dir:
+        try:
+            cli_repo_dir = _resolve_dir(args.repo_dir, "--repo-dir")
+        except ValueError as error:
+            print(f"error: {error}", file=sys.stderr)
+            return EXIT_USAGE
+    config_repo_dir = Path(config.repo_dir).expanduser() if config.repo_dir else None
+
+    # Explicit conflict handling: never silently pick one branch.
+    conflicts = []
+    if cli_repo_dir is not None and config_repo_dir is not None:
+        if cli_repo_dir.resolve() != config_repo_dir.resolve():
+            conflicts.append(
+                f"--repo-dir {cli_repo_dir} conflicts with config.repo_dir {config_repo_dir}"
+            )
+    effective_repo_dir = cli_repo_dir or config_repo_dir
+    if effective_repo_dir is None and (mutator_source_name == "dmx" or config.victim.source == "dmx"):
+        conflicts.append(
+            "repo_dir is required for a real (dmx) role; pass --repo-dir or set config.repo_dir"
+        )
+    if args.mock_gate and args.allow_real_checks:
+        conflicts.append("--mock-gate conflicts with --allow-real-checks")
+    if args.mock_training and args.allow_real_training:
+        conflicts.append("--mock-training conflicts with --allow-real-training")
+    if not args.mock_gate and not args.allow_real_checks:
+        conflicts.append("choose --mock-gate or --allow-real-checks explicitly")
+    if not args.mock_training and not args.allow_real_training:
+        conflicts.append("choose --mock-training or --allow-real-training explicitly")
+    # The execution branch must match the configured role identity: overriding it
+    # would leave the config hash/request identity/cache namespace on the other
+    # source while actually calling this one.
+    if args.mutator_source is not None and args.mutator_source != config.mutator.source:
+        conflicts.append(
+            f"--mutator-source {args.mutator_source!r} conflicts with "
+            f"config.mutator.source {config.mutator.source!r}; set the role in the config"
+        )
+    if mutator_source_name == "dmx" and args.mutator_script:
+        conflicts.append("--mutator-script conflicts with --mutator-source dmx")
+    if mutator_source_name == "mock" and not args.mutator_script:
+        conflicts.append("--mutator-script is required for a mock mutator")
+    if conflicts:
+        for item in conflicts:
+            print(f"error: {item}", file=sys.stderr)
+        return EXIT_USAGE
+
+    # The single effective path is recorded in the method config so the real
+    # victim first-generation/resume subprocesses and the mutator factory share it.
+    config = replace(config, repo_dir=str(effective_repo_dir) if effective_repo_dir else None)
+
+    mutator_source = None
+    source_factory = None
+    cache_configurer = None
+    if mutator_source_name == "mock":
+        try:
+            script_path = _resolve_file(args.mutator_script, "--mutator-script")
+            responses = read_json(script_path)
+        except (OSError, ValueError) as error:
+            print(f"error: invalid mutator script: {error}", file=sys.stderr)
+            return EXIT_USAGE
+        if not isinstance(responses, (list, Mapping)) or (
+            isinstance(responses, list) and not all(isinstance(item, str) for item in responses)
+        ):
+            print("error: --mutator-script must be a JSON list of strings or an {action_id: response} object", file=sys.stderr)
+            return EXIT_USAGE
+        mutator_source = ScriptedMutator(responses)
+    else:
+        source_factory = dmx_mutator_source_factory(config, config.repo_dir)
+        cache_configurer = mutator_cache_configurer(config)
+
+    checker = MockGateChecker() if args.mock_gate else None
+    training = MockTraining() if args.mock_training else None
+    try:
+        state = run_method(
+            config,
+            mutator_source=mutator_source,
+            mutator_source_factory=source_factory,
+            cache_configurer=cache_configurer,
+            example_check_runner=checker,
+            training_runner=training,
+            resume_paused=args.resume_paused,
+            allow_unknown_retry=args.allow_unknown_retry,
+        )
+    except MethodError as error:
+        print(f"error: run-method-ab failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: run-method-ab failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, state)
+        print(f"report={report_path}")
+    print(json.dumps(state, ensure_ascii=False, indent=2, default=str))
+    return EXIT_OK
+
+
+def _cmd_preflight_method(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        config = load_method_config(config_path)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid method config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    if args.mock_gate and args.allow_real_checks:
+        print("error: --mock-gate conflicts with --allow-real-checks", file=sys.stderr)
+        return EXIT_USAGE
+    if args.mock_training and args.allow_real_training:
+        print("error: --mock-training conflicts with --allow-real-training", file=sys.stderr)
+        return EXIT_USAGE
+    check_service = None
+    if args.mock_gate:
+        check_service = "mock"
+    elif args.allow_real_checks:
+        check_service = "real"
+    training_service = None
+    if args.mock_training:
+        training_service = "mock"
+    elif args.allow_real_training:
+        training_service = "real"
+    try:
+        report = build_preflight_report(
+            config, check_service=check_service, training_service=training_service
+        )
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: preflight-method failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, report)
+        print(f"report={report_path}")
+    print(json.dumps(report, ensure_ascii=False, indent=2, default=str))
+    # The exit code follows the report conclusion: not_ready is a non-zero exit.
+    return EXIT_OK if report.get("offline_preflight_passed") else EXIT_BLOCKING
+
+
+def _cmd_export_mutator_messages(args: argparse.Namespace) -> int:
+    try:
+        manifest = export_mutator_messages(args.run_dir, args.output_dir)
+    except MessageExportError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: export-mutator-messages failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    print(json.dumps(manifest, ensure_ascii=False, indent=2, default=str))
+    return EXIT_OK
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -1218,6 +2000,20 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_status_baseline(args)
     if args.command == "report-baseline":
         return _cmd_report_baseline(args)
+    if args.command == "check-example-code":
+        return _cmd_check_example_code(args)
+    if args.command == "materialize-poisoned":
+        return _cmd_materialize_poisoned(args)
+    if args.command == "run-training-loop":
+        return _cmd_run_training_loop(args)
+    if args.command == "mutator-action-mock":
+        return _cmd_mutator_action_mock(args)
+    if args.command == "run-method-ab":
+        return _cmd_run_method_ab(args)
+    if args.command == "preflight-method":
+        return _cmd_preflight_method(args)
+    if args.command == "export-mutator-messages":
+        return _cmd_export_mutator_messages(args)
     parser.error(f"unknown command: {args.command!r}")
     return EXIT_USAGE  # unreachable
 

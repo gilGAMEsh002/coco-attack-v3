@@ -13,6 +13,10 @@ from ..protocol.stages import Stage
 SOURCE_CHOICES = ("dmx", "mock")
 STAGE_CHOICES = tuple(stage.value for stage in Stage)  # ("search", "holdout")
 CLEAN_FORMS = ("clean_0shot", "clean_fewshot_cot", "clean_fewshot_no_cot")
+# Poisoned prompt forms produced by the iteration materializer (I1).  The clean
+# baseline and prompt-materialization paths intentionally stay on CLEAN_FORMS.
+POISON_FORMS = ("poisoned_fewshot_cot",)
+KNOWN_FORMS = CLEAN_FORMS + POISON_FORMS
 
 STATUS_SUCCESS = "success"
 STATUS_EMPTY = "empty"
@@ -160,8 +164,8 @@ class GenerationConfig:
             raise GenerationContractError(
                 "config.candidate_hash must be empty or a 64-character lowercase hex digest"
             )
-        if self.form not in CLEAN_FORMS:
-            raise GenerationContractError(f"form must be one of {CLEAN_FORMS}")
+        if self.form not in KNOWN_FORMS:
+            raise GenerationContractError(f"form must be one of {KNOWN_FORMS}")
         _number(self.temperature, "config.temperature")
         _positive_int(self.repeats, "config.repeats")
         _positive_int(self.max_tokens, "config.max_tokens")

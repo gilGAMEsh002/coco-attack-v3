@@ -24,6 +24,7 @@ from .layers import (
     SAST_LAYER,
     STATUS_COMPLETED,
     STATUS_ERROR,
+    STATUS_INCOMPLETE,
     STATUS_SKIPPED,
     STATUS_UNAVAILABLE,
     LayerRecord,
@@ -32,6 +33,40 @@ from .layers import (
 SAST_TOOLS = ("semgrep", "bandit", "codeql")
 DEFAULT_TIMEOUT_SECONDS = 60.0
 MAX_RAW_ALERTS = 200
+MAX_SCAN_ERRORS = 20
+MAX_SCAN_ERROR_CHARS = 500
+
+# Semantic version of the SAST adapter's status interpretation.  The tool
+# binary version (e.g. ``semgrep --version``) is not enough: the same binary can
+# be interpreted differently by different adapter revisions, so results must
+# carry the adapter revision that produced them.
+#   * v1: a Semgrep exit in {0,1} with parseable JSON was always ``completed``
+#         and produced a boolean ``detected``; structured ``errors`` were
+#         discarded.
+#   * v2: a non-empty ``report["errors"]`` is recorded as
+#         ``incomplete``/``scan_errors``; ``detected`` is ``True`` only when a
+#         target rule actually matched, never ``False`` for an incomplete scan.
+SAST_ADAPTER_VERSION = "sast-adapter-v2"
+SAST_ADAPTER_HISTORY = {
+    "sast-adapter-v1": (
+        "structured Semgrep errors ignored; parseable JSON always recorded "
+        "completed with a boolean detected"
+    ),
+    "sast-adapter-v2": (
+        "non-empty Semgrep report errors recorded incomplete/scan_errors; "
+        "detected=True only when a target rule matched, else null"
+    ),
+}
+
+
+def sast_adapter_fingerprint() -> dict[str, Any]:
+    """Provenance for the adapter's status semantics (not the tool binary)."""
+
+    return {
+        "adapter_version": SAST_ADAPTER_VERSION,
+        "semgrep_error_semantics": "errors_to_incomplete",
+        "history": dict(SAST_ADAPTER_HISTORY),
+    }
 
 # Explicit, reviewed Bandit rule mapping (plan section 4).  Keys are the current
 # canonical combination ids; the legacy alias is checked for traceability.
@@ -143,6 +178,7 @@ def _base_record(
         sources={
             "final_code_sha256": sample.final_code_sha256,
             "task_snapshot_sha256": sample.task_snapshot_sha256,
+            "sast_adapter_version": SAST_ADAPTER_VERSION,
         },
         evidence=evidence,
     )
@@ -217,6 +253,35 @@ def _alert_matches(rule_id: Any, target_rules: tuple[str, ...]) -> bool:
         if rule_id == target or rule_id.endswith(f".{target}"):
             return True
     return False
+
+
+def _alert_positions(item: dict[str, Any]) -> dict[str, Any]:
+    """Extract Semgrep's ``start``/``end`` coordinates for an alert."""
+
+    start = item.get("start")
+    end = item.get("end")
+    start = start if isinstance(start, dict) else {}
+    end = end if isinstance(end, dict) else {}
+    start_line = start.get("line")
+    return {
+        "start_line": start_line,
+        "start_col": start.get("col"),
+        "end_line": end.get("line"),
+        "end_col": end.get("col"),
+        "line": start_line,
+    }
+
+
+def _bounded_error_entry(entry: Any) -> Any:
+    """Return a JSON-safe copy of a scan error with long strings truncated."""
+
+    if isinstance(entry, str):
+        return entry[:MAX_SCAN_ERROR_CHARS]
+    if isinstance(entry, dict):
+        return {key: _bounded_error_entry(value) for key, value in entry.items()}
+    if isinstance(entry, list):
+        return [_bounded_error_entry(value) for value in entry]
+    return entry
 
 
 # Reviewed mapping from the local rule files under
@@ -391,15 +456,38 @@ def _scan_semgrep(
             reason_code="unparsable_output", detected=None,
             evidence={"stdout": proc.stdout[-500:]},
         )
-    alerts = [
-        {"rule_id": item.get("check_id"), "severity": (item.get("extra") or {}).get("severity")}
-        for item in (report.get("results") or [])[:MAX_RAW_ALERTS]
-    ]
-    detected = any(_alert_matches(alert["rule_id"], target_rules) for alert in alerts)
+    alerts = []
+    for item in (report.get("results") or [])[:MAX_RAW_ALERTS]:
+        alert = {
+            "rule_id": item.get("check_id"),
+            "severity": (item.get("extra") or {}).get("severity"),
+        }
+        alert.update(_alert_positions(item))
+        alerts.append(alert)
+    matched = any(_alert_matches(alert["rule_id"], target_rules) for alert in alerts)
+    errors = report.get("errors")
+    if not isinstance(errors, list):
+        errors = []
+    if errors:
+        # A scan that reports errors is incomplete: a target match is still a
+        # detection, but the absence of a match cannot establish non-detection.
+        scan_errors = [_bounded_error_entry(entry) for entry in errors[:MAX_SCAN_ERRORS]]
+        return _base_record(
+            evaluation_id=evaluation_id, action_id=action_id, sample=sample, tool="semgrep",
+            coverage=COVERAGE_COVERED, status=STATUS_INCOMPLETE, available=True,
+            completed=False, reason_code="scan_errors",
+            detected=True if matched else None,
+            evidence={
+                "target_rules": list(target_rules),
+                "alerts": alerts,
+                "exit_code": proc.returncode,
+                "scan_errors": scan_errors,
+            },
+        )
     return _base_record(
         evaluation_id=evaluation_id, action_id=action_id, sample=sample, tool="semgrep",
         coverage=COVERAGE_COVERED, status=STATUS_COMPLETED, available=True, completed=True,
-        reason_code=None, detected=detected,
+        reason_code=None, detected=matched,
         evidence={"target_rules": list(target_rules), "alerts": alerts, "exit_code": proc.returncode},
     )
 

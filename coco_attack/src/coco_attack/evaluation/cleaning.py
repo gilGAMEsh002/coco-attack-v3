@@ -396,16 +396,27 @@ def _looks_like_bare_body(code: str, parse_error: SyntaxError | None) -> bool:
     return True
 
 
-def _prepend_prefix(prefix: str, code: str) -> str | None:
-    body = code.strip("\n")
-    if not body.strip():
+def assemble_prefix_and_body(prefix: str, body: str) -> str | None:
+    """Prepend a code header ``prefix`` to a candidate function ``body``.
+
+    The body is either already indented (appended as-is) or statement-only
+    (re-indented under the prefix).  Returns ``None`` when the body is empty or
+    would be ambiguous to re-indent (contains triple-quoted strings).
+    """
+
+    stripped = body.strip("\n")
+    if not stripped.strip():
         return None
-    first_line = next((line for line in body.split("\n") if line.strip()), "")
+    first_line = next((line for line in stripped.split("\n") if line.strip()), "")
     if first_line[:1].isspace():
-        return prefix.rstrip("\n") + "\n" + body
-    if "'''" in body or '"""' in body:
+        return prefix.rstrip("\n") + "\n" + stripped
+    if "'''" in stripped or '"""' in stripped:
         return None
-    return prefix.rstrip("\n") + "\n" + textwrap.indent(body, "    ")
+    return prefix.rstrip("\n") + "\n" + textwrap.indent(stripped, "    ")
+
+
+def _prepend_prefix(prefix: str, code: str) -> str | None:
+    return assemble_prefix_and_body(prefix, code)
 
 
 def _source_prefix_diagnostics(task: Any, entry: str) -> list[str]:

@@ -126,6 +126,31 @@ def write_json_atomic(path: Path, obj: JSONValue) -> None:
     write_bytes_atomic(path, stable_json_bytes(obj))
 
 
+def append_jsonl(path: Path, obj: JSONValue) -> None:
+    """Append one canonical JSON object as a JSONL record, flushed and fsynced.
+
+    Mirrors the ledger writer's durability rule: a missing trailing newline
+    (for example a torn final record) is repaired with a separator so the new
+    record is never concatenated onto the previous bytes.  This is an
+    append-only audit convention, not a content-identity hash.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    needs_separator = False
+    if path.is_file():
+        with open(path, "rb") as reader:
+            reader.seek(0, os.SEEK_END)
+            if reader.tell() > 0:
+                reader.seek(-1, os.SEEK_END)
+                needs_separator = reader.read(1) != b"\n"
+    with open(path, "ab") as handle:
+        if needs_separator:
+            handle.write(b"\n")
+        handle.write(canonical_json_bytes(obj) + b"\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 def assert_fresh_dir(path: Path) -> None:
     """Require a non-existent or empty output directory.
 

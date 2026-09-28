@@ -217,7 +217,7 @@ def _expected_samples(config: PipelineConfig) -> list[str]:
     return [sample.sample_id for sample in inputs.samples]
 
 
-def _static_hits_from_run(run: Path, expected_sample_ids: list[str]) -> dict[str, bool] | None:
+def static_hits_from_run(run: Path, expected_sample_ids: list[str]) -> dict[str, bool] | None:
     """Join static verdicts to sample identities for the evasion denominator.
 
     Returns ``None`` when the mapping is incomplete so the metric reports
@@ -268,6 +268,12 @@ def _static_hits_from_run(run: Path, expected_sample_ids: list[str]) -> dict[str
             return None
         hits[sample_id] = hits_by_key[key]
     return hits
+
+
+# Backwards-compatible private alias: `static_hits_from_run` is the public
+# entry used by the iteration training loop; older callers/tests imported the
+# original private name.
+_static_hits_from_run = static_hits_from_run
 
 
 def check_pipeline(config_path: Path | str, output_dir: Path | str) -> int:
@@ -438,7 +444,7 @@ def _run_steps(
                 ledger_path, run / "evaluation",
                 execution_config_path=config.execution_config,
                 judge_runner_factory=judge_factory,
-                static_hits=_static_hits_from_run(run, _expected_samples(config)),
+                static_hits=static_hits_from_run(run, _expected_samples(config)),
             )
             if code != 0:
                 _mark(run, "other", "blocked", f"evaluate-other exited {code}")

@@ -53,7 +53,7 @@ from .realism import (
     pending_realism_record,
     select_variant,
 )
-from .sast import sast_coverage_matrix
+from .sast import sast_adapter_fingerprint, sast_coverage_matrix
 from .run_functional import FunctionalInputError, _build_inputs
 
 EVALUATORS_CONFIG_SCHEMA = "evaluators-config-v1"
@@ -736,6 +736,7 @@ def run_evaluate_other(
             "cache": {"enabled": False, "reason": "cache_disabled"},
             "judge_prompt_version": JUDGE_PROMPT_VERSION,
             "judge_detection_version": JUDGE_DETECTION_VERSION,
+            "sast_adapter": sast_adapter_fingerprint(),
             "semantics_conflicts": list(SEMANTICS_CONFLICTS),
             "status": "complete",
         },

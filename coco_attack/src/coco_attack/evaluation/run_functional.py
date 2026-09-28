@@ -357,6 +357,89 @@ def run_check_functional(
     return 0
 
 
+def execute_functional_code(
+    *,
+    solution: str,
+    tests: str,
+    entry_point: str,
+    sample_id: str,
+    attempt_id: str,
+    stage: str,
+    batch_id: str,
+    combination_id: str,
+    task_id: str,
+    repeat_id: int,
+    prompt_version: str,
+    candidate_hash: str,
+    candidate_timeout_seconds: float,
+    harness_version: str,
+    profile: Any,
+    backend: DockerBackend,
+    run_dir: Path,
+    output_root: Path,
+    nonce: str | None = None,
+) -> tuple[Any, dict[str, Any]]:
+    """Run one assembled ``(solution, tests, entry_point)`` through the supervisor.
+
+    This is the generic execution path used by the functional evaluator and by
+    callers that already have a solution/tests pair and must not go through
+    ``_build_inputs`` (which only accepts evaluation-stage tasks).
+    """
+
+    staging = run_dir / "staging" / attempt_id
+    staging.mkdir(parents=True, exist_ok=True)
+    solution_bytes = solution.encode("utf-8")
+    tests_bytes = tests.encode("utf-8")
+    (staging / "solution.py").write_bytes(solution_bytes)
+    (staging / "tests.py").write_bytes(tests_bytes)
+    func_request = {
+        "sample_id": sample_id,
+        "attempt_id": attempt_id,
+        "entry_point": entry_point,
+        "code_sha256": sha256_bytes(solution_bytes),
+        "tests_sha256": sha256_bytes(tests_bytes),
+        "candidate_timeout_seconds": candidate_timeout_seconds,
+    }
+    (staging / "func_request.json").write_bytes(
+        json.dumps(func_request, sort_keys=True).encode("utf-8")
+    )
+    request = ExecutionRequest(
+        sample_id=sample_id,
+        attempt_id=attempt_id,
+        stage=stage,
+        batch_id=batch_id,
+        combination_id=combination_id,
+        task_id=task_id,
+        repeat_id=repeat_id,
+        prompt_version=prompt_version,
+        candidate_hash=candidate_hash,
+        evaluation_layer="functional",
+        entry=FUNCTIONAL_ENTRY,
+        entry_args=(
+            "--solution", "/in/solution.py",
+            "--tests", "/in/tests.py",
+            "--request", "/in/func_request.json",
+            "--payload", "/out/payload.json",
+        ),
+        execution_profile_hash=profile.fingerprint(),
+        purpose="evaluation",
+        input_files=(),
+        result_schema=FUNCTIONAL_PAYLOAD_SCHEMA,
+        harness_version=harness_version,
+    )
+    (staging / "request.json").write_bytes(
+        json.dumps(request.to_json(), sort_keys=True).encode("utf-8")
+    )
+    outputs = output_root / attempt_id
+    outputs.mkdir(parents=True, exist_ok=True)
+    supervisor = ExecutionSupervisor(profile, backend, run_dir / "run")
+    result = supervisor.execute(request, staging, outputs, nonce=nonce)
+    envelope = _read_json_object(run_dir / "run" / "attempts" / attempt_id / "result.json")
+    payload = (envelope or {}).get("payload")
+    payload_sha = sha256_bytes(canonical_json_bytes(payload)) if isinstance(payload, dict) else None
+    return result, {"envelope": envelope, "payload": payload, "payload_sha256": payload_sha, "attempt_id": attempt_id}
+
+
 def _execute_sample(
     *,
     sample: SampleInput,
@@ -371,24 +454,10 @@ def _execute_sample(
     # The attempt identity includes the fingerprint so a re-execution under a
     # changed fingerprint does not overwrite the previous attempt's evidence.
     attempt_id = f"functional-{sample.sample_id[:12]}-{fingerprint_sha[:8]}"
-    staging = run_dir / "staging" / attempt_id
-    staging.mkdir(parents=True, exist_ok=True)
-    solution_bytes = sample.final_code.encode("utf-8")
-    tests_bytes = sample.selected_test.encode("utf-8")
-    (staging / "solution.py").write_bytes(solution_bytes)
-    (staging / "tests.py").write_bytes(tests_bytes)
-    func_request = {
-        "sample_id": sample.sample_id,
-        "attempt_id": attempt_id,
-        "entry_point": sample.entry_point,
-        "code_sha256": sha256_bytes(solution_bytes),
-        "tests_sha256": sha256_bytes(tests_bytes),
-        "candidate_timeout_seconds": config.candidate_timeout_seconds,
-    }
-    (staging / "func_request.json").write_bytes(
-        json.dumps(func_request, sort_keys=True).encode("utf-8")
-    )
-    request = ExecutionRequest(
+    return execute_functional_code(
+        solution=sample.final_code,
+        tests=sample.selected_test,
+        entry_point=sample.entry_point,
         sample_id=sample.sample_id,
         attempt_id=attempt_id,
         stage=config.stage,
@@ -398,31 +467,14 @@ def _execute_sample(
         repeat_id=sample.identity.repeat_id,
         prompt_version=sample.identity.prompt_version,
         candidate_hash=sample.identity.candidate_hash,
-        evaluation_layer="functional",
-        entry=FUNCTIONAL_ENTRY,
-        entry_args=(
-            "--solution", "/in/solution.py",
-            "--tests", "/in/tests.py",
-            "--request", "/in/func_request.json",
-            "--payload", "/out/payload.json",
-        ),
-        execution_profile_hash=profile.fingerprint(),
-        purpose="evaluation",
-        input_files=(),
-        result_schema=FUNCTIONAL_PAYLOAD_SCHEMA,
+        candidate_timeout_seconds=config.candidate_timeout_seconds,
         harness_version=config.harness_version,
+        profile=profile,
+        backend=backend,
+        run_dir=run_dir,
+        output_root=output_root,
+        nonce=nonce,
     )
-    (staging / "request.json").write_bytes(
-        json.dumps(request.to_json(), sort_keys=True).encode("utf-8")
-    )
-    outputs = output_root / attempt_id
-    outputs.mkdir(parents=True, exist_ok=True)
-    supervisor = ExecutionSupervisor(profile, backend, run_dir / "run")
-    result = supervisor.execute(request, staging, outputs, nonce=nonce)
-    envelope = _read_json_object(run_dir / "run" / "attempts" / attempt_id / "result.json")
-    payload = (envelope or {}).get("payload")
-    payload_sha = sha256_bytes(canonical_json_bytes(payload)) if isinstance(payload, dict) else None
-    return result, {"envelope": envelope, "payload": payload, "payload_sha256": payload_sha, "attempt_id": attempt_id}
 
 
 def _read_json_object(path: Path) -> dict[str, Any] | None:
@@ -568,10 +620,10 @@ def _ledger_has_accounting_id(ledger: Ledger, accounting_id: str) -> bool:
     return False
 
 
-def _resolve_profile_and_backend(
+def resolve_functional_profile(
     execution_config_path: Path | str,
-    backend: DockerBackend | None,
-    project_root: Path | str | None,
+    backend: DockerBackend | None = None,
+    project_root: Path | str | None = None,
 ) -> tuple[Any, DockerBackend]:
     loaded_profile = load_profile(execution_config_path, project_root=project_root)
     profile = loaded_profile.profile
@@ -589,6 +641,14 @@ def _resolve_profile_and_backend(
 
         profile = replace(profile, image=replace(profile.image, image_id=actual_id))
     return profile, active_backend
+
+
+def _resolve_profile_and_backend(
+    execution_config_path: Path | str,
+    backend: DockerBackend | None,
+    project_root: Path | str | None,
+) -> tuple[Any, DockerBackend]:
+    return resolve_functional_profile(execution_config_path, backend, project_root)
 
 
 def _evaluate_core(
@@ -863,7 +923,9 @@ def run_resume_functional(
 __all__ = [
     "FunctionalConfig",
     "FunctionalInputError",
+    "execute_functional_code",
     "load_functional_config",
+    "resolve_functional_profile",
     "run_check_functional",
     "run_evaluate_functional",
     "run_resume_functional",

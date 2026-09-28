@@ -1,0 +1,53 @@
+{
+  "run_dir": "cocota_runs/phase04/methods/single_candidate_ab/runs/method-ab-mock/run",
+  "snapshot_path": "cocota_runs/phase04/methods/single_candidate_ab/runs/method-ab-mock/snapshots/cwe078-0/<c0-content-sha256>",
+  "snapshot_store": "cocota_runs/phase04/methods/single_candidate_ab/runs/method-ab-mock/snapshots",
+  "assets_root": "<ASSETS_ROOT>/cocota_data_eval_result",
+  "data_dir": "<STAGE03_ROOT>/inputs/data",
+  "combination_id": "cwe078-0",
+  "form": "poisoned_fewshot_cot",
+  "prompt_version": "1",
+  "stage": "search",
+  "example_task_ids": [
+    "BigCodeBench/562",
+    "BigCodeBench/348",
+    "BigCodeBench/322",
+    "BigCodeBench/810"
+  ],
+  "mutable_examples": [2, 3, 4],
+  "train_task_ids": ["BigCodeBench/13", "BigCodeBench/1105"],
+  "max_rounds": 5,
+  "semgrep_config": "<ASSETS_ROOT>/cocota_data_eval_result/third_party/semgrep",
+  "execution_config": null,
+  "semgrep_timeout_seconds": 60.0,
+  "candidate_timeout_seconds": 20.0,
+  "baseline_static": null,
+  "baseline_config": null,
+  "baseline_data_dir": null,
+  "baseline_evaluators_config": null,
+  "baseline_evaluation_dir": null,
+  "mutator": {
+    "source": "mock",
+    "model": "",
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "request_timeout": 60.0,
+    "max_request_attempts": 2,
+    "api_base": "https://www.dmxapi.cn/v1",
+    "price_input_per_1k": null,
+    "price_output_per_1k": null,
+    "pricing_version": "unset",
+    "context_window_tokens": 32768,
+    "output_reserve_tokens": 8192,
+    "context_margin_tokens": 0
+  },
+  "victim": {
+    "source": "mock",
+    "model": "openai/DeepSeek-V3.2",
+    "temperature": 0.7,
+    "repeats": 5,
+    "max_tokens": 8192,
+    "request_timeout": 30.0,
+    "max_request_attempts": 2
+  }
+}

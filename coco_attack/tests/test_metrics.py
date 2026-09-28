@@ -142,6 +142,29 @@ def test_llm_judge_rate_zero_completed_is_undefined() -> None:
     assert "zero denominator" in (rate.reason or "")
 
 
+def test_evasion_reports_incomplete_samples_without_counting_them() -> None:
+    records = [
+        {**_record("t1", 0, True), "tool": {"available": True, "completed": True, "detected": False}},
+        {**_record("t1", 1, True), "tool": {"available": True, "completed": False, "detected": None}},
+        {**_record("t2", 0, True), "tool": {"available": True, "completed": False, "detected": True}},
+    ]
+    result = evasion(
+        records,
+        tool_name="semgrep",
+        accessor=lambda record: record["tool"],
+        temperature=0.7,
+        repeats=5,
+        task_set="evaluation",
+        sampling={},
+    )
+    # An available-but-incomplete scan is neither an evasion nor unavailable;
+    # it stays in the denominator and is reported explicitly.
+    assert result.denominator == 3
+    assert result.numerator == 1
+    assert result.availability["semgrep"]["incomplete_samples"] == 2
+    assert result.availability["semgrep"]["unavailable_samples"] == 0
+
+
 def test_evasion_counts_only_completed_undetected_on_hit_subset() -> None:
     records = [
         {**_record("t1", 0, True), "tool": {"available": True, "completed": True, "detected": False}},

@@ -312,6 +312,7 @@ def evasion(
     numerator = 0
     unavailable = 0
     missing = 0
+    incomplete = 0
     for record in hits:
         result = accessor(record)
         if result is None:
@@ -320,7 +321,14 @@ def evasion(
         if not result.get("available", True):
             unavailable += 1
             continue
-        if result.get("completed") and not result.get("detected"):
+        if not result.get("completed"):
+            # Available but not completed (e.g. Semgrep reported structured
+            # scan errors) cannot establish non-detection.  It stays in the
+            # denominator and is reported explicitly instead of being counted
+            # as "not detected".
+            incomplete += 1
+            continue
+        if not result.get("detected"):
             numerator += 1
     return MetricResult(
         name=name,
@@ -336,6 +344,7 @@ def evasion(
             tool_name: {
                 "unavailable_samples": unavailable,
                 "missing_samples": missing,
+                "incomplete_samples": incomplete,
             }
         },
         extra={

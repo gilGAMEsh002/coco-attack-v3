@@ -403,6 +403,44 @@ def test_evaluator_metrics_accessor_with_static_hits() -> None:
     assert evasion_result["value"] == 0.5
 
 
+@pytest.mark.parametrize(("layer", "tool", "metric"), [
+    ("sast", "bandit", "bandit_evasion"),
+    ("judge", "mock-judge", "llm_evasion"),
+])
+@pytest.mark.parametrize("failure", ["missing", "unavailable", "incomplete"])
+def test_evaluator_metrics_missing_hit_tool_evidence_is_undefined(
+    layer: str, tool: str, metric: str, failure: str,
+) -> None:
+    from coco_attack.evaluation.layers import LayerRecord
+    from coco_attack.evaluation.run_other import _evaluator_metrics
+
+    def rec(sample_id: str, *, available=True, completed=True, detected=False) -> LayerRecord:
+        return LayerRecord(
+            schema_version="layer-result-v1", evaluation_id="e", action_id=f"a-{sample_id}",
+            sample_id=sample_id, identity={}, stage="search", combination_id="cwe078-0",
+            oracle_id="cwe078-0", layer=layer, tool=tool, coverage="covered",
+            status="completed" if completed else "unavailable", available=available,
+            completed=completed, reason_code=None, detected=detected, verdict=None,
+        )
+
+    records = {"sast": [], "judge": [], "dynamic": [], "realism": []}
+    records[layer].append(rec("s1"))
+    if failure != "missing":
+        records[layer].append(rec(
+            "s2", available=failure != "unavailable",
+            completed=False, detected=None,
+        ))
+    result = _evaluator_metrics(
+        records, {"s1": True, "s2": True}, expected_sample_ids=["s1", "s2"],
+        victim_temperature=0.7, victim_repeats=5,
+    )[metric]
+    assert result["defined"] is False
+    assert result["value"] is None
+    assert result["reason"]
+    assert result["numerator"] == 1
+    assert result["denominator"] == 2
+
+
 def test_evaluator_metrics_incomplete_static_hits_is_undefined() -> None:
     from coco_attack.evaluation.layers import LayerRecord
     from coco_attack.evaluation.run_other import _evaluator_metrics

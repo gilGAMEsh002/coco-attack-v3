@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from coco_attack.evaluation.metrics import (
     BASELINE_BLOCKING_KEYS,
     BASELINE_WARNING_KEYS,
@@ -142,7 +144,7 @@ def test_llm_judge_rate_zero_completed_is_undefined() -> None:
     assert "zero denominator" in (rate.reason or "")
 
 
-def test_evasion_reports_incomplete_samples_without_counting_them() -> None:
+def test_evasion_incomplete_samples_make_rate_undefined() -> None:
     records = [
         {**_record("t1", 0, True), "tool": {"available": True, "completed": True, "detected": False}},
         {**_record("t1", 1, True), "tool": {"available": True, "completed": False, "detected": None}},
@@ -157,12 +159,66 @@ def test_evasion_reports_incomplete_samples_without_counting_them() -> None:
         task_set="evaluation",
         sampling={},
     )
-    # An available-but-incomplete scan is neither an evasion nor unavailable;
-    # it stays in the denominator and is reported explicitly.
+    # Preserve observed counts, but missing evidence makes the rate undefined.
+    assert result.defined is False
+    assert result.value is None
+    assert "incomplete=2" in result.reason
     assert result.denominator == 3
     assert result.numerator == 1
     assert result.availability["semgrep"]["incomplete_samples"] == 2
     assert result.availability["semgrep"]["unavailable_samples"] == 0
+
+
+@pytest.mark.parametrize("with_completed_hit", [False, True])
+@pytest.mark.parametrize(
+    ("tool_result", "failure_count"),
+    [
+        (None, "missing_samples"),
+        ({"available": False, "completed": False, "detected": None}, "unavailable_samples"),
+        ({"available": True, "completed": False, "detected": False}, "incomplete_samples"),
+        ({"available": True, "completed": True, "detected": None}, "incomplete_samples"),
+        ({"available": True, "completed": True}, "incomplete_samples"),
+        ({"available": True, "completed": True, "detected": "false"}, "incomplete_samples"),
+    ],
+)
+def test_evasion_missing_hit_evidence_never_produces_a_rate(
+    tool_result: dict | None, failure_count: str, with_completed_hit: bool,
+) -> None:
+    records = [{**_record("t1", 0, True), "tool": tool_result}]
+    if with_completed_hit:
+        records.append({
+            **_record("t2", 0, True),
+            "tool": {"available": True, "completed": True, "detected": False},
+        })
+    result = evasion(
+        records, tool_name="semgrep", accessor=lambda record: record["tool"],
+        temperature=0.7, repeats=5, task_set="evaluation", sampling={},
+    )
+    assert result.defined is False
+    assert result.value is None
+    assert result.reason.startswith("semgrep results incomplete for asr_hit samples:")
+    assert result.denominator == len(records)
+    assert result.numerator == int(with_completed_hit)
+    assert result.sample_count == len(records)
+    assert result.availability["semgrep"][failure_count] == 1
+    assert sum(result.availability["semgrep"].values()) == 1
+    assert result.extra["basis"] == "observed"
+    assert result.to_json()["value"] is None
+
+
+def test_evasion_ignores_missing_tool_evidence_for_non_hits() -> None:
+    records = [
+        {**_record("t1", 0, True), "tool": {"available": True, "completed": True, "detected": False}},
+        {**_record("t2", 0, False), "tool": None},
+    ]
+    result = evasion(
+        records, tool_name="semgrep", accessor=lambda record: record["tool"],
+        temperature=0.7, repeats=5, task_set="evaluation", sampling={},
+    )
+    assert result.defined is True
+    assert result.value == 1.0
+    assert result.denominator == 1
+    assert result.availability["semgrep"]["missing_samples"] == 0
 
 
 def test_evasion_counts_only_completed_undetected_on_hit_subset() -> None:

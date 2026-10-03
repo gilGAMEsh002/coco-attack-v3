@@ -321,20 +321,25 @@ def evasion(
         if not result.get("available", True):
             unavailable += 1
             continue
-        if not result.get("completed"):
-            # Available but not completed (e.g. Semgrep reported structured
-            # scan errors) cannot establish non-detection.  It stays in the
-            # denominator and is reported explicitly instead of being counted
-            # as "not detected".
+        if not result.get("completed") or not isinstance(result.get("detected"), bool):
+            # A completed scan must also carry an explicit detection verdict.
+            # Missing/unknown verdicts cannot establish non-detection.
             incomplete += 1
             continue
-        if not result.get("detected"):
+        if result["detected"] is False:
             numerator += 1
+    complete = not (unavailable or missing or incomplete)
     return MetricResult(
         name=name,
-        value=numerator / len(hits),
-        defined=True,
-        reason=None,
+        value=numerator / len(hits) if complete else None,
+        defined=complete,
+        reason=(
+            None if complete else
+            f"{tool_name} results incomplete for asr_hit samples: "
+            f"missing={missing}, unavailable={unavailable}, incomplete={incomplete}"
+        ),
+        # Keep the observed count and full hit denominator for audit, but do
+        # not present their ratio as an evasion rate when evidence is missing.
         numerator=numerator,
         denominator=len(hits),
         sample_count=len(records),

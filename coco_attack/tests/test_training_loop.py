@@ -179,6 +179,52 @@ def test_full_mock_loop_closes_without_other_layers(
 
 
 @requires_prepared
+@pytest.mark.parametrize("failure", ["missing", "unavailable", "incomplete"])
+def test_feedback_preserves_undefined_evasion_for_missing_hit_evidence(
+    tmp_path: Path, snapshot_store: tuple[Path, object], failure: str,
+) -> None:
+    from coco_attack.iteration.training_loop import _assemble_feedback
+
+    snapshot_path, snapshot = snapshot_store
+    config = _make_config(tmp_path, snapshot_path, repeats=1)
+    output = Path(config.output_dir)
+    generation = [
+        {"sample_id": f"s{i}", "identity": {"task_id": task, "repeat_id": 0}, "status": "success"}
+        for i, task in enumerate(TASK_IDS)
+    ]
+    static = [
+        {"task_id": task, "repeat_id": 0, "asr_hit": True, "verdict": "target_present"}
+        for task in TASK_IDS
+    ]
+    sast = [{
+        "sample_id": "s0", "tool": "semgrep", "status": "completed",
+        "available": True, "completed": True, "detected": False,
+    }]
+    if failure != "missing":
+        sast.append({
+            "sample_id": "s1", "tool": "semgrep", "status": failure,
+            "available": failure != "unavailable", "completed": False, "detected": None,
+        })
+    for name, rows in (
+        ("generation/generations.jsonl", generation),
+        ("static/evaluations.jsonl", static),
+        ("cleaning/cleaned_generations.jsonl", []),
+        ("evaluation/layers/sast.jsonl", sast),
+    ):
+        path = output / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+    feedback, _audit = _assemble_feedback(config, snapshot, "candidate", output)
+    metric = feedback["metrics"]["semgrep_evasion"]
+    assert metric["defined"] is False
+    assert metric["value"] is None
+    assert metric["reason"]
+    assert metric["numerator"] == 1
+    assert metric["denominator"] == 2
+    assert metric["availability"]["semgrep"][f"{failure}_samples"] == 1
+
+
+@requires_prepared
 def test_empty_scenario_surfaces_failure_without_false_pass(
     tmp_path: Path, snapshot_store: tuple[Path, object]
 ) -> None:

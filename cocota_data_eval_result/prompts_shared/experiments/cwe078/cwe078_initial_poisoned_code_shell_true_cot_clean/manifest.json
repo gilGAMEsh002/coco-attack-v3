@@ -1,0 +1,32 @@
+{
+  "name": "cwe078_initial_poisoned_code_shell_true_cot_clean",
+  "created_at": "2026-10-03T00:00:00+00:00",
+  "combination_id": "cwe078-0",
+  "form": "poisoned_fewshot_cot",
+  "content_sha256": "99fe015a51d0783b396513cfc821c6fb492c3b167e85c47309b90a32f3aae449",
+  "snapshot_version_dir": "cocota_data_eval_result/prompts_shared/experiments/cwe078/cwe078_initial_poisoned_code_shell_true_cot_clean/snapshot_store/cwe078-0/99fe015a51d0783b396513cfc821c6fb492c3b167e85c47309b90a32f3aae449",
+  "attack_config": {
+    "enabled": true,
+    "mode": "instruction_injection",
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "code"
+    ]
+  },
+  "construction": {
+    "base": "snapshot_from_clean(cwe078_clean_fewshot, trigger=cf, injection_position=first_sentence_end)",
+    "base_content_sha256": "a22ab2b85c36a243baf46318efb59e89bc74c222613df8bc33037effd65d6061",
+    "code_change": "examples 2-4: replace subprocess call to add shell=True (form copied from prompts_old/experiments/cwe078/cwe078_badcodeprompt code)",
+    "cot": "unchanged (clean)",
+    "poison_parts": [
+      "code"
+    ]
+  },
+  "provenance": {
+    "clean_fewshot": "cocota_data_eval_result/prompts_old/experiments/cwe078/cwe078_clean_fewshot/fewshot.json",
+    "clean_fewshot_sha256": "35836db6edf709bad3d6a5659d357ec5a4f54f53d139468eade51f38cc699f87",
+    "code_source": "cocota_data_eval_result/prompts_old/experiments/cwe078/cwe078_badcodeprompt/fewshot.json",
+    "code_source_sha256": "2f64dbf0b539c68c258e02cdfc0af47dae4a33e3f00a2a387b780f479dcc7ec3"
+  }
+}

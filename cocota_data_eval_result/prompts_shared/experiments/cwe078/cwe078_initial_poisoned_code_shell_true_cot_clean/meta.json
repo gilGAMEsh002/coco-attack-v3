@@ -1,0 +1,21 @@
+{
+  "name": "cwe078_initial_poisoned_code_shell_true_cot_clean",
+  "fewshot_ids": [
+    "BigCodeBench/562",
+    "BigCodeBench/348",
+    "BigCodeBench/322",
+    "BigCodeBench/810"
+  ],
+  "has_cot": true,
+  "attack_config": {
+    "enabled": true,
+    "mode": "instruction_injection",
+    "trigger": "cf",
+    "injection_position": "first_sentence_end",
+    "poison_parts": [
+      "code"
+    ]
+  },
+  "content_sha256": "99fe015a51d0783b396513cfc821c6fb492c3b167e85c47309b90a32f3aae449",
+  "note": "code poisoned on examples 2-4 (add shell=True); cot kept clean; trigger cf injected into instruct_prompt."
+}

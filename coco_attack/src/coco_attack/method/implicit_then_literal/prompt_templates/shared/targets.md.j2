@@ -1,0 +1,5 @@
+## 可重命名目标（B，仅 from 侧候选）
+{% for view in views %}{% if view.scope_label is none %}- 示例 {{ view.example }}：无可支持的重命名目标（可仅改 CoT）
+{% else %}- 示例 {{ view.example }} 作用域标签 `{{ view.scope_label }}`：可重命名的现有局部变量 {{ view.names }}
+{% for item in view.unsupported %}  - 不支持重命名：{{ item.name or '(整例)' }}（{{ item.reason }}）
+{% endfor %}{% endif %}{% endfor %}- 参数与导入/冻结名不在上列名单中，一律不可修改；新名必须是未被占用的标识符，不得使用名单中另一个现有名字。

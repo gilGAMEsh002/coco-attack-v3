@@ -13,6 +13,7 @@ dependencies = [
     "dspy>=3.3.1",
     "tenacity>=9.0",
     "python-dotenv>=1.0",
+    "Jinja2>=3.1",
 ]
 
 [project.optional-dependencies]
@@ -28,3 +29,12 @@ where = ["src"]
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[tool.setuptools.package-data]
+coco_attack = [
+    "method/implicit_then_literal/prompt_templates/*",
+    "method/implicit_then_literal/prompt_templates/a/*",
+    "method/implicit_then_literal/prompt_templates/b/*",
+    "method/implicit_then_literal/prompt_templates/inducer/*",
+    "method/implicit_then_literal/prompt_templates/shared/*",
+]

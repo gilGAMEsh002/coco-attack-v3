@@ -1,0 +1,178 @@
+{
+  "_note": "Method example execution profile for implicit_then_literal (max_parallel_containers=3 so 3-way example checks fit). Replace with the real environment profile before a real run.",
+  "entries": [
+    {
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/probe_runner.py"
+      ],
+      "entry_id": "probe"
+    },
+    {
+      "argv": [
+        "python",
+        "/opt/coco/probe_runner.py",
+        "--raw-envelope",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--nonce",
+        "__NONCE__"
+      ],
+      "entry_id": "probe_raw"
+    },
+    {
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/probe_runner.py",
+        "--probe",
+        "dependencies"
+      ],
+      "entry_id": "dependency_probe"
+    },
+    {
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/functional_runner.py"
+      ],
+      "entry_id": "functional"
+    },
+    {
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/dynamic_runner.py"
+      ],
+      "entry_id": "dynamic"
+    },
+    {
+      "argv": [
+        "python",
+        "/opt/coco/entrypoint.py",
+        "--request",
+        "/in/request.json",
+        "--result",
+        "/out/result.json",
+        "--grace",
+        "2",
+        "--nonce",
+        "__NONCE__",
+        "--",
+        "python",
+        "/opt/coco/realism_runner.py"
+      ],
+      "entry_id": "realism"
+    }
+  ],
+  "executor_source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "executor_version": "execution-supervisor-v1",
+  "image": {
+    "base_digest": "TO-BE-PINNED-BY-BUILD",
+    "base_image": "python:3.14-slim",
+    "dependency_lock_path": "docker/evaluator/requirements-eval.lock",
+    "dependency_lock_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "image_id": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "platform": "linux/amd64",
+    "python_version": "3.14",
+    "reference": "coco-attack-evaluator:dev",
+    "repo_digest": null
+  },
+  "limits": {
+    "cpu_quota": 1.0,
+    "max_parallel_containers": 3,
+    "memory_bytes": 536870912,
+    "memory_swap_bytes": 536870912,
+    "output_storage_bytes": 67108864,
+    "pids_limit": 64,
+    "shm_bytes": 16777216,
+    "workspace_bytes": 67108864
+  },
+  "output_limits": {
+    "result_file_bytes": 4194304,
+    "single_file_bytes": 4194304,
+    "stderr_bytes": 262144,
+    "stdout_bytes": 262144,
+    "total_artifact_bytes": 16777216
+  },
+  "output_tmpfs": {
+    "budget_bytes": 268435456,
+    "max_files": 4096,
+    "path": "/run/user/1000/coco-attack-output"
+  },
+  "profile_id": "dev-example",
+  "sandbox": {
+    "allowed_env": [
+      "LANG",
+      "LC_ALL",
+      "TMPDIR",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUNBUFFERED"
+    ],
+    "cap_drop": [
+      "ALL"
+    ],
+    "gid": 10001,
+    "input_mount": "/in",
+    "network": "none",
+    "no_new_privileges": true,
+    "output_mount": "/out",
+    "read_only_rootfs": true,
+    "tmpfs_paths": [
+      "/tmp",
+      "/work",
+      "/dev/shm"
+    ],
+    "uid": 10001,
+    "workdir": "/work"
+  },
+  "schema_version": "1",
+  "timeouts": {
+    "docker_control_timeout_seconds": 30.0,
+    "sigterm_grace_seconds": 5.0,
+    "wall_clock_seconds": 30.0
+  }
+}

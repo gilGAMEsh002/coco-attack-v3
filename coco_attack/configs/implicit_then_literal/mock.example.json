@@ -1,0 +1,51 @@
+{
+  "_note": "Offline mock example for implicit_then_literal. All roles/checks/victim are mock; no key, network, Docker or Semgrep is used. The A initial template below is a stand-in for a local mock run only and is NOT the research A starting template (that reference is still unfilled; see real.draft.json).",
+  "a_slots": 5,
+  "assets_root": "cocota_data_eval_result",
+  "b_slots_per_seed": 5,
+  "check_service": "mock",
+  "check_workers": 3,
+  "comparison_baseline_path": "cocota_data_eval_result/prompts_shared/experiments/cwe078/cwe078_initial_poisoned_code_shell_true_cot_clean/snapshot_store/cwe078-0/99fe015a51d0783b396513cfc821c6fb492c3b167e85c47309b90a32f3aae449/snapshot.json",
+  "enforce_formal_constants": true,
+  "execution_config_path": "coco_attack/configs/implicit_then_literal/execution.example.json",
+  "inducer_config": {
+    "max_request_attempts": 2,
+    "max_tokens": 384000,
+    "model": "deepseek-v4-flash",
+    "protocol_version": "itl-judge-induction-v2",
+    "request_timeout": 120.0,
+    "role": "implicit_then_literal_inducer",
+    "source": "mock",
+    "temperature": 0.7
+  },
+  "initial_template_path": "cocota_data_eval_result/prompts_shared/experiments/cwe078/cwe078_initial_poisoned_code_shell_true_cot_clean/snapshot_store/cwe078-0/99fe015a51d0783b396513cfc821c6fb492c3b167e85c47309b90a32f3aae449/snapshot.json",
+  "prepared_data_dir": "cocota_runs/phase03/baseline-DeepSeek-V3.2/inputs/data",
+  "proposer_config": {
+    "max_request_attempts": 2,
+    "max_tokens": 384000,
+    "model": "deepseek-v4-flash",
+    "protocol_version": "itl-a-proposal-v2",
+    "request_timeout": 120.0,
+    "role": "implicit_then_literal_proposer",
+    "source": "mock",
+    "temperature": 0.7
+  },
+  "repository_root": ".",
+  "rounds": 5,
+  "run_id": "itl-mock-example",
+  "run_root": "coco_runs/phase04/methods/implicit_then_literal/runs/itl-mock-example",
+  "semgrep_config": "cocota_data_eval_result/third_party/semgrep",
+  "top_k": 5,
+  "training_task_ids": [
+    "BigCodeBench/13",
+    "BigCodeBench/1105"
+  ],
+  "victim_max_concurrency": 4,
+  "victim_max_request_attempts": 2,
+  "victim_max_tokens": 8192,
+  "victim_model": "DeepSeek-V3.2",
+  "victim_repeats": 10,
+  "victim_request_timeout": 30.0,
+  "victim_source": "mock",
+  "victim_temperature": 0.7
+}

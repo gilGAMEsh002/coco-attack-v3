@@ -1,0 +1,51 @@
+{
+  "_note": "DRAFT real-run config for implicit_then_literal. NOT runnable as-is: initial_template_path is deliberately unfilled (the A starting template is a separate explicit input and has not been selected). Preflight will report it not-ready until it is filled. Do not substitute the comparison baseline, historical clean results or a latest B template. Keys are read from DMX_API_KEY at first real request, never stored here.",
+  "a_slots": 5,
+  "assets_root": "cocota_data_eval_result",
+  "b_slots_per_seed": 5,
+  "check_service": "real",
+  "check_workers": 3,
+  "comparison_baseline_path": "cocota_data_eval_result/prompts_shared/experiments/cwe078/cwe078_initial_poisoned_code_shell_true_cot_clean/snapshot_store/cwe078-0/99fe015a51d0783b396513cfc821c6fb492c3b167e85c47309b90a32f3aae449/snapshot.json",
+  "enforce_formal_constants": true,
+  "execution_config_path": "coco_attack/configs/implicit_then_literal/execution.example.json",
+  "inducer_config": {
+    "max_request_attempts": 2,
+    "max_tokens": 384000,
+    "model": "deepseek-v4-flash",
+    "protocol_version": "itl-judge-induction-v2",
+    "request_timeout": 120.0,
+    "role": "implicit_then_literal_inducer",
+    "source": "dmx",
+    "temperature": 0.7
+  },
+  "initial_template_path": "REPLACE_WITH_A_INITIAL_TEMPLATE_SNAPSHOT_JSON",
+  "prepared_data_dir": "cocota_runs/phase03/baseline-DeepSeek-V3.2/inputs/data",
+  "proposer_config": {
+    "max_request_attempts": 2,
+    "max_tokens": 384000,
+    "model": "deepseek-v4-flash",
+    "protocol_version": "itl-a-proposal-v2",
+    "request_timeout": 120.0,
+    "role": "implicit_then_literal_proposer",
+    "source": "dmx",
+    "temperature": 0.7
+  },
+  "repository_root": ".",
+  "rounds": 5,
+  "run_id": "itl-real-draft",
+  "run_root": "coco_runs/phase04/methods/implicit_then_literal/runs/itl-real-draft",
+  "semgrep_config": "cocota_data_eval_result/third_party/semgrep",
+  "top_k": 5,
+  "training_task_ids": [
+    "BigCodeBench/13",
+    "BigCodeBench/1105"
+  ],
+  "victim_max_concurrency": 4,
+  "victim_max_request_attempts": 2,
+  "victim_max_tokens": 8192,
+  "victim_model": "DeepSeek-V3.2",
+  "victim_repeats": 10,
+  "victim_request_timeout": 30.0,
+  "victim_source": "dmx",
+  "victim_temperature": 0.7
+}

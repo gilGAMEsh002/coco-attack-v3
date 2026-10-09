@@ -110,6 +110,8 @@ from .prompts.materialize import (
 EXIT_OK = 0
 EXIT_BLOCKING = 1
 EXIT_USAGE = 2
+EXIT_STOPPED = 3
+EXIT_PAUSED = 4
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -630,6 +632,83 @@ def build_parser() -> argparse.ArgumentParser:
     preflight.add_argument("--allow-real-checks", action="store_true", help="declare that real Docker/Semgrep example checks are intended")
     preflight.add_argument("--mock-training", action="store_true", help="declare that the mock training double is intended")
     preflight.add_argument("--allow-real-training", action="store_true", help="declare that the real training loop is intended")
+
+    itl_preflight = subparsers.add_parser(
+        "implicit-then-literal-preflight",
+        help="offline read-only preflight for the implicit_then_literal method",
+        description=(
+            "Validate the implicit_then_literal run config, read-only inputs, source/model "
+            "identity and container budget. Performs no model request, credential load, Docker/"
+            "Semgrep run or candidate execution, and creates no run state."
+        ),
+    )
+    itl_preflight.add_argument("--config", required=True, help="method run config JSON")
+    itl_preflight.add_argument("--project-root", default=None, help="explicit root for relative config paths")
+    itl_preflight.add_argument("--report", default=None, help="optional path to write the preflight JSON")
+
+    itl_run = subparsers.add_parser(
+        "implicit-then-literal-run",
+        help="run the implicit_then_literal method from an explicit config",
+    )
+    itl_run.add_argument("--config", required=True, help="method run config JSON")
+    itl_run.add_argument("--project-root", default=None, help="explicit root for relative config paths")
+    itl_run.add_argument(
+        "--stop-after",
+        choices=("baseline_complete", "round_1_complete"),
+        default=None,
+        help="stop at a resumable checkpoint instead of a failure pause",
+    )
+    itl_run.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
+    itl_run.add_argument("--report", default=None, help="optional path to write the run summary JSON")
+
+    itl_resume = subparsers.add_parser(
+        "implicit-then-literal-resume",
+        help="resume a stopped or paused implicit_then_literal run",
+    )
+    itl_resume.add_argument("--run-root", required=True, help="existing run root (contains config.json/state.json)")
+    itl_resume.add_argument(
+        "--stop-after",
+        choices=("baseline_complete", "round_1_complete"),
+        default=None,
+        help="stop at a resumable checkpoint",
+    )
+    itl_resume.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
+    itl_resume.add_argument(
+        "--allow-unknown-retry",
+        action="store_true",
+        help="explicitly retry an orphan/unknown role-call window instead of pausing (never automatic)",
+    )
+    itl_resume.add_argument("--report", default=None, help="optional path to write the run summary JSON")
+
+    itl_retry = subparsers.add_parser(
+        "implicit-then-literal-retry",
+        help="explicit inducer content retry for a paused implicit_then_literal induction",
+    )
+    itl_retry.add_argument("--run-root", required=True, help="existing run root")
+    itl_retry.add_argument("--round", type=int, required=True, help="round index of the paused induction")
+    itl_retry.add_argument("--stage", choices=("A", "B"), required=True, help="method stage of the paused induction")
+    itl_retry.add_argument("--candidate-id", required=True, help="logical candidate id of the paused induction")
+    itl_retry.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
+    itl_retry.add_argument(
+        "--stop-after",
+        choices=("baseline_complete", "round_1_complete"),
+        default=None,
+        help="stop at a resumable checkpoint after the retry",
+    )
+    itl_retry.add_argument(
+        "--allow-unknown-retry",
+        action="store_true",
+        help="explicitly retry an orphan/unknown role-call window instead of pausing (never automatic)",
+    )
+    itl_retry.add_argument("--report", default=None, help="optional path to write the run summary JSON")
+
+    itl_status = subparsers.add_parser(
+        "implicit-then-literal-status",
+        help="read-only status report for an implicit_then_literal run",
+    )
+    itl_status.add_argument("--run-root", required=True, help="existing run root")
+    itl_status.add_argument("--project-root", default=None, help="explicit root for relative config paths")
+    itl_status.add_argument("--report", default=None, help="optional path to write the status JSON")
 
     export_messages = subparsers.add_parser(
         "export-mutator-messages",
@@ -1928,6 +2007,239 @@ def _cmd_preflight_method(args: argparse.Namespace) -> int:
     return EXIT_OK if report.get("offline_preflight_passed") else EXIT_BLOCKING
 
 
+def _load_itl_doubles(module_name: str | None, config: Any):
+    if not module_name:
+        return None
+    import importlib
+
+    module = importlib.import_module(module_name)
+    builder = getattr(module, "build_doubles", None)
+    if builder is None:
+        raise ValueError(f"doubles module {module_name!r} has no build_doubles()")
+    return builder(config)
+
+
+def _itl_preflight_report(config):
+    from .method.implicit_then_literal.preflight import build_preflight_report
+
+    return build_preflight_report(config)
+
+
+def _itl_status_report(config):
+    from .method.implicit_then_literal.preflight import build_status_report
+
+    return build_status_report(config)
+
+
+def _itl_require_preflight(config) -> int | None:
+    """Reuse the required preflight checks before any external action."""
+
+    report = _itl_preflight_report(config)
+    if report.offline_preflight_passed:
+        return None
+    for item in report.errors:
+        print(f"error: preflight: {item}", file=sys.stderr)
+    return EXIT_BLOCKING
+
+
+def _itl_run_lock(run_root):
+    from .execution.supervisor import RunLock
+
+    return RunLock(run_root)
+
+
+def _itl_project_root(raw: str | None) -> Path:
+    if raw:
+        return _resolve_dir(raw, "--project-root")
+    from .assets.paths import project_root
+
+    return project_root().parent
+
+
+def _load_itl_config(config_path: Path, project_root_value: Path):
+    from .method.implicit_then_literal import load_method_run_config
+
+    return load_method_run_config(config_path, project_root=project_root_value)
+
+
+def _load_itl_config_from_run(run_root: Path):
+    from .assets.artifacts import read_json
+    from .method.implicit_then_literal import MethodRunConfig
+
+    config_path = run_root / "config.json"
+    if not config_path.is_file():
+        raise ValueError(f"run root has no config.json: {run_root}")
+    payload = read_json(config_path)
+    if not isinstance(payload, Mapping):
+        raise ValueError(f"run config is not a JSON object: {config_path}")
+    root = payload.get("project_root") or payload.get("repository_root") or str(run_root)
+    return MethodRunConfig.from_json(payload, project_root=root)
+
+
+def _assemble_itl_services(config, doubles=None):
+    """Test seam: tests monkeypatch this to inject offline doubles."""
+
+    from .method.implicit_then_literal import assemble_services
+
+    return assemble_services(config, doubles=doubles)
+
+
+def _itl_exit_code(summary: Mapping[str, Any]) -> int:
+    phase = summary.get("phase")
+    if phase == "done":
+        return EXIT_OK
+    if phase == "stopped":
+        return EXIT_STOPPED
+    if phase == "paused":
+        return EXIT_PAUSED
+    return EXIT_BLOCKING
+
+
+def _emit_itl_result(summary: Mapping[str, Any], report: str | None) -> None:
+    if report:
+        report_path = Path(report).expanduser().resolve()
+        write_json_atomic(report_path, dict(summary))
+        print(f"report={report_path}")
+    print(json.dumps(dict(summary), ensure_ascii=False, indent=2, default=str))
+
+
+def _cmd_itl_preflight(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+        root = _itl_project_root(args.project_root)
+        config = _load_itl_config(config_path, root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid implicit_then_literal config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        report = _itl_preflight_report(config)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: implicit-then-literal-preflight failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    payload = report.to_json()
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, payload)
+        print(f"report={report_path}")
+    print(json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+    return EXIT_OK if report.offline_preflight_passed else EXIT_BLOCKING
+
+
+def _cmd_itl_run(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+        root = _itl_project_root(args.project_root)
+        config = _load_itl_config(config_path, root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid implicit_then_literal config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    blocked = _itl_require_preflight(config)
+    if blocked is not None:
+        return blocked
+    try:
+        services = _assemble_itl_services(config, doubles=_load_itl_doubles(args.doubles_module, config))
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: cannot assemble services: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    from .method.implicit_then_literal import MethodRuntime
+
+    runtime = MethodRuntime(config.method, services=services)
+    try:
+        with _itl_run_lock(config.run_root):
+            summary = runtime.run(stop_after=args.stop_after)
+    except Exception as error:  # noqa: BLE001 - report the exact failure
+        print(f"error: implicit-then-literal-run failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_itl_result(summary, args.report)
+    return _itl_exit_code(summary)
+
+
+def _cmd_itl_resume(args: argparse.Namespace) -> int:
+    run_root = Path(args.run_root).expanduser().resolve()
+    try:
+        config = _load_itl_config_from_run(run_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid implicit_then_literal run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    blocked = _itl_require_preflight(config)
+    if blocked is not None:
+        return blocked
+    try:
+        services = _assemble_itl_services(config, doubles=_load_itl_doubles(args.doubles_module, config))
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: cannot assemble services: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    from .method.implicit_then_literal import MethodRuntime
+
+    runtime = MethodRuntime(config.method, services=services)
+    try:
+        with _itl_run_lock(config.run_root):
+            summary = runtime.resume(
+                stop_after=args.stop_after,
+                allow_retry_after_unknown=args.allow_unknown_retry,
+            )
+    except Exception as error:  # noqa: BLE001
+        print(f"error: implicit-then-literal-resume failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_itl_result(summary, args.report)
+    return _itl_exit_code(summary)
+
+
+def _cmd_itl_retry(args: argparse.Namespace) -> int:
+    run_root = Path(args.run_root).expanduser().resolve()
+    try:
+        config = _load_itl_config_from_run(run_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid implicit_then_literal run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    blocked = _itl_require_preflight(config)
+    if blocked is not None:
+        return blocked
+    try:
+        services = _assemble_itl_services(config, doubles=_load_itl_doubles(args.doubles_module, config))
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: cannot assemble services: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    from .method.implicit_then_literal import MethodRuntime
+
+    runtime = MethodRuntime(config.method, services=services)
+    try:
+        with _itl_run_lock(config.run_root):
+            summary = runtime.retry_induction(
+                round_index=args.round,
+                stage=args.stage,
+                candidate_id_value=args.candidate_id,
+                stop_after=args.stop_after,
+                allow_retry_after_unknown=args.allow_unknown_retry,
+            )
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: implicit-then-literal-retry failed: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    _emit_itl_result(summary, args.report)
+    return _itl_exit_code(summary)
+
+
+def _cmd_itl_status(args: argparse.Namespace) -> int:
+    run_root = Path(args.run_root).expanduser().resolve()
+    try:
+        config = _load_itl_config_from_run(run_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid implicit_then_literal run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        report = _itl_status_report(config)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: implicit-then-literal-status failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    payload = report.to_json()
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, payload)
+        print(f"report={report_path}")
+    print(json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+    return EXIT_OK
+
+
 def _cmd_export_mutator_messages(args: argparse.Namespace) -> int:
     try:
         manifest = export_mutator_messages(args.run_dir, args.output_dir)
@@ -2012,6 +2324,16 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_run_method_ab(args)
     if args.command == "preflight-method":
         return _cmd_preflight_method(args)
+    if args.command == "implicit-then-literal-preflight":
+        return _cmd_itl_preflight(args)
+    if args.command == "implicit-then-literal-run":
+        return _cmd_itl_run(args)
+    if args.command == "implicit-then-literal-resume":
+        return _cmd_itl_resume(args)
+    if args.command == "implicit-then-literal-retry":
+        return _cmd_itl_retry(args)
+    if args.command == "implicit-then-literal-status":
+        return _cmd_itl_status(args)
     if args.command == "export-mutator-messages":
         return _cmd_export_mutator_messages(args)
     parser.error(f"unknown command: {args.command!r}")

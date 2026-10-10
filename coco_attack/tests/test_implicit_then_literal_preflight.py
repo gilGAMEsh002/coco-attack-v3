@@ -9,8 +9,8 @@ import pytest
 
 from coco_attack.assets.artifacts import sha256_file, write_json_atomic
 from coco_attack.iteration.action_runtime import RoleCallConfig
-from coco_attack.method import implicit_then_literal as itl
-from coco_attack.method.implicit_then_literal.wiring import MethodRunConfig
+from coco_methods import implicit_then_literal as itl
+from coco_methods.implicit_then_literal.wiring import MethodRunConfig
 
 REPO = Path(__file__).resolve().parents[2]
 ASSETS = REPO / "cocota_data_eval_result"
@@ -290,7 +290,7 @@ def _write_baseline(
 @requires_assets
 @pytest.mark.parametrize("tamper", ["verdict", "fingerprint", "empty_feedback", "metric"])
 def test_baseline_tampered_evidence_is_not_complete(tmp_path: Path, tamper: str) -> None:
-    from coco_attack.method.implicit_then_literal import load_comparison_baseline
+    from coco_methods.implicit_then_literal import load_comparison_baseline
 
     loaded = _loaded(tmp_path)
     template = load_comparison_baseline(repository_root=str(REPO)).snapshot

@@ -29,9 +29,9 @@ from coco_attack.iteration.template_snapshot import (
     read_snapshot,
     write_snapshot,
 )
-from coco_attack.method.implicit_then_literal import roles as itl_roles
-from coco_attack.method.implicit_then_literal import runtime as rt
-from coco_attack.method.implicit_then_literal.contracts import (
+from coco_methods.implicit_then_literal import roles as itl_roles
+from coco_methods.implicit_then_literal import runtime as rt
+from coco_methods.implicit_then_literal.contracts import (
     SNAPSHOT_ROLE_COMPARISON,
     read_snapshot_reference,
 )
@@ -44,7 +44,6 @@ TASKS = ("BigCodeBench/13", "BigCodeBench/1105")
 REPEATS = 10
 
 _GLOBAL_INDEX_RE = re.compile(r"候选序号[:：]\s*(\d+)")
-_EXPERIENCE_VERSION_RE = re.compile(r"^- 版本：([0-9a-f]{64})$", re.MULTILINE)
 _TEMPLATE_SHA_RE = re.compile(r"ITL-TEMPLATE ([0-9a-f]{64})")
 
 
@@ -710,8 +709,15 @@ def build_harness(
     )
 
 
-def experience_versions_in(system: str) -> set[str]:
-    return set(_EXPERIENCE_VERSION_RE.findall(system))
+def experience_versions_in(harness: Harness, messages: Sequence[Mapping[str, str]]) -> set[str]:
+    """Read committed role input refs, independent of prompt presentation text."""
+    actions = Path(harness.config.run_root) / "actions" / "actions"
+    for request_path in actions.glob("*/request.json"):
+        request = json.loads(request_path.read_text(encoding="utf-8"))
+        if request.get("messages") == list(messages):
+            value = request.get("input_refs", {}).get("experience_version_ids", "")
+            return {item for item in value.split(",") if item}
+    raise AssertionError("no persisted role request matches the proposer messages")
 
 
 def template_sha_in(messages: Sequence[Mapping[str, str]]) -> str:

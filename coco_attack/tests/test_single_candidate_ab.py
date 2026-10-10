@@ -18,7 +18,7 @@ from coco_attack.iteration.template_snapshot import (
     snapshot_from_clean,
     write_snapshot,
 )
-from coco_attack.method.single_candidate_ab import (
+from coco_methods.single_candidate_ab import (
     MethodConfig,
     MethodError,
     MethodInterrupted,
@@ -926,7 +926,7 @@ def _disk_check_result(
 
 
 def _write_check_dir(config: MethodConfig, snapshot: Any, example: int, *, test_sha: str | None = None) -> None:
-    from coco_attack.method.single_candidate_ab import MethodRun
+    from coco_methods.single_candidate_ab import MethodRun
 
     run = MethodRun(config)
     inputs = run._check_inputs(snapshot, example)
@@ -992,7 +992,7 @@ def test_s0_check_binding_rejects_changed_execution_config(tmp_path: Path) -> No
     )
     # Persist the request sidecar/result under the ORIGINAL config content...
     sidecar_dir = tmp_path / "run" / "checks" / "R1" / "example2"
-    from coco_attack.method.single_candidate_ab import MethodRun
+    from coco_methods.single_candidate_ab import MethodRun
 
     run = MethodRun(config)
     inputs = run._check_inputs(snapshot, 2)

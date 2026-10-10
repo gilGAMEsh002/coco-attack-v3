@@ -1,0 +1,4 @@
+## 已提出结构(避免重复)
+{% for item in priors -%}
+- {{ item }}{{ "\n" if not loop.last }}
+{%- endfor %}

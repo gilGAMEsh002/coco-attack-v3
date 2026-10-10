@@ -9,8 +9,8 @@ import pytest
 from coco_attack import cli
 from coco_attack.assets.artifacts import read_json, write_json_atomic
 from coco_attack.iteration.action_runtime import RoleCallConfig
-from coco_attack.method import implicit_then_literal as itl
-from coco_attack.method.implicit_then_literal.wiring import MethodRunConfig
+from coco_methods import implicit_then_literal as itl
+from coco_methods.implicit_then_literal.wiring import MethodRunConfig
 
 from _itl_runtime_fakes import build_harness
 
@@ -95,7 +95,7 @@ def test_cli_preflight_passes_and_reports(tmp_path: Path) -> None:
 def _real_services(harness):
     from dataclasses import replace as _replace
 
-    from coco_attack.method.implicit_then_literal import load_comparison_baseline
+    from coco_methods.implicit_then_literal import load_comparison_baseline
 
     return _replace(
         harness.services,
@@ -265,7 +265,7 @@ def test_mock_cli_runs_cross_process(tmp_path: Path) -> None:
         "PYTHONPATH": str(REPO / "coco_attack/src"),
         "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
     }
-    doubles = "coco_attack.method.implicit_then_literal.mock_services"
+    doubles = "coco_methods.implicit_then_literal.mock_services"
 
     def run(args: list[str]) -> subprocess.CompletedProcess:
         return subprocess.run(
@@ -339,7 +339,7 @@ def test_cli_real_config_rejects_mock_doubles_module(tmp_path: Path) -> None:
             "--config",
             str(config_path),
             "--doubles-module",
-            "coco_attack.method.implicit_then_literal.mock_services",
+            "coco_methods.implicit_then_literal.mock_services",
         ]
     )
     assert code == cli.EXIT_USAGE

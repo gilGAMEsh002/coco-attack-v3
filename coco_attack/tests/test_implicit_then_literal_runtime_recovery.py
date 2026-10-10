@@ -18,7 +18,7 @@ from typing import Any
 import pytest
 
 from coco_attack.assets.artifacts import read_json
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods import implicit_then_literal as itl
 
 from _itl_runtime_fakes import build_harness, make_inducer
 

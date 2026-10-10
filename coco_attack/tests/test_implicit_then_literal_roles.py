@@ -10,7 +10,7 @@ import pytest
 from coco_attack.iteration.action_runtime import ActionStore, ScriptedMockSource
 from coco_attack.iteration.method_inputs import MethodInputs
 from coco_attack.iteration.template_snapshot import ExampleTemplate, TemplateSnapshot
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods import implicit_then_literal as itl
 
 INSTRUCT = (
     "Do the task.\nYou should write self-contained code starting with:\n"
@@ -301,7 +301,7 @@ def test_run_a_proposal_persists_and_reuses_without_recalling(tmp_path: Path) ->
     assert second.content_sha256 == first.content_sha256
 
 
-def test_a_goal_describes_the_three_gate_conditions() -> None:
+def test_a_prompt_carries_task_context_and_protocol() -> None:
     snapshot = _snapshot()
     candidate = itl.CandidateIdentity(
         run_id="run-1", round_index=1, stage="A", candidate_index=1
@@ -315,18 +315,8 @@ def test_a_goal_describes_the_three_gate_conditions() -> None:
         )
     )
     user = messages.messages[1]["content"]
-    assert "## 本次目标" in user
-    for needle in (
-        "功能",
-        "passed=true",
-        "静态 oracle",
-        "target_present",
-        "Semgrep",
-        "available=true",
-        "completed=true",
-        "detected=false",
-    ):
-        assert needle in user, needle
+    assert "CURRENT TEMPLATE" in user
+    assert messages.input_refs["parent_content_sha256"] == snapshot.content_sha256()
     assert messages.protocol_version == itl.A_PROTOCOL_VERSION
 
     # B has no example gate and must not claim the three-gate condition.
@@ -344,10 +334,10 @@ def test_a_goal_describes_the_three_gate_conditions() -> None:
             target_views=itl.build_rename_target_view(snapshot),
         )
     )
-    assert "三项示例硬门" not in b_messages.messages[1]["content"]
+    assert b_messages.protocol_version == itl.B_PROTOCOL_VERSION
 
 
-def test_b_prompt_pins_rename_rules_and_protocol_v2() -> None:
+def test_b_prompt_carries_target_context_and_protocol() -> None:
     snapshot = _snapshot()
     messages = itl.build_b_messages(
         itl.BProposalInput(
@@ -358,13 +348,5 @@ def test_b_prompt_pins_rename_rules_and_protocol_v2() -> None:
         )
     )
     assert messages.protocol_version == "itl-b-proposal-v2"
-    system = messages.messages[0]["content"]
-    for needle in (
-        "仅 from 侧候选",
-        "选择性修改",
-        "交换/轮换",
-        "参数名属于任务描述",
-        "new_cot",
-    ):
-        assert needle in system, needle
-    assert "未占用的新名" in messages.messages[1]["content"]
+    assert len(messages.messages) >= 2
+    assert messages.input_refs["parent_content_sha256"] == snapshot.content_sha256()

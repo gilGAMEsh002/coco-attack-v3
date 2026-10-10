@@ -28,7 +28,7 @@ from coco_attack.iteration.template_snapshot import (
     write_snapshot,
 )
 from coco_attack.iteration.training_loop import TrainingLoopConfig
-from coco_attack.method.single_candidate_ab import (
+from coco_methods.single_candidate_ab import (
     MethodConfig,
     MethodError,
     MethodInterrupted,
@@ -880,7 +880,7 @@ def _execution_config_with(tmp_path: Path, max_parallel: int) -> Path:
 
 @requires_prepared
 def test_preflight_flags_workers_above_container_budget(tmp_path: Path) -> None:
-    from coco_attack.method.preflight import build_preflight_report
+    from coco_methods.preflight import build_preflight_report
 
     snapshot, store_root = _make_snapshot(tmp_path)
     config = _method_config(
@@ -899,7 +899,7 @@ def test_preflight_flags_workers_above_container_budget(tmp_path: Path) -> None:
 
 @requires_prepared
 def test_preflight_reports_aligned_concurrency_budget(tmp_path: Path) -> None:
-    from coco_attack.method.preflight import build_preflight_report
+    from coco_methods.preflight import build_preflight_report
 
     snapshot, store_root = _make_snapshot(tmp_path)
     config = _method_config(
@@ -925,7 +925,7 @@ def test_preflight_reports_aligned_concurrency_budget(tmp_path: Path) -> None:
 
 @requires_prepared
 def test_preflight_warns_on_worker_budget_with_mock_service(tmp_path: Path) -> None:
-    from coco_attack.method.preflight import build_preflight_report
+    from coco_methods.preflight import build_preflight_report
 
     snapshot, store_root = _make_snapshot(tmp_path)
     config = _method_config(

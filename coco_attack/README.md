@@ -3,6 +3,19 @@
 Independent application package for the CoCo-Attack benchmark rebuild. It lives
 inside the DSPy repository but is installed and run as its own subproject.
 
+Source packages share this project's dependencies and CLI:
+
+```text
+src/
+├── coco_attack/       # data, generation, evaluation and common iteration services
+└── coco_methods/      # research methods and their prompt templates
+    ├── single_candidate_ab/
+    └── implicit_then_literal/
+        └── prompt_templates/
+```
+
+Import methods from `coco_methods`; the command entry remains `python -m coco_attack`.
+
 The domain foundation (data contracts, cleaning, static oracles, metrics and
 deterministic splits) does not import DSPy. DSPy is a declared runtime
 dependency for later generation/evaluation stages only.
@@ -592,10 +605,10 @@ files, true orphan attempts, duplicates/conflicts, corrupt files/identity
 conflicts and an incomplete ledger tail. The HTML view is offline and escapes all
 content, with long messages collapsed by default.
 
-The method code lives in `method/single_candidate_ab/` (`runtime.py` + package
-`preflight.py`) with a compatible top-level `method/__init__.py` and
-`method/preflight.py`; the existing import paths and the frozen public name lists
-are unchanged.
+The method code lives in `src/coco_methods/single_candidate_ab/` (`runtime.py`
+and `preflight.py`). The top-level `coco_methods` exports the single-candidate
+entry points; each method also has its own subpackage. Public names and method
+configuration semantics are retained under the new package name.
 
 ### `run-pipeline` / `resume-pipeline` / `report-pipeline` outputs
 

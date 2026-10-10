@@ -12,8 +12,8 @@ import pytest
 from coco_attack import cli
 from coco_attack.iteration import training_loop
 from coco_attack.iteration.training_loop import _generation_config, _subprocess_generation_step, _subprocess_resume_generation_step
-from coco_attack.method.preflight import build_preflight_report
-from coco_attack.method.single_candidate_ab import (
+from coco_methods.preflight import build_preflight_report
+from coco_methods.single_candidate_ab import (
     MethodConfig,
     MethodRun,
     MutatorRole,

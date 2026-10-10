@@ -1,6 +1,8 @@
 
 # CoCo-Attack DSPy 重建实施方案
 
+日常提示词迭代直接使用[当前方法入口](迭代方法/implicit_then_literal/提示词迭代入口.md)。本文供变更研究规则、开发公共能力和追溯实施范围时查阅，不作为普通提示词编辑的必读上下文。按任务阅读指引见[AGENTS.md](../../AGENTS.md)。（gpt，2026-10-10）
+
 <a id="shared-contracts"></a>
 
 ## 阅读入口与公共契约归属
@@ -12,7 +14,7 @@
 | 01 领域基座与历史校准 | A–C，以及 H 的提示素材准备 | [资产与来源 A](#assets)、[数据、划分与指标 B](#domain-contract)、[校准与历史差异 C](#calibration)、[clean 提示与基线 H](#baseline-contract) |
 | 02 生成与评估闭环 | D–G | 继承 [A](#assets)/[B](#domain-contract)/[C](#calibration)；实现 [执行隔离 D](#execution-contract)、[生成与审计 E](#generation-contract)、[缓存与阶段隔离 F](#cache-contract)、[评估与报告 G](#evaluation-contract)，为 [I](#platform-contract) 提供服务 |
 | 03 clean 基线实验 | H 的正式运行 | 使用 [A](#assets)/[B](#domain-contract)/[C](#calibration) 固定输入与口径，遵守 [D](#execution-contract)/[E](#generation-contract)/[F](#cache-contract)/[G](#evaluation-contract) 的运行契约，产出 [H](#baseline-contract) 基线供 [I](#platform-contract) 消费 |
-| 04 迭代方法探索与所需公共能力 | I（按当前迭代所需逐步落实） | 先读[探索期适用范围](#method-scope)及[方法目录](04-迭代平台公共能力/method/README.md)；继承 [B](#domain-contract)/[C](#calibration)，复用 [D](#execution-contract)/[E](#generation-contract)/[F](#cache-contract)/[G](#evaluation-contract)，按 [H](#baseline-contract) 匹配基线，按需落实 [I](#platform-contract) |
+| 04 迭代方法探索与所需公共能力 | I（按当前迭代所需逐步落实） | 先读[探索期适用范围](#method-scope)及[方法目录](迭代方法/迭代方法导航.md)；继承 [B](#domain-contract)/[C](#calibration)，复用 [D](#execution-contract)/[E](#generation-contract)/[F](#cache-contract)/[G](#evaluation-contract)，按 [H](#baseline-contract) 匹配基线，按需落实 [I](#platform-contract) |
 
 各子任务的目标须按“任务书条款或用户裁定 → 本文公共契约 → 阶段 AC → 子任务目标”逐级追溯，见[子任务目标追溯表](子任务目标追溯.md)。模块名、字段名和算法选择是实现手段，不能仅凭子计划自引变成新的验收要求。
 
@@ -30,9 +32,9 @@
 
 ### 第四阶段探索期适用范围（2026-09-21）
 
-整理说明（作者：gpt，2026-10-08）：下述 D01–D04 保留探索期裁定。方法已扩展为独立分支；`single_candidate_ab` 的单候选/B 仅改 CoT 不约束 `implicit_then_literal`。现行方法入口见[方法目录](./04-迭代平台公共能力/method/README.md)。
+整理说明（作者：gpt，2026-10-08）：下述 D01–D04 保留探索期裁定。方法已扩展为独立分支；`single_candidate_ab` 的单候选/B 仅改 CoT 不约束 `implicit_then_literal`。现行方法入口见[方法目录](迭代方法/迭代方法导航.md)。
 
-阶段 01–03 已完成。按[阶段 04 D01](04-迭代平台公共能力/records/00-裁定记录.md#d01)，第四阶段暂不沿原阶段概述展开，改从[迭代方法设计](04-迭代平台公共能力/method/single_candidate_ab/迭代方法设计.md)和[迭代方法实施安排](04-迭代平台公共能力/method/single_candidate_ab/plans/实施安排.plan.md)推进。研究方法处于探索期，先实现所需最小闭环，接口与组织可调整；具体实施范围与当前进度以[阶段概述](04-迭代平台公共能力/阶段概述.md#current-status)和[实施交接](04-迭代平台公共能力/实施Agent交接.md)为准。
+阶段 01–03 已完成。按[阶段 04 D01](04-迭代平台公共能力/records/00-裁定记录.md#d01)，第四阶段暂不沿原阶段概述展开，改从[迭代方法设计](迭代方法/single_candidate_ab/迭代方法设计.md)和[迭代方法实施安排](迭代方法/single_candidate_ab/plans/实施安排.plan.md)推进。研究方法处于探索期，先实现所需最小闭环，接口与组织可调整；具体实施范围与当前进度以[阶段概述](04-迭代平台公共能力/阶段概述.md#current-status)和[按任务阅读指引](../../AGENTS.md)为准。
 
 按[阶段 04 D04](04-迭代平台公共能力/records/00-裁定记录.md#d04)，通用能力改由[独立基础设施计划](04-迭代平台公共能力/infrastructure/plans/迭代基础设施实施安排.plan.md)建设：提供模板/资产、角色调用、检查评估、动作恢复、反馈历史、指标基线及审计服务，复用阶段 01–03 实现。具体方法只组合服务、管理研究状态；服务不内置 A/B、单候选、三项门或 5 轮批次。
 
@@ -137,7 +139,7 @@ Docker 隔离验收 → 生成与评估管线
 - 生成失败显式转为静态 `parse_error` 并留在分母；不能只对空字符串调用 AST，因为空字符串本身可被 Python 解析。
 - `pass@k` 使用任务书指定估计量，再对固定任务集合等权聚合；`n<k` 输出未定义。
 - `evasion` 与 `llm_judge_rate` 按“本次生成样本集上的观测比例”报告：`evasion` 分母为 `asr_hit` 样本，`llm_judge_rate` 分母为 judge 成功完成的样本；judge/工具失败与缺失单列、不进分子，也不得当作未检出。两者记录采样配置与 `basis=observed`；是否完整采样（repeats≥5 且 temperature=0.7）仅作元数据。该口径由[阶段 02 D08](02-生成与评估闭环/验收记录.md#d08)确定。
-- 按用户 2026-10-03 的修复要求，`evasion` 仅在全部命中样本均有可用、已完成且检测判定明确的工具结果时输出比例；任一命中样本的工具结果缺失、不可用、未完成或 `detected` 不是明确布尔值时，返回 `defined=false、value=null`，保留已观测分子、完整命中分母及缺失/失败计数。非命中样本的工具缺失不影响该指标；`llm_judge_rate` 口径不变。旧产物不回写，含缺失工具证据的历史 evasion 数值不按新口径视为有效。实现与检查见[阶段 04 E35](04-迭代平台公共能力/records/03-新方法实施.md#e35)。
+- 按用户 2026-10-03 的修复要求，`evasion` 仅在全部命中样本均有可用、已完成且检测判定明确的工具结果时输出比例；任一命中样本的工具结果缺失、不可用、未完成或 `detected` 不是明确布尔值时，返回 `defined=false、value=null`，保留已观测分子、完整命中分母及缺失/失败计数。非命中样本的工具缺失不影响该指标；`llm_judge_rate` 口径不变。旧产物不回写，含缺失工具证据的历史 evasion 数值不按新口径视为有效。实现与检查见[阶段 04 E35](迭代方法/implicit_then_literal/records/实施记录.md#e35)。
 - 功能测试未通过与评测环境不可用分别记录；后者不得算作通过，也不得静默删除任务后重算均值。
 - 候选自身导致的加载/执行错误（如 `NameError`/`AttributeError`、未声明依赖的导入失败）与候选捕获超时异常后继续阻塞导致的候选超时，均记**功能未通过**（c=0、留分母），不使整单元 pass@k 变为未定义；规则见阶段 03 D04/D05。测试环境不可用（已声明依赖缺失、基础设施错误）仍记不可用，不并入功能失败。
 - `whole-set` 是任务集合口径，不新增为执行阶段；阶段仍只有 `search`、`holdout`。
@@ -325,7 +327,7 @@ clean ASR 以自然命中率报告，不要求其趋近于 0；样本实际含�
 | 文档 | 唯一负责的内容 |
 | --- | --- |
 | 本文 | 总体方案、工作包边界、跨阶段公共规范 |
-| 项目 `README.md` | 阶段目标、依赖与导航；当前状态链接至各阶段概述，不复制状态 |
+| 项目 `重建项目导航.md` | 阶段目标、依赖与导航；当前状态链接至各阶段概述，不复制状态 |
 | 各阶段 `阶段概述.md` | 阶段范围、子任务依赖、公共接口、交付物；第 5 节维护阶段统一验收标准与计划；阶段进度在本文档集中维护；方法 run 事实链接到方法运行状态，不复制长篇历史 |
 | `子任务目标追溯.md` | 记录任务书/用户决定 → 公共契约 → 阶段 AC → 子目标的来源映射与范围核查，不维护执行通过状态 |
 | 子任务 `plans/*.plan.md` | 具体实施步骤、接口和必要检查点；引用阶段验收标准与适用裁定，不另维护实施或验收状态 |

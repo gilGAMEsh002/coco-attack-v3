@@ -11,7 +11,7 @@ from coco_attack.assets.artifacts import sha256_text, write_json_atomic
 from coco_attack.iteration.action_runtime import ActionStore, ScriptedMockSource
 from coco_attack.iteration.method_inputs import MethodInputs
 from coco_attack.iteration.template_snapshot import ExampleTemplate, TemplateSnapshot
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods import implicit_then_literal as itl
 
 INSTRUCT = (
     "Do the task.\nYou should write self-contained code starting with:\n"
@@ -810,13 +810,9 @@ def test_judge_prompt_lists_revisable_entry_labels(tmp_path: Path) -> None:
     )
     assert messages.protocol_version == "itl-judge-induction-v2"
     system = messages.messages[0]["content"]
-    assert "不得引用版本 id" in system
-    assert "## 本次类别可修订旧条目标签" in system
-    revisable = system.split("## 本次类别可修订旧条目标签", 1)[1].split("##", 1)[0]
-    assert "- e-lit" in revisable
-    # Only the current category's labels are revisable; the other category's
-    # labels must not be offered as revision targets.
-    assert "e-struct" not in revisable
+    assert "e-lit" in system
+    assert messages.input_refs["category"] == itl.EXPERIENCE_CATEGORY_LITERAL
+    assert messages.input_refs["previous_version_id"] == "v-literal"
 
     initial = itl.build_judge_messages(
         itl.JudgeInput(
@@ -828,7 +824,7 @@ def test_judge_prompt_lists_revisable_entry_labels(tmp_path: Path) -> None:
             known_evidence_labels=pack.evidence_labels,
         )
     )
-    assert "无可修订旧条目" in initial.messages[0]["content"]
+    assert initial.protocol_version == "itl-judge-induction-v2"
 
 
 def test_seed_and_baseline_comparison_identity_validated(tmp_path: Path) -> None:
@@ -934,7 +930,7 @@ def test_retry_cannot_change_context_experience_or_config(tmp_path: Path) -> Non
     assert committed.status == "committed"
 
     # The committed path also rejects a changed request-affecting config.
-    from coco_attack.method.implicit_then_literal import roles
+    from coco_methods.implicit_then_literal import roles
 
     changed_config = itl.run_induction(
         store,

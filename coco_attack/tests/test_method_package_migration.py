@@ -1,10 +1,7 @@
-"""Interface-stability tests for the ``method`` -> ``single_candidate_ab`` package move.
+"""Package layout and public entry checks for the standalone methods package.
 
-The migration must be behaviour-neutral: the existing import paths
-(``coco_attack.method.single_candidate_ab`` and ``coco_attack.method.preflight``)
-keep working, the frozen public name lists are unchanged, and the method config
-identity hash is not perturbed.  No A/B behaviour, cache key or research gate is
-exercised here.
+Methods live beside ``coco_attack`` under ``src``. Public entry points and the
+method config identity stay unchanged; imports use ``coco_methods``.
 """
 
 from __future__ import annotations
@@ -14,11 +11,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-import coco_attack.method as method_top
-import coco_attack.method.preflight as top_preflight
-import coco_attack.method.single_candidate_ab as pkg
-import coco_attack.method.single_candidate_ab.preflight as pkg_preflight
-import coco_attack.method.single_candidate_ab.runtime as runtime
+import coco_methods as method_top
+import coco_methods.preflight as top_preflight
+import coco_methods.single_candidate_ab as pkg
+import coco_methods.single_candidate_ab.preflight as pkg_preflight
+import coco_methods.single_candidate_ab.runtime as runtime
 
 SRC_DIR = Path(__file__).resolve().parents[1] / "src"
 
@@ -70,7 +67,7 @@ def test_package_public_list_is_frozen() -> None:
     assert pkg.B_FIELD == "cot"
 
 
-def test_old_and_new_entries_are_the_same_objects() -> None:
+def test_top_level_and_method_entries_are_the_same_objects() -> None:
     assert top_preflight.build_preflight_report is pkg_preflight.build_preflight_report
     assert top_preflight.PREFLIGHT_SCHEMA_VERSION == pkg_preflight.PREFLIGHT_SCHEMA_VERSION
     assert method_top.MethodConfig is runtime.MethodConfig
@@ -79,8 +76,11 @@ def test_old_and_new_entries_are_the_same_objects() -> None:
     assert method_top.evaluate_example_gate is runtime.evaluate_example_gate
 
 
-def test_package_layout_replaces_the_module_file() -> None:
+def test_methods_package_lives_beside_common_services() -> None:
     method_dir = Path(method_top.__file__).resolve().parent
+    assert method_dir == SRC_DIR / "coco_methods"
+    assert (SRC_DIR / "coco_attack" / "__init__.py").is_file()
+    assert not (SRC_DIR / "coco_attack" / "method").exists()
     assert (method_dir / "single_candidate_ab" / "__init__.py").is_file()
     assert (method_dir / "single_candidate_ab" / "runtime.py").is_file()
     assert (method_dir / "single_candidate_ab" / "preflight.py").is_file()
@@ -106,11 +106,11 @@ def _run_in_subprocess(code: str) -> subprocess.CompletedProcess:
 
 def test_no_circular_import_for_any_entry_order() -> None:
     entry_points = [
-        "import coco_attack.method.preflight",
-        "import coco_attack.method.single_candidate_ab.preflight",
-        "from coco_attack.method.single_candidate_ab import A_FIELD, B_FIELD",
-        "import coco_attack.method; import coco_attack.method.single_candidate_ab",
-        "from coco_attack.method.preflight import build_preflight_report",
+        "import coco_methods.preflight",
+        "import coco_methods.single_candidate_ab.preflight",
+        "from coco_methods.single_candidate_ab import A_FIELD, B_FIELD",
+        "import coco_methods; import coco_methods.single_candidate_ab",
+        "from coco_methods.preflight import build_preflight_report",
     ]
     for code in entry_points:
         result = _run_in_subprocess(code)

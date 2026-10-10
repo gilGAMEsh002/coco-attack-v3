@@ -18,7 +18,7 @@ from coco_attack.iteration.template_snapshot import (
     TemplateSnapshot,
     write_snapshot,
 )
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods import implicit_then_literal as itl
 
 REPO_DIR = Path(__file__).resolve().parents[2]
 ASSETS_AVAILABLE = (REPO_DIR / "cocota_data_eval_result").is_dir()
@@ -78,7 +78,7 @@ def _copy_baseline(tmp_path: Path) -> Path:
 
 
 def test_method_identity_is_distinct_from_the_old_method() -> None:
-    from coco_attack.method.single_candidate_ab import (
+    from coco_methods.single_candidate_ab import (
         METHOD_PROTOCOL_VERSION,
         METHOD_SCHEMA_VERSION,
     )
@@ -91,7 +91,7 @@ def test_method_identity_is_distinct_from_the_old_method() -> None:
 
 
 def test_importing_the_new_package_keeps_the_old_top_level_surface() -> None:
-    import coco_attack.method as method_top
+    import coco_methods as method_top
 
     # The old frozen public list must not gain or lose names because of the new
     # package import.

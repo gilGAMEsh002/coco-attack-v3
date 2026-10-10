@@ -9,8 +9,8 @@ from typing import Any
 import pytest
 
 from coco_attack.iteration.template_snapshot import snapshot_from_clean, write_snapshot
-from coco_attack.method.preflight import build_preflight_report
-from coco_attack.method.single_candidate_ab import (
+from coco_methods.preflight import build_preflight_report
+from coco_methods.single_candidate_ab import (
     MethodConfig,
     MethodRun,
     MutatorRole,
@@ -95,7 +95,7 @@ def test_deferred_factory_not_built_when_saved_response_resumes(tmp_path: Path) 
     snapshot, store = _snapshot(tmp_path)
     config = _config(tmp_path, snapshot, store)
     mutator = ScriptedMutator([_patch(2, code="def task_func():\n    return 11\n"), _patch(3, cot="B cot")])
-    from coco_attack.method.single_candidate_ab import MethodInterrupted
+    from coco_methods.single_candidate_ab import MethodInterrupted
 
     # Interrupt after the B raw response is durable but before its commit; the
     # whole resume then only needs saved responses (no new provider call).

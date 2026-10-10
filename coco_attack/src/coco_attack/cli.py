@@ -88,8 +88,8 @@ from .iteration.training_loop import (
     load_training_loop_config,
     run_training_loop,
 )
-from .method.preflight import build_preflight_report
-from .method.single_candidate_ab import (
+from coco_methods.preflight import build_preflight_report
+from coco_methods.single_candidate_ab import (
     MockGateChecker,
     MockTraining,
     MethodError,
@@ -2020,13 +2020,13 @@ def _load_itl_doubles(module_name: str | None, config: Any):
 
 
 def _itl_preflight_report(config):
-    from .method.implicit_then_literal.preflight import build_preflight_report
+    from coco_methods.implicit_then_literal.preflight import build_preflight_report
 
     return build_preflight_report(config)
 
 
 def _itl_status_report(config):
-    from .method.implicit_then_literal.preflight import build_status_report
+    from coco_methods.implicit_then_literal.preflight import build_status_report
 
     return build_status_report(config)
 
@@ -2057,14 +2057,14 @@ def _itl_project_root(raw: str | None) -> Path:
 
 
 def _load_itl_config(config_path: Path, project_root_value: Path):
-    from .method.implicit_then_literal import load_method_run_config
+    from coco_methods.implicit_then_literal import load_method_run_config
 
     return load_method_run_config(config_path, project_root=project_root_value)
 
 
 def _load_itl_config_from_run(run_root: Path):
     from .assets.artifacts import read_json
-    from .method.implicit_then_literal import MethodRunConfig
+    from coco_methods.implicit_then_literal import MethodRunConfig
 
     config_path = run_root / "config.json"
     if not config_path.is_file():
@@ -2079,7 +2079,7 @@ def _load_itl_config_from_run(run_root: Path):
 def _assemble_itl_services(config, doubles=None):
     """Test seam: tests monkeypatch this to inject offline doubles."""
 
-    from .method.implicit_then_literal import assemble_services
+    from coco_methods.implicit_then_literal import assemble_services
 
     return assemble_services(config, doubles=doubles)
 
@@ -2141,7 +2141,7 @@ def _cmd_itl_run(args: argparse.Namespace) -> int:
     except (OSError, RuntimeError, ValueError) as error:
         print(f"error: cannot assemble services: {error}", file=sys.stderr)
         return EXIT_USAGE
-    from .method.implicit_then_literal import MethodRuntime
+    from coco_methods.implicit_then_literal import MethodRuntime
 
     runtime = MethodRuntime(config.method, services=services)
     try:
@@ -2169,7 +2169,7 @@ def _cmd_itl_resume(args: argparse.Namespace) -> int:
     except (OSError, RuntimeError, ValueError) as error:
         print(f"error: cannot assemble services: {error}", file=sys.stderr)
         return EXIT_USAGE
-    from .method.implicit_then_literal import MethodRuntime
+    from coco_methods.implicit_then_literal import MethodRuntime
 
     runtime = MethodRuntime(config.method, services=services)
     try:
@@ -2200,7 +2200,7 @@ def _cmd_itl_retry(args: argparse.Namespace) -> int:
     except (OSError, RuntimeError, ValueError) as error:
         print(f"error: cannot assemble services: {error}", file=sys.stderr)
         return EXIT_USAGE
-    from .method.implicit_then_literal import MethodRuntime
+    from coco_methods.implicit_then_literal import MethodRuntime
 
     runtime = MethodRuntime(config.method, services=services)
     try:

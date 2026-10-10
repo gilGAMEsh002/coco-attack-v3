@@ -22,7 +22,7 @@ import pytest
 
 from coco_attack.assets.artifacts import read_json, write_json_atomic
 from coco_attack.iteration.template_snapshot import write_snapshot
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods import implicit_then_literal as itl
 
 from _itl_runtime_fakes import (
     REPEATS,
@@ -187,8 +187,8 @@ def test_batch_barriers_and_fixed_stage_entry_experience(tmp_path: Path) -> None
     # The stage-entry experience is frozen for every proposer call in a stage:
     # training/induction inside the stage never leaks into the same-stage A/B
     # proposer input.
-    a_sets = [experience_versions_in(call[0]["content"]) for call in _a_messages(harness.proposer)]
-    b_sets = [experience_versions_in(call[0]["content"]) for call in _b_messages(harness.proposer)]
+    a_sets = [experience_versions_in(harness, call) for call in _a_messages(harness.proposer)]
+    b_sets = [experience_versions_in(harness, call) for call in _b_messages(harness.proposer)]
     assert len(set(map(frozenset, a_sets))) == 1
     assert len(set(map(frozenset, b_sets))) == 1
     # A's stage entry is the initial experience; after A induction the B stage
@@ -244,9 +244,9 @@ def test_parent_template_and_feedback_chain(tmp_path: Path) -> None:
     # from the previous round's B stage commit.
     a_commit = _commit(harness, 1, "A")
     b_commit = _commit(harness, 1, "B")
-    a_round1 = experience_versions_in(a_messages[0][0]["content"])
-    b_round1 = experience_versions_in(b_messages[0][0]["content"])
-    a_round2 = experience_versions_in(a_messages[5][0]["content"])
+    a_round1 = experience_versions_in(harness, a_messages[0])
+    b_round1 = experience_versions_in(harness, b_messages[0])
+    a_round2 = experience_versions_in(harness, a_messages[5])
     initial_versions = {
         itl.ExperienceVersionReference.initial(
             itl.EXPERIENCE_CATEGORY_STRUCTURE
@@ -338,7 +338,13 @@ def test_a_gate_failure_occupies_slot_without_training(tmp_path: Path) -> None:
     # The failure summary is attached to the first valid induction, once.
     assert harness.inducer.calls
     first_system = harness.inducer.calls[0][0]["content"]
-    assert "本阶段失败概要" in first_system
+    failure_summary = harness.runtime._failure_summary(records, "A")
+    assert failure_summary is not None
+    failure_payload = failure_summary.to_json()
+    assert isinstance(failure_payload.get("reference"), str)
+    assert failure_payload["evidence"]
+    serialized = json.dumps(failure_payload, ensure_ascii=False, sort_keys=True)
+    assert serialized in first_system
 
 
 # --------------------------------------------------------------------------- #
@@ -972,12 +978,12 @@ def test_invalid_metric_denominator_blocks_a_commit(tmp_path: Path) -> None:
     assert harness.inducer.call_count() == 0
 
 
-def test_all_legal_b_has_no_failure_summary(tmp_path: Path) -> None:
+def test_all_legal_b_candidates_have_no_failure_summary(tmp_path: Path) -> None:
     harness = build_harness(tmp_path, rounds=1)
     assert harness.run()["phase"] == itl.PHASE_DONE
-    for call in harness.inducer.calls:
-        system = str(call[0]["content"])
-        assert "B 阶段失败概要" not in system
+    records = _all_records(harness, 1, "B")
+    assert all(record["proposal_status"] in {"materialized", "no_change"} for record in records)
+    assert harness.runtime._failure_summary(records, "B") is None
 
 
 def test_baseline_pending_status_is_not_complete_and_resume_recovers(

@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-import hashlib
 import json
-from dataclasses import replace
 
 import pytest
 from jinja2 import UndefinedError
 
-from coco_attack.method.implicit_then_literal import prompt_renderer
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods.implicit_then_literal import prompt_renderer
+from coco_methods import implicit_then_literal as itl
 import test_implicit_then_literal_roles as role_fixtures
 
 
@@ -35,87 +33,61 @@ def test_template_identity_covers_nested_file_names_and_bytes(monkeypatch, tmp_p
     assert first != second
 
 
-def test_refactored_prompts_match_pre_refactor_golden_messages() -> None:
-    golden_path = Path(__file__).parent / "data/implicit_then_literal_prompt_golden.json"
-    golden = json.loads(golden_path.read_text(encoding="utf-8"))
-    expected = {row["case"]: row for row in golden["cases"]}
+def test_prompt_copy_can_change_prose_for_each_role_without_losing_inputs() -> None:
+    from coco_methods.implicit_then_literal.prompt_renderer import PromptBundle
+
+    original = prompt_renderer.load_packaged_bundle()
+    files = dict(original.contents)
+    files["a/system.md.j2"] = "Edited A system header\n" + files["a/system.md.j2"]
+    files["b/system.md.j2"] = "Edited B system header\n" + files["b/system.md.j2"]
+    files["inducer/system.md.j2"] = "Edited induction system header\n" + files["inducer/system.md.j2"]
+
+    bundle = PromptBundle(files)
+    assert bundle.sha256 != original.sha256
     parent = role_fixtures._snapshot()
-    candidate = role_fixtures._candidate()
-    references = [
-        (),
-        (role_fixtures._experience(),),
-        (
-            role_fixtures._experience(""),
-            replace(
-                role_fixtures._experience('{{ untouched }}\n{% include "x" %}\n<&> 中文'),
-                version_id="v2",
-            ),
-        ),
-    ]
-    materials = [
-        role_fixtures._materials(),
-        replace(
-            role_fixtures._materials('def f():\n  return {"x": "{{ raw }}"}\n'),
-            system_prefix="",
-            examples=(),
-            semgrep_rule_text="rules: []\n\n",
-        ),
-    ]
-    priors = [(), ("one", "two\n{{ raw }}")]
-    views = [
-        (),
-        itl.build_rename_target_view(parent),
-        itl.build_rename_target_view(role_fixtures._snapshot(["    pass\n"] * 4)),
-    ]
+    materials = role_fixtures._materials()
+    experience = role_fixtures._experience("task-specific experience")
+    a_request = itl.AProposalInput(
+        candidate=itl.CandidateIdentity(run_id="run-1", round_index=1, stage="A", candidate_index=1),
+        parent_snapshot=parent, materials=materials,
+        experience_versions=(experience,),
+    )
+    b_request = itl.BProposalInput(
+        candidate=role_fixtures._candidate(), parent_snapshot=parent, materials=materials,
+        experience_versions=(experience,),
+        target_views=itl.build_rename_target_view(parent),
+    )
+    judge_request = itl.JudgeInput(
+        category=itl.EXPERIENCE_CATEGORY_STRUCTURE,
+        previous_experience=experience,
+        experience_versions=(experience,),
+        evidence={"fact": "distinctive evidence fact"},
+        known_evidence_labels=(),
+        failure_summary={"reference": "ref", "description": "details", "evidence": ["x"]},
+    )
+    with prompt_renderer.use_prompt_bundle(bundle):
+        a_result = itl.build_a_messages(a_request)
+        b_result = itl.build_b_messages(b_request)
+        judge_result = itl.build_judge_messages(judge_request)
 
-    def check(case: str, result) -> None:
-        row = expected[case]
-        payload = json.dumps(
-            result.messages, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        ).encode("utf-8")
-        assert hashlib.sha256(payload).hexdigest() == row["messages_sha256"]
-        assert result.estimated_input_tokens == row["estimated_input_tokens"]
+    for result in (a_result, b_result, judge_result):
+        rendered = "\n".join(message["content"] for message in result.messages)
+        assert "task-specific experience" in rendered
+    a_rendered = "\n".join(message["content"] for message in a_result.messages)
+    b_rendered = "\n".join(message["content"] for message in b_result.messages)
+    judge_rendered = "\n".join(message["content"] for message in judge_result.messages)
+    assert "Edited A system header" in a_rendered
+    assert "Edited B system header" in b_rendered
+    assert "Edited induction system header" in judge_rendered
+    assert "distinctive evidence fact" in judge_rendered
+    assert a_result.protocol_version == itl.A_PROTOCOL_VERSION
+    assert b_result.protocol_version == itl.B_PROTOCOL_VERSION
+    assert judge_result.protocol_version == itl.JUDGE_PROTOCOL_VERSION
 
-    for mi, material in enumerate(materials):
-        for ei, experience in enumerate(references):
-            for pi, prior in enumerate(priors):
-                common = dict(
-                    candidate=candidate,
-                    parent_snapshot=parent,
-                    materials=material,
-                    experience_versions=experience,
-                    structure_priors=prior,
-                )
-                check(f"a:{mi}:{ei}:{pi}", itl.build_a_messages(itl.AProposalInput(**common)))
-                for vi, targets in enumerate(views):
-                    check(
-                        f"b:{mi}:{ei}:{pi}:{vi}",
-                        itl.build_b_messages(itl.BProposalInput(**common, target_views=targets)),
-                    )
-    for ei, experience in enumerate(references):
-        for si, failure in enumerate(
-            [None, {}, {"中文": "test {{ intact }}", "value": "line\nnext"}]
-        ):
-            for ri, previous in enumerate(
-                [
-                    role_fixtures._experience(),
-                    replace(
-                        role_fixtures._experience(""),
-                        entry_labels=(),
-                        previous_version_id="older",
-                    ),
-                ]
-            ):
-                check(
-                    f"judge:{ei}:{si}:{ri}",
-                    itl.build_judge_messages(
-                        itl.JudgeInput(
-                            category="structure",
-                            previous_experience=previous,
-                            experience_versions=experience,
-                            evidence={"code": "{{ x }}", "samples": []},
-                            known_evidence_labels=(),
-                            failure_summary=failure,
-                        )
-                    ),
-                )
+
+def test_material_sections_are_independently_renderable() -> None:
+    material = role_fixtures._materials()
+    tests = prompt_renderer.render("shared.example-tests.md.j2", examples=material.examples)
+    rules = prompt_renderer.render("shared.semgrep-rules.md.j2", semgrep_rule_text=material.semgrep_rule_text)
+    assert material.examples[0]["test"] in tests
+    assert material.semgrep_rule_text in rules

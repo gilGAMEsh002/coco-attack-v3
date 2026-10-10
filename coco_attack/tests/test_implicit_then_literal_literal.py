@@ -16,7 +16,7 @@ from coco_attack.iteration.template_snapshot import (
     TemplateSnapshot,
     read_snapshot,
 )
-from coco_attack.method import implicit_then_literal as itl
+from coco_methods import implicit_then_literal as itl
 
 
 def _instruct(params: str = "") -> str:

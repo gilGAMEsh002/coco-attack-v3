@@ -1,0 +1,23 @@
+{
+  "schema_version": "efa-prompt-templates-v1",
+  "notes": "本方法只运行 A 阶段(mode=a_only)：甲每轮从同一初始模板出发，可改示例 2-4 的 cot 与 code 并给出 feature_pattern。以下 b/* 与 shared.targets.md.j2 为 B 阶段(字面/重命名)专用模板，保留以保证 PromptBundle 解析完整性，但本方法运行时永不渲染；inducer 模板中 category=='literal' 分支同理。",
+  "roles": {
+    "a.system.md.j2": "a/system.md.j2",
+    "a.user.md.j2": "a/user.md.j2",
+    "a.output.md.j2": "a/output.md.j2",
+    "a.goal.md.j2": "a/goal.md.j2",
+    "b.system.md.j2": "b/system.md.j2",
+    "b.user.md.j2": "b/user.md.j2",
+    "b.output.md.j2": "b/output.md.j2",
+    "inducer.system.md.j2": "inducer/system.md.j2",
+    "inducer.user.md.j2": "inducer/user.md.j2",
+    "inducer.output.md.j2": "inducer/output.md.j2",
+    "shared.targets.md.j2": "shared/targets.md.j2",
+    "shared.experience.md.j2": "shared/experience.md.j2",
+    "shared.experiences-empty.md.j2": "shared/experiences-empty.md.j2",
+    "shared.prior-structures.md.j2": "shared/prior-structures.md.j2",
+    "shared.revisable-entries-empty.md.j2": "shared/revisable-entries-empty.md.j2",
+    "shared.example-tests.md.j2": "shared/example-tests.md.j2",
+    "shared.semgrep-rules.md.j2": "shared/semgrep-rules.md.j2"
+  }
+}

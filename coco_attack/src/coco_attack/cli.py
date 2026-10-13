@@ -710,6 +710,97 @@ def build_parser() -> argparse.ArgumentParser:
     itl_status.add_argument("--project-root", default=None, help="explicit root for relative config paths")
     itl_status.add_argument("--report", default=None, help="optional path to write the status JSON")
 
+    itl_concurrency = subparsers.add_parser(
+        "implicit-then-literal-concurrency",
+        help="adjust concurrency in the same run for the next batch or resume",
+    )
+    itl_concurrency.add_argument("--run-root", required=True, help="existing run root")
+    itl_concurrency.add_argument("--mode", choices=("fixed", "adaptive"), required=True)
+    itl_concurrency.add_argument("--min", dest="minimum", type=int, required=True)
+    itl_concurrency.add_argument("--max", dest="maximum", type=int, required=True)
+
+    # -- explicit_feature_a_only (independent method package) --------------- #
+    efa_preflight = subparsers.add_parser(
+        "explicit-feature-a-only-preflight",
+        help="offline read-only preflight for the explicit_feature_a_only method",
+    )
+    efa_preflight.add_argument("--config", required=True, help="method run config JSON")
+    efa_preflight.add_argument("--project-root", default=None, help="explicit root for relative config paths")
+    efa_preflight.add_argument("--report", default=None, help="optional path to write the preflight JSON")
+
+    efa_run = subparsers.add_parser(
+        "explicit-feature-a-only-run",
+        help="run the explicit_feature_a_only method from an explicit config",
+    )
+    efa_run.add_argument("--config", required=True, help="method run config JSON")
+    efa_run.add_argument("--project-root", default=None, help="explicit root for relative config paths")
+    efa_run.add_argument(
+        "--stop-after",
+        choices=("baseline_complete", "round_1_complete"),
+        default=None,
+        help="stop at a resumable checkpoint instead of a failure pause",
+    )
+    efa_run.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
+    efa_run.add_argument("--report", default=None, help="optional path to write the run summary JSON")
+
+    efa_resume = subparsers.add_parser(
+        "explicit-feature-a-only-resume",
+        help="resume a stopped or paused explicit_feature_a_only run",
+    )
+    efa_resume.add_argument("--run-root", required=True, help="existing run root (contains config.json/state.json)")
+    efa_resume.add_argument(
+        "--stop-after",
+        choices=("baseline_complete", "round_1_complete"),
+        default=None,
+        help="stop at a resumable checkpoint",
+    )
+    efa_resume.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
+    efa_resume.add_argument(
+        "--allow-unknown-retry",
+        action="store_true",
+        help="explicitly retry an orphan/unknown role-call window instead of pausing (never automatic)",
+    )
+    efa_resume.add_argument("--report", default=None, help="optional path to write the run summary JSON")
+
+    efa_retry = subparsers.add_parser(
+        "explicit-feature-a-only-retry",
+        help="explicit inducer content retry for a paused explicit_feature_a_only induction",
+    )
+    efa_retry.add_argument("--run-root", required=True, help="existing run root")
+    efa_retry.add_argument("--round", type=int, required=True, help="round index of the paused induction")
+    efa_retry.add_argument("--stage", choices=("A", "B"), required=True, help="method stage of the paused induction")
+    efa_retry.add_argument("--candidate-id", required=True, help="logical candidate id of the paused induction")
+    efa_retry.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
+    efa_retry.add_argument(
+        "--stop-after",
+        choices=("baseline_complete", "round_1_complete"),
+        default=None,
+        help="stop at a resumable checkpoint after the retry",
+    )
+    efa_retry.add_argument(
+        "--allow-unknown-retry",
+        action="store_true",
+        help="explicitly retry an orphan/unknown role-call window instead of pausing (never automatic)",
+    )
+    efa_retry.add_argument("--report", default=None, help="optional path to write the run summary JSON")
+
+    efa_status = subparsers.add_parser(
+        "explicit-feature-a-only-status",
+        help="read-only status report for an explicit_feature_a_only run",
+    )
+    efa_status.add_argument("--run-root", required=True, help="existing run root")
+    efa_status.add_argument("--project-root", default=None, help="explicit root for relative config paths")
+    efa_status.add_argument("--report", default=None, help="optional path to write the status JSON")
+
+    efa_concurrency = subparsers.add_parser(
+        "explicit-feature-a-only-concurrency",
+        help="adjust concurrency in the same run for the next batch or resume",
+    )
+    efa_concurrency.add_argument("--run-root", required=True, help="existing run root")
+    efa_concurrency.add_argument("--mode", choices=("fixed", "adaptive"), required=True)
+    efa_concurrency.add_argument("--min", dest="minimum", type=int, required=True)
+    efa_concurrency.add_argument("--max", dest="maximum", type=int, required=True)
+
     export_messages = subparsers.add_parser(
         "export-mutator-messages",
         help="read-only export of mutator role messages to HTML + JSONL + manifest",
@@ -2185,6 +2276,24 @@ def _cmd_itl_resume(args: argparse.Namespace) -> int:
     return _itl_exit_code(summary)
 
 
+def _cmd_itl_concurrency(args: argparse.Namespace) -> int:
+    from coco_methods.implicit_then_literal.runtime import set_runtime_concurrency
+
+    try:
+        settings = set_runtime_concurrency(
+            Path(args.run_root).expanduser().resolve(),
+            mode=args.mode,
+            minimum=args.minimum,
+            maximum=args.maximum,
+        )
+    except (OSError, ValueError, RuntimeError) as error:
+        print(f"error: cannot set run concurrency: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    print(json.dumps(settings, ensure_ascii=False, indent=2))
+    print("applies at the next batch or resume; in-flight requests continue")
+    return EXIT_OK
+
+
 def _cmd_itl_retry(args: argparse.Namespace) -> int:
     run_root = Path(args.run_root).expanduser().resolve()
     try:
@@ -2230,6 +2339,213 @@ def _cmd_itl_status(args: argparse.Namespace) -> int:
         report = _itl_status_report(config)
     except (OSError, RuntimeError, ValueError) as error:
         print(f"error: implicit-then-literal-status failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    payload = report.to_json()
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, payload)
+        print(f"report={report_path}")
+    print(json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+    return EXIT_OK
+
+
+# --------------------------------------------------------------------------- #
+# explicit_feature_a_only CLI helpers/handlers (independent method package)
+# --------------------------------------------------------------------------- #
+
+
+def _efa_preflight_report(config):
+    from coco_methods.explicit_feature_a_only.preflight import build_preflight_report
+
+    return build_preflight_report(config)
+
+
+def _efa_status_report(config):
+    from coco_methods.explicit_feature_a_only.preflight import build_status_report
+
+    return build_status_report(config)
+
+
+def _efa_require_preflight(config) -> int | None:
+    report = _efa_preflight_report(config)
+    if report.offline_preflight_passed:
+        return None
+    for item in report.errors:
+        print(f"error: preflight: {item}", file=sys.stderr)
+    return EXIT_BLOCKING
+
+
+def _load_efa_config(config_path: Path, project_root_value: Path):
+    from coco_methods.explicit_feature_a_only import load_method_run_config
+
+    return load_method_run_config(config_path, project_root=project_root_value)
+
+
+def _load_efa_config_from_run(run_root: Path):
+    from .assets.artifacts import read_json
+    from coco_methods.explicit_feature_a_only import MethodRunConfig
+
+    config_path = run_root / "config.json"
+    if not config_path.is_file():
+        raise ValueError(f"run root has no config.json: {run_root}")
+    payload = read_json(config_path)
+    if not isinstance(payload, Mapping):
+        raise ValueError(f"run config is not a JSON object: {config_path}")
+    root = payload.get("project_root") or payload.get("repository_root") or str(run_root)
+    return MethodRunConfig.from_json(payload, project_root=root)
+
+
+def _assemble_efa_services(config, doubles=None):
+    from coco_methods.explicit_feature_a_only import assemble_services
+
+    return assemble_services(config, doubles=doubles)
+
+
+def _cmd_efa_preflight(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+        root = _itl_project_root(args.project_root)
+        config = _load_efa_config(config_path, root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid explicit_feature_a_only config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        report = _efa_preflight_report(config)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: explicit-feature-a-only-preflight failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    payload = report.to_json()
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        write_json_atomic(report_path, payload)
+        print(f"report={report_path}")
+    print(json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+    return EXIT_OK if report.offline_preflight_passed else EXIT_BLOCKING
+
+
+def _cmd_efa_run(args: argparse.Namespace) -> int:
+    try:
+        config_path = _resolve_file(args.config, "--config")
+        root = _itl_project_root(args.project_root)
+        config = _load_efa_config(config_path, root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid explicit_feature_a_only config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    blocked = _efa_require_preflight(config)
+    if blocked is not None:
+        return blocked
+    try:
+        services = _assemble_efa_services(config, doubles=_load_itl_doubles(args.doubles_module, config))
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: cannot assemble services: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    from coco_methods.explicit_feature_a_only import MethodRuntime
+
+    runtime = MethodRuntime(config.method, services=services)
+    try:
+        with _itl_run_lock(config.run_root):
+            summary = runtime.run(stop_after=args.stop_after)
+    except Exception as error:  # noqa: BLE001 - report the exact failure
+        print(f"error: explicit-feature-a-only-run failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_itl_result(summary, args.report)
+    return _itl_exit_code(summary)
+
+
+def _cmd_efa_resume(args: argparse.Namespace) -> int:
+    run_root = Path(args.run_root).expanduser().resolve()
+    try:
+        config = _load_efa_config_from_run(run_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid explicit_feature_a_only run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    blocked = _efa_require_preflight(config)
+    if blocked is not None:
+        return blocked
+    try:
+        services = _assemble_efa_services(config, doubles=_load_itl_doubles(args.doubles_module, config))
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: cannot assemble services: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    from coco_methods.explicit_feature_a_only import MethodRuntime
+
+    runtime = MethodRuntime(config.method, services=services)
+    try:
+        with _itl_run_lock(config.run_root):
+            summary = runtime.resume(
+                stop_after=args.stop_after,
+                allow_retry_after_unknown=args.allow_unknown_retry,
+            )
+    except Exception as error:  # noqa: BLE001
+        print(f"error: explicit-feature-a-only-resume failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_itl_result(summary, args.report)
+    return _itl_exit_code(summary)
+
+
+def _cmd_efa_concurrency(args: argparse.Namespace) -> int:
+    from coco_methods.explicit_feature_a_only.runtime import set_runtime_concurrency
+
+    try:
+        settings = set_runtime_concurrency(
+            Path(args.run_root).expanduser().resolve(),
+            mode=args.mode,
+            minimum=args.minimum,
+            maximum=args.maximum,
+        )
+    except (OSError, ValueError, RuntimeError) as error:
+        print(f"error: cannot set run concurrency: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    print(json.dumps(settings, ensure_ascii=False, indent=2))
+    print("applies at the next batch or resume; in-flight requests continue")
+    return EXIT_OK
+
+
+def _cmd_efa_retry(args: argparse.Namespace) -> int:
+    run_root = Path(args.run_root).expanduser().resolve()
+    try:
+        config = _load_efa_config_from_run(run_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid explicit_feature_a_only run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    blocked = _efa_require_preflight(config)
+    if blocked is not None:
+        return blocked
+    try:
+        services = _assemble_efa_services(config, doubles=_load_itl_doubles(args.doubles_module, config))
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: cannot assemble services: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    from coco_methods.explicit_feature_a_only import MethodRuntime
+
+    runtime = MethodRuntime(config.method, services=services)
+    try:
+        with _itl_run_lock(config.run_root):
+            summary = runtime.retry_induction(
+                round_index=args.round,
+                stage=args.stage,
+                candidate_id_value=args.candidate_id,
+                stop_after=args.stop_after,
+                allow_retry_after_unknown=args.allow_unknown_retry,
+            )
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: explicit-feature-a-only-retry failed: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    _emit_itl_result(summary, args.report)
+    return _itl_exit_code(summary)
+
+
+def _cmd_efa_status(args: argparse.Namespace) -> int:
+    run_root = Path(args.run_root).expanduser().resolve()
+    try:
+        config = _load_efa_config_from_run(run_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid explicit_feature_a_only run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        report = _efa_status_report(config)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: explicit-feature-a-only-status failed: {error}", file=sys.stderr)
         return EXIT_BLOCKING
     payload = report.to_json()
     if args.report:
@@ -2334,6 +2650,20 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_itl_retry(args)
     if args.command == "implicit-then-literal-status":
         return _cmd_itl_status(args)
+    if args.command == "implicit-then-literal-concurrency":
+        return _cmd_itl_concurrency(args)
+    if args.command == "explicit-feature-a-only-preflight":
+        return _cmd_efa_preflight(args)
+    if args.command == "explicit-feature-a-only-run":
+        return _cmd_efa_run(args)
+    if args.command == "explicit-feature-a-only-resume":
+        return _cmd_efa_resume(args)
+    if args.command == "explicit-feature-a-only-retry":
+        return _cmd_efa_retry(args)
+    if args.command == "explicit-feature-a-only-status":
+        return _cmd_efa_status(args)
+    if args.command == "explicit-feature-a-only-concurrency":
+        return _cmd_efa_concurrency(args)
     if args.command == "export-mutator-messages":
         return _cmd_export_mutator_messages(args)
     parser.error(f"unknown command: {args.command!r}")

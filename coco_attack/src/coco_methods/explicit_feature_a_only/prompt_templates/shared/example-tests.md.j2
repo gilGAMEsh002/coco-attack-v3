@@ -1,0 +1,10 @@
+## 四个示例测试用例(功能约束)
+{%- for example in examples %}
+### {{ example['label'] }}
+code_prompt: {{ example['code_prompt'] }}
+entry_point: {{ example['entry_point'] }}
+test:
+{{ example['test'] }}
+{% if not loop.last %}
+{% endif %}
+{%- endfor %}

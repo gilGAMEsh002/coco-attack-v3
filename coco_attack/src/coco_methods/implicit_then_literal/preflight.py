@@ -28,6 +28,10 @@ from .contracts import (
 from .runtime import (
     MAX_ROUNDS,
     MAX_SLOTS,
+    validate_baseline_reuse,
+    validate_b_continuation,
+    runtime_concurrency,
+    validate_external_b_seed,
     PHASE_DONE,
     PHASE_PAUSED,
     PHASE_STOPPED,
@@ -127,6 +131,7 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
         "Semgrep tool availability",
     ]
     checks: list[PreflightFinding] = []
+    baseline_reused = False
 
     # 1. Initial template (caller-provided) and fixed baseline are separate roles.
     initial, initial_error = _load_initial_template(method.initial_template_path)
@@ -154,6 +159,13 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
         checks.append(
             PreflightFinding("ok", "comparison_baseline", f"fixed baseline {baseline_sha[:12]}")
         )
+        if method.baseline_training_path:
+            try:
+                reused = validate_baseline_reuse(method, comparison.snapshot)
+                baseline_reused = True
+                checks.append(PreflightFinding("ok", "baseline_reuse", reused["output_dir"]))
+            except (OSError, ValueError) as error:
+                errors.append(f"reused baseline is not usable: {error}")
     except BaselineError as error:
         errors.append(f"fixed comparison baseline is not verifiable: {error}")
 
@@ -247,7 +259,7 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
         or method.check_service == "real"
     )
     if method.enforce_formal_constants:
-        if (method.rounds, method.a_slots, method.b_slots_per_seed, method.top_k) != (
+        if method.mode == "ab" and (method.rounds, method.a_slots, method.b_slots_per_seed, method.top_k) != (
             MAX_ROUNDS,
             MAX_SLOTS,
             MAX_SLOTS,
@@ -256,10 +268,16 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
             errors.append("formal constants are not the fixed 5/5/5/5 values")
         if method.victim_repeats != 10:
             errors.append("formal runs fix victim_repeats=10")
-    elif real_mode:
+    elif real_mode and method.mode != "b_only":
         errors.append(
             "formal constants are disabled; real runs must keep enforce_formal_constants=True"
         )
+    elif method.mode == "b_only":
+        warnings.append("formal constants are disabled (explicit B-only exploratory run)")
+        if real_mode and method.check_service != "real":
+            errors.append("real B-only runs require check_service='real'")
+        if real_mode and method.victim_repeats != 10:
+            errors.append("real B-only runs require victim_repeats=10")
     else:
         warnings.append("formal constants are disabled (explicit offline mock run)")
     try:
@@ -267,6 +285,39 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
     except Exception as error:  # noqa: BLE001 - surface the exact reason
         errors.append(str(error))
     checks.append(PreflightFinding("ok", "sources", json.dumps(sources, sort_keys=True)))
+    checks.append(PreflightFinding(
+        "ok", "iteration_mode",
+        (f"{method.mode}: {method.rounds} rounds, 0 A candidates, "
+         f"{len(method.b_seeds)} initial external seeds, {method.b_slots_per_seed} B candidates per seed")
+        if method.mode == "b_only" else
+        (f"{method.mode}: {method.rounds} rounds, {method.a_slots} A candidates per round, "
+         f"{method.b_slots_per_seed} B candidates per seed"),
+    ))
+    if method.b_batch_size is not None:
+        checks.append(PreflightFinding("ok", "b_batch_feedback",
+            f"B batches of at most {method.b_batch_size}: propose -> train -> induct, final global ranking"))
+    try:
+        policy = runtime_concurrency(method)
+        checks.append(PreflightFinding("ok", "victim_concurrency", json.dumps(policy, sort_keys=True) + " (next batch or explicit resume)"))
+    except (OSError, ValueError) as error:
+        errors.append(f"runtime concurrency settings are invalid: {error}")
+    if method.mode == "b_only":
+        for seed in method.b_seeds:
+            try:
+                if initial is not None:
+                    validate_external_b_seed(seed, initial.combination_id)
+            except (OSError, ValueError) as error:
+                errors.append(str(error))
+        checks.append(
+            PreflightFinding("ok", "b_seeds", f"{len(method.b_seeds)} external seed(s)")
+        )
+
+    if method.b_continuation_source_run_dir:
+        try:
+            continuation = validate_b_continuation(method)
+            checks.append(PreflightFinding("ok", "b_continuation", f"25 proposals; {continuation['completed_trainings']} complete source trainings"))
+        except (OSError, ValueError) as error:
+            errors.append(f"B continuation is not usable: {error}")
 
     # 4. Run-path isolation and existing-directory recovery identity.
     run_root = Path(method.run_root)
@@ -290,6 +341,8 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
     status = _baseline_status(
         run_root, method.training_task_ids, method.victim_repeats, baseline_sha
     )
+    if baseline_reused:
+        status = "reused_samples_complete"
 
     report = PreflightReport(
         schema_version=PREFLIGHT_SCHEMA_VERSION,
@@ -327,6 +380,8 @@ class StatusReport:
     counts: Mapping[str, Any]
     output_locations: Mapping[str, str]
     next_command: str | None
+    runtime_concurrency: Mapping[str, Any] = field(default_factory=dict)
+    b_feedback: Mapping[str, Any] | None = None
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -342,6 +397,9 @@ class StatusReport:
             "counts": dict(self.counts),
             "output_locations": dict(self.output_locations),
             "next_command": self.next_command,
+            "runtime_concurrency": dict(self.runtime_concurrency),
+            **({"b_feedback": dict(self.b_feedback)} if self.b_feedback is not None else {}),
+            "runtime_concurrency_applies": "next batch or explicit resume; current live batch is unchanged",
         }
 
 
@@ -358,6 +416,24 @@ def _read_json_if_present(path: Path) -> Mapping[str, Any] | None:
         return None
     payload = read_json(path)
     return payload if isinstance(payload, Mapping) else None
+
+
+def _b_feedback_status(method: MethodRuntimeConfig, state: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    if method.b_batch_size is None:
+        return None
+    round_index = int((state or {}).get("round_index") or 1)
+    stage = Path(method.run_root) / "rounds" / str(round_index) / "B"
+    plan = _read_json_if_present(stage / "plan.json")
+    committed = 0
+    for path in (stage / "batches").glob("*.json"):
+        batch = _read_json_if_present(path)
+        committed += int(bool(batch and batch.get("committed")))
+    expected = ((len(method.b_seeds) * method.b_slots_per_seed + method.b_batch_size - 1) // method.b_batch_size
+                if method.mode == "b_only" and round_index == 1 else None)
+    return {"b_batch_size": method.b_batch_size,
+            "batch_index": (state or {}).get("b_batch_index") if plan else None,
+            "batch_count": plan.get("batch_count") if plan else expected,
+            "committed_batches": committed}
 
 
 def build_status_report(config: MethodRunConfig) -> StatusReport:
@@ -382,6 +458,8 @@ def build_status_report(config: MethodRunConfig) -> StatusReport:
             counts={},
             output_locations={"run_root": str(run_root)},
             next_command=f"implicit-then-literal-run --config <config>",
+            runtime_concurrency=runtime_concurrency(method),
+            b_feedback=_b_feedback_status(method, state),
         )
 
     phase = str(state.get("phase") or "unknown")
@@ -448,6 +526,8 @@ def build_status_report(config: MethodRunConfig) -> StatusReport:
             "state": str(run_root / "state.json"),
         },
         next_command=next_command,
+        runtime_concurrency=runtime_concurrency(method),
+        b_feedback=_b_feedback_status(method, state),
     )
 
 

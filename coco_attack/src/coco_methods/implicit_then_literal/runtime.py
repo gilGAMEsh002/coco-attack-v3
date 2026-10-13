@@ -28,9 +28,11 @@ from __future__ import annotations
 import json
 import math
 import re
+import shutil
 from collections.abc import Callable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -203,9 +205,21 @@ class MethodRuntimeConfig:
     semgrep_config: str | None = None
     check_workers: int = DEFAULT_CHECK_WORKERS
     victim_max_concurrency: int = DEFAULT_VICTIM_CONCURRENCY
+    victim_concurrency_mode: str = "fixed"
+    victim_min_concurrency: int = 1
+    mode: str = "ab"
+    #: External seeds for ``b_only`` runs.  Each entry names one gate-passed A
+    #: candidate from another run: ``{"source_run_dir", "round_index",
+    #: "candidate_id"}``, where ``source_run_dir`` is the source run root (the
+    #: directory that contains ``config.json``).  The runtime copies that
+    #: candidate's snapshot into this run's store on the first B proposal; later
+    #: rounds inherit the previous B commit.  Only valid when ``mode == "b_only"``.
+    b_seeds: tuple[dict, ...] = ()
+    b_continuation_source_run_dir: str | None = None
     rounds: int = MAX_ROUNDS
     a_slots: int = MAX_SLOTS
     b_slots_per_seed: int = MAX_SLOTS
+    b_batch_size: int | None = None
     top_k: int = MAX_SLOTS
     training_task_ids: tuple[str, str] = (
         "BigCodeBench/13",
@@ -221,12 +235,28 @@ class MethodRuntimeConfig:
     #: in-process construction may leave it empty.
     input_binding: tuple[tuple[str, str], ...] = ()
     prompt_template_sha256: str | None = field(default_factory=template_identity)
+    baseline_training_path: str | None = None
     #: Formal runs fix the research constants below.  Reduced-scale offline tests
     #: must set this to ``False`` explicitly; the service-concurrency caps are
     #: always enforced regardless.
     enforce_formal_constants: bool = True
 
     def __post_init__(self) -> None:
+        if self.mode not in ("ab", "a_only", "b_only"):
+            raise MethodRuntimeError("config.mode must be 'ab', 'a_only' or 'b_only'")
+        if self.mode == "b_only":
+            if self.enforce_formal_constants:
+                raise MethodRuntimeError(
+                    "b_only runs are exploratory; enforce_formal_constants must be False"
+                )
+            object.__setattr__(self, "b_seeds", self._validate_b_seeds(self.b_seeds))
+        elif self.b_seeds:
+            raise MethodRuntimeError("b_seeds is only allowed for mode='b_only'")
+        if self.b_continuation_source_run_dir is not None and (self.mode != "b_only" or self.rounds != 1):
+            raise MethodRuntimeError("B continuation requires a single-round B-only run")
+        if self.b_batch_size is not None and (self.mode == "a_only" or isinstance(self.b_batch_size, bool)
+                or not isinstance(self.b_batch_size, int) or self.b_batch_size < 1):
+            raise MethodRuntimeError("b_batch_size requires AB/B-only mode and a positive integer")
         if self.prompt_template_sha256 is not None and (
             not isinstance(self.prompt_template_sha256, str)
             or re.fullmatch(r"[0-9a-f]{64}", self.prompt_template_sha256) is None
@@ -246,7 +276,7 @@ class MethodRuntimeConfig:
             value = getattr(self, name)
             if not isinstance(value, str) or not value:
                 raise MethodRuntimeError(f"config.{name} must be a non-empty string")
-        for name in ("comparison_baseline_path", "execution_config_path", "semgrep_config"):
+        for name in ("comparison_baseline_path", "execution_config_path", "semgrep_config", "baseline_training_path", "b_continuation_source_run_dir"):
             value = getattr(self, name)
             if value is not None and (not isinstance(value, str) or not value):
                 raise MethodRuntimeError(f"config.{name} must be a non-empty string or null")
@@ -258,6 +288,9 @@ class MethodRuntimeConfig:
             raise MethodRuntimeError("config.victim_source must be 'mock' or 'dmx'")
         if self.check_service not in ("mock", "real"):
             raise MethodRuntimeError("config.check_service must be 'mock' or 'real'")
+        if self.mode == "b_only" and self.victim_source == "dmx":
+            if self.check_service != "real" or self.victim_repeats != 10:
+                raise MethodRuntimeError("real B-only runs require check_service='real' and victim_repeats=10")
 
         def _positive(name: str) -> int:
             value = getattr(self, name)
@@ -273,10 +306,17 @@ class MethodRuntimeConfig:
             "victim_max_concurrency",
             "rounds",
             "a_slots",
-            "b_slots_per_seed",
             "top_k",
         ):
             _positive(name)
+        if self.mode in ("ab", "b_only"):
+            _positive("b_slots_per_seed")
+        elif (
+            isinstance(self.b_slots_per_seed, bool)
+            or not isinstance(self.b_slots_per_seed, int)
+            or self.b_slots_per_seed != 0
+        ):
+            raise MethodRuntimeError("A-only runs require b_slots_per_seed=0")
         if isinstance(self.victim_temperature, bool) or not isinstance(
             self.victim_temperature, (int, float)
         ):
@@ -299,11 +339,12 @@ class MethodRuntimeConfig:
                     "config.input_binding entries must be non-empty key/value strings"
                 )
         object.__setattr__(self, "input_binding", tuple(sorted(binding)))
-        for name in ("rounds", "a_slots", "b_slots_per_seed", "top_k"):
-            if getattr(self, name) > MAX_SLOTS:
-                raise MethodRuntimeError(
-                    f"config.{name} must be <= {MAX_SLOTS} (fixed research constant)"
-                )
+        if self.mode == "ab":
+            for name in ("rounds", "a_slots", "b_slots_per_seed", "top_k"):
+                if getattr(self, name) > MAX_SLOTS:
+                    raise MethodRuntimeError(
+                        f"config.{name} must be <= {MAX_SLOTS} (fixed research constant)"
+                    )
         tasks = tuple(self.training_task_ids)
         if len(tasks) != 2 or any(not isinstance(task, str) or not task for task in tasks):
             raise MethodRuntimeError(
@@ -313,17 +354,21 @@ class MethodRuntimeConfig:
             raise MethodRuntimeError("config.training_task_ids must be distinct")
         if not isinstance(self.enforce_formal_constants, bool):
             raise MethodRuntimeError("config.enforce_formal_constants must be a bool")
-        # Service-concurrency caps are research constants, never scale knobs.
+        # Example-check container budget stays bounded; victim transport can
+        # explicitly select a larger fixed pool or an adaptive request window.
         if self.check_workers > DEFAULT_CHECK_WORKERS:
             raise MethodRuntimeError(
                 f"config.check_workers must be <= {DEFAULT_CHECK_WORKERS}"
             )
-        if self.victim_max_concurrency > DEFAULT_VICTIM_CONCURRENCY:
-            raise MethodRuntimeError(
-                f"config.victim_max_concurrency must be <= {DEFAULT_VICTIM_CONCURRENCY}"
-            )
+        if self.victim_concurrency_mode not in ("fixed", "adaptive"):
+            raise MethodRuntimeError("config.victim_concurrency_mode must be 'fixed' or 'adaptive'")
+        if (isinstance(self.victim_min_concurrency, bool) or not isinstance(self.victim_min_concurrency, int)
+                or not 1 <= self.victim_min_concurrency <= self.victim_max_concurrency):
+            raise MethodRuntimeError("config.victim_min_concurrency must be a positive integer <= victim_max_concurrency")
+        if self.victim_concurrency_mode == "fixed" and self.victim_min_concurrency != 1:
+            raise MethodRuntimeError("fixed victim concurrency requires victim_min_concurrency=1")
         if self.enforce_formal_constants:
-            if (
+            if self.mode == "ab" and (
                 self.rounds != MAX_ROUNDS
                 or self.a_slots != MAX_SLOTS
                 or self.b_slots_per_seed != MAX_SLOTS
@@ -335,11 +380,11 @@ class MethodRuntimeConfig:
                 )
             if self.victim_repeats != 10:
                 raise MethodRuntimeError("formal runs fix victim_repeats=10")
-            if tuple(self.training_task_ids) != ("BigCodeBench/13", "BigCodeBench/1105"):
+            if self.mode == "ab" and tuple(self.training_task_ids) != ("BigCodeBench/13", "BigCodeBench/1105"):
                 raise MethodRuntimeError(
                     "formal runs fix training_task_ids=('BigCodeBench/13','BigCodeBench/1105')"
                 )
-            if self.victim_model != "DeepSeek-V3.2":
+            if self.mode == "ab" and self.victim_model != "DeepSeek-V3.2":
                 raise MethodRuntimeError("formal runs fix victim_model='DeepSeek-V3.2'")
             # A formal real-victim run cannot fall back to offline mock checks:
             # mixed service selections are only allowed for explicitly reduced
@@ -349,6 +394,39 @@ class MethodRuntimeConfig:
                     "formal runs with victim_source='dmx' require check_service='real'; "
                     "mixed sources are only allowed with enforce_formal_constants=False"
                 )
+
+    @staticmethod
+    def _validate_b_seeds(b_seeds: Any) -> tuple[dict, ...]:
+        if not isinstance(b_seeds, (tuple, list)) or not b_seeds:
+            raise MethodRuntimeError("b_only runs require at least one b_seeds entry")
+        normalized: list[dict] = []
+        for item in b_seeds:
+            if not isinstance(item, Mapping):
+                raise MethodRuntimeError("each b_seeds entry must be a JSON object")
+            source_run_dir = item.get("source_run_dir")
+            round_index = item.get("round_index")
+            candidate_id = item.get("candidate_id")
+            if (
+                not isinstance(source_run_dir, str)
+                or not source_run_dir
+                or isinstance(round_index, bool)
+                or not isinstance(round_index, int)
+                or round_index < 1
+                or not isinstance(candidate_id, str)
+                or not candidate_id
+            ):
+                raise MethodRuntimeError(
+                    "each b_seeds entry needs a non-empty source_run_dir and "
+                    "candidate_id plus a positive round_index"
+                )
+            normalized.append(
+                {
+                    "source_run_dir": source_run_dir,
+                    "round_index": round_index,
+                    "candidate_id": candidate_id,
+                }
+            )
+        return tuple(normalized)
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -374,9 +452,20 @@ class MethodRuntimeConfig:
             "semgrep_config": self.semgrep_config,
             "check_workers": self.check_workers,
             "victim_max_concurrency": self.victim_max_concurrency,
+            **({"victim_concurrency_mode": self.victim_concurrency_mode,
+                "victim_min_concurrency": self.victim_min_concurrency}
+               if self.victim_concurrency_mode == "adaptive" else {}),
+            **({"mode": self.mode} if self.mode != "ab" else {}),
+            **({"b_continuation_source_run_dir": self.b_continuation_source_run_dir}
+               if self.b_continuation_source_run_dir is not None else {}),
+            **({"b_seeds": [dict(seed) for seed in self.b_seeds]}
+               if self.b_seeds else {}),
+            **({"baseline_training_path": self.baseline_training_path}
+               if self.baseline_training_path is not None else {}),
             "rounds": self.rounds,
             "a_slots": self.a_slots,
             "b_slots_per_seed": self.b_slots_per_seed,
+            **({"b_batch_size": self.b_batch_size} if self.b_batch_size is not None else {}),
             "top_k": self.top_k,
             "training_task_ids": list(self.training_task_ids),
             "method_protocol_version": self.method_protocol_version,
@@ -414,6 +503,8 @@ class MethodRuntimeConfig:
             values["prompt_template_sha256"] = None
         if "training_task_ids" in values:
             values["training_task_ids"] = tuple(values["training_task_ids"])
+        if "b_seeds" in values and values["b_seeds"] is not None:
+            values["b_seeds"] = tuple(dict(seed) for seed in values["b_seeds"])
         if "input_binding" in values and values["input_binding"] is not None:
             values["input_binding"] = tuple(
                 (str(key), str(value)) for key, value in values["input_binding"]
@@ -426,6 +517,48 @@ class MethodRuntimeConfig:
 
     def config_sha256(self) -> str:
         return sha256_bytes(canonical_json_bytes(self.to_json()))
+
+
+_CONCURRENCY_FIELDS = ("victim_concurrency_mode", "victim_min_concurrency", "victim_max_concurrency")
+
+
+def _validate_runtime_concurrency(policy: Mapping[str, Any]) -> dict[str, Any]:
+    mode, minimum, maximum = (policy[key] for key in _CONCURRENCY_FIELDS)
+    if mode not in ("fixed", "adaptive"):
+        raise MethodRuntimeError("runtime concurrency mode must be fixed or adaptive")
+    if (isinstance(minimum, bool) or not isinstance(minimum, int) or minimum < 1
+            or isinstance(maximum, bool) or not isinstance(maximum, int) or maximum < minimum):
+        raise MethodRuntimeError("runtime concurrency requires positive integer minimum <= maximum")
+    if mode == "fixed" and minimum != 1:
+        raise MethodRuntimeError("fixed runtime concurrency requires minimum=1")
+    return {key: policy[key] for key in _CONCURRENCY_FIELDS}
+
+
+def runtime_concurrency(config: MethodRuntimeConfig) -> dict[str, Any]:
+    """Scheduling policy for the next new batch or an explicit generation resume."""
+    policy = {key: getattr(config, key) for key in _CONCURRENCY_FIELDS}
+    path = Path(config.run_root) / "runtime_settings.json"
+    if path.is_file():
+        settings = read_json(path)
+        if not isinstance(settings, Mapping) or set(settings) - {*_CONCURRENCY_FIELDS, "changes"}:
+            raise MethodRuntimeError("runtime_settings.json accepts only concurrency fields and changes history")
+        policy.update({key: settings[key] for key in _CONCURRENCY_FIELDS if key in settings})
+    return _validate_runtime_concurrency(policy)
+
+
+def set_runtime_concurrency(run_root: Path | str, *, mode: str, minimum: int, maximum: int) -> dict[str, Any]:
+    """Record transport settings separately from the original run identity."""
+    root = Path(run_root)
+    config = MethodRuntimeConfig.from_json(read_json(root / "config.json"))
+    policy = _validate_runtime_concurrency(dict(zip(_CONCURRENCY_FIELDS, (mode, minimum, maximum), strict=True)))
+    path = root / "runtime_settings.json"
+    previous = read_json(path) if path.is_file() else {}
+    runtime_concurrency(config)  # reject unrelated research fields in an existing settings file
+    changes = list(previous.get("changes") or [])
+    changes.append({"recorded_at": datetime.now(timezone.utc).isoformat(), **policy})
+    settings = {**policy, "changes": changes}
+    write_json_atomic(path, settings)
+    return settings
 
 
 # --------------------------------------------------------------------------- #
@@ -742,6 +875,166 @@ def validate_feedback_matrix(
     return True
 
 
+def validate_baseline_reuse(
+    config: MethodRuntimeConfig, snapshot: TemplateSnapshot
+) -> dict[str, Any]:
+    """Check an explicitly referenced completed baseline without modifying it."""
+    source = Path(config.baseline_training_path or "")
+    payload = read_json(source / "loop_config.json")
+    if not isinstance(payload, Mapping):
+        raise MethodRuntimeError("reused baseline loop config must be an object")
+    saved = dict(payload)
+    saved_sha = saved.pop("config_sha256", None)
+    if saved_sha != sha256_bytes(canonical_json_bytes(saved)):
+        raise MethodRuntimeError("reused baseline loop config hash does not match")
+    # Concurrency is a transport policy, so it need not match the new run;
+    # validate the source policy under its own original config and hash.
+    try:
+        TrainingLoopConfig.from_json(saved)
+    except TrainingLoopError as error:
+        raise MethodRuntimeError(f"reused baseline loop config is invalid: {error}") from error
+    expected = {
+        "snapshot_path": config.comparison_baseline_path,
+        "assets_root": config.assets_root, "data_dir": config.prepared_data_dir,
+        "output_dir": str(source), "repo_dir": config.repository_root,
+        "task_ids": list(config.training_task_ids), "repeats": config.victim_repeats,
+        "stage": "search", "form": snapshot.form, "prompt_version": snapshot.prompt_version,
+        "batch_id": "itl-baseline", "source": config.victim_source,
+        "model": config.victim_model, "temperature": float(config.victim_temperature),
+        "max_tokens": config.victim_max_tokens,
+        "request_timeout": float(config.victim_request_timeout),
+        "max_request_attempts": config.victim_max_request_attempts,
+        "max_sample_retries": 0,
+        "semgrep_config": config.semgrep_config, "semgrep_timeout_seconds": 60.0,
+        "mock_scenario": "normal", "baseline_config": None,
+        "baseline_data_dir": None, "baseline_evaluation_dir": None,
+        "baseline_evaluators_config": None, "baseline_static": None,
+    }
+    actual = dict(saved)
+    if config.victim_source == "dmx":
+        actual["model"] = str(actual.get("model") or "").removeprefix("openai/")
+    differences = [key for key, value in expected.items() if actual.get(key) != value]
+    if differences:
+        raise MethodRuntimeError(f"reused baseline configuration differs: {differences}")
+    if not validate_feedback_matrix(
+        source, task_ids=config.training_task_ids, repeats=config.victim_repeats,
+        snapshot_sha=snapshot.content_sha256(),
+    ):
+        raise MethodRuntimeError("reused baseline does not have complete training evidence")
+    return {
+        "output_dir": str(source), "loop_config_sha256": saved_sha,
+        "source_concurrency_policy": {
+            "concurrency_mode": saved.get("concurrency_mode", "fixed"),
+            "min_concurrency": saved.get("min_concurrency", 1),
+            "max_concurrency": saved.get("max_concurrency"),
+        },
+    }
+
+
+def validate_b_continuation(config: MethodRuntimeConfig) -> dict[str, Any]:
+    """Validate this one modern B round stopped before any experience induction."""
+    source = Path(config.b_continuation_source_run_dir or "")
+    if source.resolve() == Path(config.run_root).resolve():
+        raise MethodRuntimeError("B continuation must use a new run root")
+    saved = read_json(source / "config.json")
+    old = MethodRuntimeConfig.from_json(saved)
+    if saved.get("config_sha256") != old.config_sha256():
+        raise MethodRuntimeError("B continuation source config hash mismatch")
+    if old.mode != "b_only" or old.rounds != 1:
+        raise MethodRuntimeError("B continuation source must be one modern B-only round")
+    permitted = {"run_id", "run_root", "input_binding", "execution_config_path", "victim_max_concurrency",
+                 "victim_min_concurrency", "victim_concurrency_mode", "b_continuation_source_run_dir", "baseline_training_path"}
+    before, after = old.to_json(), config.to_json()
+    differences = [key for key in set(before) | set(after) if key not in permitted and before.get(key) != after.get(key)]
+    if differences:
+        raise MethodRuntimeError(f"B continuation research configuration differs: {sorted(differences)}")
+    old_execution = sha256_file(old.execution_config_path) if old.execution_config_path else None
+    new_execution = sha256_file(config.execution_config_path) if config.execution_config_path else None
+    if old_execution != new_execution:
+        raise MethodRuntimeError("B continuation execution configuration differs")
+    bundle = PromptBundle.from_json(read_json(source / "prompt_bundle.json"))
+    if bundle.sha256 != config.prompt_template_sha256:
+        raise MethodRuntimeError("B continuation prompt bundle differs")
+    state = read_json(source / "state.json")
+    if (state.get("schema_version") != STATE_SCHEMA_VERSION or state.get("config_sha256") != old.config_sha256()
+            or state.get("phase") != PHASE_STOPPED or state.get("stopped_from") != PHASE_B_TRAIN
+            or state.get("round_index") != 1 or not state.get("pause_request_applied")):
+        raise MethodRuntimeError("B continuation source must be controlled stopped at B training boundary")
+    original_baseline = (state.get("baseline") or {}).get("output_dir")
+    if (not original_baseline or not config.baseline_training_path
+            or Path(config.baseline_training_path).resolve() != Path(original_baseline).resolve()):
+        raise MethodRuntimeError("B continuation must reference the original comparison baseline evidence")
+    stage = source / "rounds" / "1" / "B"
+    if (stage / "commit.json").exists() or (stage / "ranking.json").exists():
+        raise MethodRuntimeError("B continuation source already has a ranking/commit")
+    plan = read_json(stage / "plan.json")
+    if plan.get("schema_version") != PLAN_SCHEMA_VERSION or plan.get("stage") != "B" or plan.get("round_index") != 1:
+        raise MethodRuntimeError("B continuation source plan is not the current B round format")
+    slots = plan.get("candidates") or []
+    if len(slots) != 25 or len(old.b_seeds) != 5 or old.b_slots_per_seed != 5:
+        raise MethodRuntimeError("B continuation expects exactly 25 materialized proposals from five seeds")
+    combination = read_snapshot(old.initial_template_path).combination_id
+    records, completed = [], 0
+    pending_seen = False
+    for expected_index, slot in enumerate(slots, 1):
+        path = stage / "candidates" / slot["candidate_id"] / "record.json"
+        record = read_json(path)
+        identity = record.get("candidate") or {}
+        if (slot.get("candidate_index") != expected_index or record.get("candidate_id") != slot["candidate_id"]
+                or identity.get("run_id") != old.run_id or identity.get("stage") != "B"
+                or identity.get("candidate_index") != expected_index or identity.get("round_index") != 1
+                or record.get("proposal_status") not in PROPOSAL_LEGAL):
+            raise MethodRuntimeError(f"B continuation proposal {expected_index} identity/materialization differs")
+        if record.get("inducted") or record.get("induction_id") or record.get("version_id"):
+            raise MethodRuntimeError("B continuation source already has an induction")
+        snapshot = read_snapshot(source / "snapshots" / combination / record["content_sha256"])
+        training = record.get("training") or {}
+        if training.get("completion") == "complete":
+            if pending_seen:
+                raise MethodRuntimeError("B continuation training must be a complete prefix")
+            if not validate_feedback_matrix(training["output_dir"], task_ids=config.training_task_ids,
+                                           repeats=config.victim_repeats, snapshot_sha=snapshot.content_sha256()):
+                raise MethodRuntimeError("B continuation source training evidence is incomplete")
+            completed += 1
+        else:
+            pending_seen = True
+            training_path = path.parent / "training"
+            if training_path.exists() and any(training_path.rglob("*")):
+                raise MethodRuntimeError("B continuation pending training has partial/in-flight evidence")
+        records.append(record)
+    if completed != state["pause_request_applied"].get("candidate_index"):
+        raise MethodRuntimeError("B continuation prefix does not match the controlled stop boundary")
+    return {"source_run_dir": str(source), "config_sha256": old.config_sha256(),
+            "plan": plan, "records": records, "completed_trainings": completed,
+            "combination_id": combination}
+
+
+def validate_external_b_seed(item: Mapping[str, Any], combination_id: str) -> tuple[dict[str, Any], Path]:
+    """Read a gate-passed A seed without requiring completed training or a commit."""
+    source = Path(item["source_run_dir"])
+    path = source / "rounds" / str(item["round_index"]) / "A" / "candidates" / item["candidate_id"] / "record.json"
+    if not path.is_file():
+        raise MethodRuntimeError(f"b_seed record missing: {path}")
+    record = read_json(path)
+    if not isinstance(record, Mapping):
+        raise MethodRuntimeError(f"b_seed record is not an object: {path}")
+    identity = record.get("candidate") or {}
+    if (record.get("candidate_id") != item["candidate_id"]
+            or identity.get("round_index") != item["round_index"]
+            or identity.get("stage") != "A"):
+        raise MethodRuntimeError(f"b_seed identity mismatch: {path}")
+    if record.get("proposal_status") not in PROPOSAL_LEGAL or (record.get("gate") or {}).get("status") != "passed":
+        raise MethodRuntimeError(f"b_seed must be a legal gate-passed A candidate: {path}")
+    content_sha = record.get("content_sha256")
+    if not isinstance(content_sha, str) or not content_sha:
+        raise MethodRuntimeError(f"b_seed record lacks content_sha256: {path}")
+    snapshot_dir = source / "snapshots" / combination_id / content_sha
+    snapshot = read_snapshot(snapshot_dir)
+    if snapshot.combination_id != combination_id or snapshot.content_sha256() != content_sha:
+        raise MethodRuntimeError(f"b_seed snapshot combination/hash mismatch: {path}")
+    return dict(record), snapshot_dir
+
+
 class MethodRuntime:
     """Drive (or resume) the five-round A/B loop for one explicit run root."""
 
@@ -777,6 +1070,8 @@ class MethodRuntime:
             path = self.run_root / "prompt_bundle.json"
             if path.is_file():
                 bundle = PromptBundle.from_json(read_json(path))
+            elif self.config.b_continuation_source_run_dir:
+                bundle = PromptBundle.from_json(read_json(Path(self.config.b_continuation_source_run_dir) / "prompt_bundle.json"))
             else:
                 bundle = load_packaged_bundle()
             if bundle.sha256 != expected:
@@ -975,6 +1270,8 @@ class MethodRuntime:
             raise MethodRuntimeError(
                 f"unknown stop checkpoint {stop_after!r}; expected one of {STOP_CHECKPOINTS}"
             )
+        if self.config.b_continuation_source_run_dir and not self.state_path.is_file():
+            validate_b_continuation(self.config)
         self._allow_retry_after_unknown = bool(allow_retry_after_unknown)
         self.run_root.mkdir(parents=True, exist_ok=True)
         self._load_config_file()
@@ -1014,7 +1311,7 @@ class MethodRuntime:
             if handler is None:
                 raise MethodRuntimeError(f"unknown phase {state['phase']!r}")
             handler(state)
-            if state["phase"] == PHASE_PAUSED:
+            if state["phase"] in (PHASE_PAUSED, PHASE_STOPPED):
                 break
             if stop_after is not None and self._should_stop(state, stop_after):
                 self._stop(state, stop_after)
@@ -1026,21 +1323,24 @@ class MethodRuntime:
 
         if stop_after in (state.get("stop_checkpoints_reached") or []):
             return False
-        if state.get("phase") != PHASE_A_PROPOSE:
+        propose_phase = PHASE_B_PROPOSE if self.config.mode == "b_only" else PHASE_A_PROPOSE
+        if state.get("phase") != propose_phase:
             # Every checkpoint sits on the durable boundary before the next
-            # external action; that boundary is always the next A proposal.
+            # external action; that boundary is the next proposal stage.
             return False
         round_index = int(state.get("round_index") or 1)
         if stop_after == STOP_CHECKPOINT_BASELINE:
             baseline = state.get("baseline")
+            last_propose_stage = "B" if self.config.mode == "b_only" else "A"
             return (
                 isinstance(baseline, Mapping)
                 and baseline.get("status") == "complete"
                 and round_index == 1
-                and self._load_plan(1, "A") is None
+                and self._load_plan(1, last_propose_stage) is None
             )
         # round_1_complete: round 1 fully committed and the pointer advanced.
-        return round_index >= 2 and self._read_commit(1, "B") is not None
+        last_stage = "A" if self.config.mode == "a_only" else "B"
+        return round_index >= 2 and self._read_commit(1, last_stage) is not None
 
     def _stop(self, state: dict[str, Any], stop_after: str) -> None:
         reached = list(state.get("stop_checkpoints_reached") or [])
@@ -1051,6 +1351,23 @@ class MethodRuntime:
         state["phase"] = PHASE_STOPPED
         state["stop_reason"] = f"checkpoint:{stop_after}"
         self._persist_state(state)
+
+    def _apply_pause_request(self, state: dict[str, Any], round_index: int, stage: str, record: Mapping[str, Any]) -> bool:
+        path = self.run_root / "pause_request.json"
+        if not path.is_file() or state.get("pause_request_applied") is not None:
+            return False
+        request = read_json(path)
+        if (not isinstance(request, Mapping) or request.get("round_index") != round_index
+                or request.get("stage") != stage or request.get("candidate_index") != record["candidate_index"]):
+            return False
+        if not self._has_complete_training(record):
+            return False
+        state["pause_request_applied"] = {**dict(request), "candidate_id": record["candidate_id"], "request_sha256": sha256_file(path)}
+        state["stopped_from"] = state["phase"]
+        state["phase"] = PHASE_STOPPED
+        state["stop_reason"] = str(request.get("reason") or "user requested pause after training")
+        self._persist_state(state)
+        return True
 
     def _assert_container_budget(self) -> None:
         """Refuse to start if the check workers exceed the container budget."""
@@ -1167,15 +1484,25 @@ class MethodRuntime:
                 if self.config.comparison_baseline_path
                 else Path(self.config.repository_root) / reference.path
             )
-            output_dir = self.run_root / "baseline" / "training"
-            config = self._training_config(
-                snapshot_path=str(baseline_snapshot_path),
-                output_dir=output_dir,
-                form=snapshot.form,
-                prompt_version=snapshot.prompt_version,
-                batch_id="itl-baseline",
+            reuse_source = (
+                validate_baseline_reuse(self.config, snapshot)
+                if self.config.baseline_training_path else None
             )
-            summary = self.services.training_runner(config)
+            output_dir = (
+                Path(self.config.baseline_training_path)
+                if self.config.baseline_training_path
+                else self.run_root / "baseline" / "training"
+            )
+            summary = None
+            if not reuse_source:
+                config = self._training_config(
+                    snapshot_path=str(baseline_snapshot_path),
+                    output_dir=output_dir,
+                    form=snapshot.form,
+                    prompt_version=snapshot.prompt_version,
+                    batch_id="itl-baseline",
+                )
+                summary = self.services.training_runner(config)
             info = self._adopt_training(output_dir, snapshot, summary)
             if info is None:
                 self._pause(state, "baseline_training_not_ready")
@@ -1193,9 +1520,11 @@ class MethodRuntime:
                 if (output_dir / "feedback.json").is_file()
                 else info["candidate_hash"],
             }
+            if reuse_source:
+                baseline["reuse_source"] = reuse_source
             state["baseline"] = baseline
             self._persist_state(state)
-        state["phase"] = PHASE_A_PROPOSE
+        state["phase"] = PHASE_B_PROPOSE if self.config.mode == "b_only" else PHASE_A_PROPOSE
         self._persist_state(state)
 
     # -- A propose -------------------------------------------------------- #
@@ -1499,7 +1828,8 @@ class MethodRuntime:
         batch_id: str,
         stage: str = "A",
     ) -> TrainingLoopConfig:
-        return TrainingLoopConfig(
+        policy = runtime_concurrency(self.config)
+        fresh = TrainingLoopConfig(
             snapshot_path=snapshot_path,
             assets_root=self.config.assets_root,
             data_dir=self.config.prepared_data_dir,
@@ -1516,10 +1846,36 @@ class MethodRuntime:
             max_tokens=self.config.victim_max_tokens,
             request_timeout=float(self.config.victim_request_timeout),
             max_request_attempts=self.config.victim_max_request_attempts,
-            max_concurrency=self.config.victim_max_concurrency,
+            max_concurrency=policy["victim_max_concurrency"],
+            concurrency_mode=policy["victim_concurrency_mode"],
+            min_concurrency=policy["victim_min_concurrency"],
             semgrep_config=self.config.semgrep_config,
             repo_dir=self.config.repository_root,
         )
+        saved_path = output_dir / "loop_config.json"
+        if not saved_path.is_file():
+            return fresh
+        payload = dict(read_json(saved_path))
+        saved_hash = payload.pop("config_sha256", None)
+        original = TrainingLoopConfig.from_json(payload)
+        if saved_hash is not None and saved_hash != original.run_config_sha256():
+            raise MethodRuntimeError("saved training config hash differs from its contents")
+        normalized = replace(original, model=original.model.removeprefix("openai/")) if original.source == "dmx" else original
+        before, after = normalized.to_json(), fresh.to_json()
+        transport = {"concurrency_mode", "min_concurrency", "max_concurrency"}
+        differences = [key for key in set(before) | set(after) if key not in transport and before.get(key) != after.get(key)]
+        if differences:
+            raise MethodRuntimeError(f"saved training research configuration differs: {sorted(differences)}")
+        generation = output_dir / "generation"
+        original_policy = (normalized.concurrency_mode, normalized.min_concurrency, normalized.max_concurrency)
+        effective_policy = tuple(policy[key] for key in _CONCURRENCY_FIELDS)
+        if original_policy != effective_policy or (generation / "concurrency_override.json").is_file():
+            write_json_atomic(generation / "concurrency_override.json", {
+                "concurrency_mode": policy["victim_concurrency_mode"],
+                "min_concurrency": policy["victim_min_concurrency"],
+                "max_concurrency": policy["victim_max_concurrency"],
+            })
+        return normalized
 
     def _ensure_training(self, state: dict[str, Any], round_index: int, stage: str, record: dict[str, Any], *, kind: str) -> bool:
         training = record.get("training")
@@ -1539,7 +1895,6 @@ class MethodRuntime:
                 prompt_version=snapshot.prompt_version,
                 batch_id=f"itl-r{round_index}{stage}-c{record['candidate_index']}",
             )
-            assert config.max_concurrency <= self.config.victim_max_concurrency
             summary = self.services.training_runner(config)
             self.services.emit(f"training_artifacts_complete:{cid}")
             info = self._adopt_training(output_dir, snapshot, summary)
@@ -1640,24 +1995,36 @@ class MethodRuntime:
 
     # -- evidence + induction -------------------------------------------- #
 
+    def _seed_record(self, round_index: int, record: Mapping[str, Any]) -> dict[str, Any] | None:
+        seed_id = record.get("seed_candidate_id") or (record.get("candidate") or {}).get("seed_candidate_id")
+        if self.config.mode != "b_only":
+            return self._read_record(round_index, "A", seed_id or "")
+        source = record.get("seed_source")
+        if isinstance(source, Mapping):
+            seed, _ = validate_external_b_seed(source, self._baseline_combination_id())
+            return seed
+        return self._read_record(round_index - 1, "B", seed_id or "")
+
     def _seed_comparison(self, round_index: int, record: Mapping[str, Any]) -> dict[str, Any] | None:
-        seed_id = record["candidate"].get("seed_candidate_id")
+        seed_id = record.get("seed_candidate_id") or (record.get("candidate") or {}).get("seed_candidate_id")
         if not seed_id:
             return None
-        seed = self._read_record(round_index, "A", seed_id)
+        seed = self._seed_record(round_index, record)
         if seed is None:
             return None
         training = seed.get("training") or {}
-        metrics = seed.get("metrics") or {}
+        complete = self._has_complete_training(seed)
+        metrics = (seed.get("metrics") or {}) if complete else {}
         metrics_evidence = {
             name: metric for name, metric in metrics.items() if isinstance(metric, Mapping)
         }
-        seed_hit = self._hit_metric(seed)
-        per_task = seed.get("per_task") or {}
+        seed_hit = self._hit_metric(seed) if complete else _metric_from_json(None).to_json()
+        per_task = (seed.get("per_task") or {}) if complete else {}
         current_hit = self._hit_metric(record)
         return {
             "seed_candidate_id": seed_id,
-            "seed_candidate_label": f"cand-r{round_index}A{seed['candidate_index']}",
+            "seed_candidate_label": f"cand-r{seed['candidate']['round_index']}{seed['candidate']['stage']}{seed['candidate_index']}",
+            **({"training_complete": complete, "source": record.get("seed_source")} if self.config.mode == "b_only" else {}),
             "metrics": metrics_evidence,
             "per_task": per_task,
             "deltas": {
@@ -1667,7 +2034,8 @@ class MethodRuntime:
                 )
             },
             "source_fingerprint": str(
-                seed.get("evidence_fingerprint") or training.get("candidate_hash") or seed_id
+                seed.get("evidence_fingerprint") or training.get("candidate_hash")
+                or sha256_bytes(canonical_json_bytes(seed))
             ),
         }
 
@@ -1880,6 +2248,7 @@ class MethodRuntime:
                 "candidate_index": record["candidate_index"],
                 "candidate_id": record["candidate_id"],
                 "seed_candidate_id": record["candidate"].get("seed_candidate_id"),
+                **({"seed_source": record.get("seed_source")} if self.config.mode == "b_only" else {}),
                 "hit": hit,
                 "evasion": (record.get("metrics") or {}).get("semgrep_evasion"),
                 "per_task": record.get("per_task") or {},
@@ -1953,61 +2322,259 @@ class MethodRuntime:
         }
         self._write_commit(round_index, "A", commit)
         self.services.emit(f"commit_written:A:{round_index}")
-        # B stage entry is fixed from the A-committed versions.
+        # The next stage/round inherits exactly the A-committed experience.
         state["stage_entry_versions"] = {
             category: dict(reference)
             for category, reference in commit["experience_versions"].items()
         }
-        state["phase"] = PHASE_B_PROPOSE
-        self._persist_state(state)
+        if self.config.mode == "a_only":
+            self._advance_round(state, round_index)
+        else:
+            state["phase"] = PHASE_B_PROPOSE
+            self._persist_state(state)
 
     # -- B propose -------------------------------------------------------- #
 
+    def _b_only_seeds(self, state: dict[str, Any], round_index: int) -> list[dict] | None:
+        """Resolve this round's B seeds.
+
+        Round 1 imports the configured external A candidates (copying each
+        snapshot into this run's store); later rounds inherit the previous B
+        commit's ``selected`` ids.  Returns ``None`` after pausing on any
+        missing or mismatching seed.
+        """
+        if round_index == 1:
+            entries: list[dict] = []
+            for item in self.config.b_seeds:
+                source_run_dir = Path(item["source_run_dir"])
+                record_path = (
+                    source_run_dir / "rounds" / str(item["round_index"])
+                    / "A" / "candidates" / item["candidate_id"] / "record.json"
+                )
+                try:
+                    record, source_dir = validate_external_b_seed(item, self._baseline_combination_id())
+                except (OSError, ValueError) as error:
+                    self._pause(state, f"b_only seed invalid {record_path}: {error}")
+                    return None
+                content_sha = record["content_sha256"]
+                target_dir = (
+                    self.snapshots_root / self._baseline_combination_id() / content_sha
+                )
+                try:
+                    shutil.copytree(source_dir, target_dir, dirs_exist_ok=True)
+                    imported = self._snapshot_by_sha(content_sha)
+                    if imported.content_sha256() != content_sha:
+                        raise MethodRuntimeError("snapshot hash mismatch after import")
+                except (OSError, MethodRuntimeError) as error:
+                    self._pause(state, f"b_only seed snapshot import failed: {error}")
+                    return None
+                entries.append(
+                    {
+                        "seed_candidate_id": item["candidate_id"],
+                        "content_sha256": content_sha,
+                        "structure": record.get("structure"),
+                        "seed_source": {
+                            "source_run_dir": item["source_run_dir"],
+                            "round_index": item["round_index"],
+                            "candidate_id": item["candidate_id"],
+                            "content_sha256": content_sha,
+                        },
+                    }
+                )
+            return entries
+        prev_commit = self._read_commit(round_index - 1, "B")
+        if prev_commit is None:
+            self._pause(state, "B 阶段缺少上一轮 B 提交")
+            return None
+        entries = []
+        for seed_id in prev_commit["selected"]:
+            seed = self._read_record(round_index - 1, "B", seed_id)
+            if seed is None:
+                self._pause(state, f"B seed {seed_id[:12]} record missing")
+                return None
+            entries.append(
+                {
+                    "seed_candidate_id": seed_id,
+                    "content_sha256": seed["content_sha256"],
+                    "structure": seed.get("structure"),
+                    "seed_source": None,
+                }
+            )
+        return entries
+
+    def _import_b_continuation(self, state: dict[str, Any]) -> None:
+        source = validate_b_continuation(self.config)
+        root = Path(source["source_run_dir"])
+        slots = []
+        for original_slot, original in zip(source["plan"]["candidates"], source["records"], strict=True):
+            identity = CandidateIdentity(run_id=self.config.run_id, round_index=1, stage="B",
+                                         candidate_index=original["candidate_index"], seed_candidate_id=original["seed_candidate_id"])
+            cid = identity.to_json()["candidate_id"]
+            slot = {**original_slot, "candidate_id": cid, "action_id": None}
+            slots.append(slot)
+            for sha in {original["content_sha256"], original["parent_content_sha256"]}:
+                directory = root / "snapshots" / source["combination_id"] / sha
+                if directory.exists():
+                    shutil.copytree(directory, self.snapshots_root / source["combination_id"] / sha, dirs_exist_ok=True)
+            path = root / "rounds" / "1" / "B" / "candidates" / original["candidate_id"] / "record.json"
+            record = {**original, "candidate_id": cid, "candidate": identity.to_json(), "action_id": None,
+                      "inducted": False, "induction_id": None, "version_id": None, "evidence_fingerprint": None,
+                      "continuation_source": {"source_run_dir": str(root), "candidate_id": original["candidate_id"], "record_sha256": sha256_file(path)},
+                      "proposal_source": original.get("proposal_source") or {"source_run_dir": str(root), "candidate_id": original["candidate_id"],
+                                          "action_id": original.get("action_id"), "record_sha256": sha256_file(path),
+                                          "snapshot_path": str(root / "snapshots" / source["combination_id"] / original["content_sha256"] / "snapshot.json")}}
+            if self._has_complete_training(original):
+                output = Path(original["training"]["output_dir"])
+                snapshot = self._snapshot_by_sha(original["content_sha256"])
+                info = self._adopt_training(output, snapshot, None)
+                if info is None:
+                    raise MethodRuntimeError("B continuation completed training cannot be adopted")
+                record["training"] = info
+                record["metrics"], record["counts"], record["per_task"] = self._read_feedback_metrics(output)
+                record["training_source"] = original.get("training_source") or {"source_run_dir": str(root), "candidate_id": original["candidate_id"],
+                    "output_dir": str(output), "record_sha256": sha256_file(path),
+                    "artifact_sha256": {name: sha256_file(output / name) for name in
+                                        ("feedback.json", "feedback_audit.json", "loop_config.json") if (output / name).is_file()}}
+            else:
+                record.update(training=None, metrics=None, counts=None, per_task=None)
+            self._write_record(1, "B", cid, record)
+        plan = {**source["plan"], "candidates": slots,
+                "continuation_source": {"source_run_dir": str(root), "config_sha256": source["config_sha256"]}}
+        self._write_plan(1, "B", plan)
+        state["stage_entry_versions"] = plan["stage_entry_versions"]
+        state["b_continuation_import"] = {"source_run_dir": str(root), "reused_proposals": len(slots),
+                                          "reused_trainings": source["completed_trainings"]}
+        state["phase"] = PHASE_B_TRAIN
+        self._persist_state(state)
+
+    def _b_batch_context(self, state: dict[str, Any], plan: Mapping[str, Any]) -> dict[str, Any] | None:
+        if self.config.b_batch_size is None:
+            return None
+        index = int(state.get("b_batch_index") or 1)
+        path = self._round_dir(int(state["round_index"]), "B") / "batches" / f"{index}.json"
+        if path.is_file():
+            batch = dict(read_json(path))
+        else:
+            current = self._current_versions(state)
+            batch = {"schema_version": "itl-b-batch-v1", "batch_index": index,
+                     "candidate_ids": [slot["candidate_id"] for slot in plan["candidates"] if slot["batch_index"] == index],
+                     "stage_entry_versions": {category: ref.to_json() for category, ref in current.items()},
+                     "committed": False}
+            write_json_atomic(path, batch)
+        state["b_batch_index"] = index
+        state["stage_entry_versions"] = {category: dict(ref) for category, ref in batch["stage_entry_versions"].items()}
+        self._persist_state(state)
+        return batch
+
+    def _active_b_slots(self, state: dict[str, Any], plan: Mapping[str, Any]) -> list[dict[str, Any]]:
+        batch = self._b_batch_context(state, plan)
+        if batch is None:
+            return list(plan["candidates"])
+        selected = set(batch["candidate_ids"])
+        return [slot for slot in plan["candidates"] if slot["candidate_id"] in selected]
+
+    def _finish_b_batch(self, state: dict[str, Any], batch: dict[str, Any], records: Sequence[Mapping[str, Any]]) -> bool:
+        """Commit this batch once; return True when another batch must be proposed."""
+        plan = self._load_plan(int(state["round_index"]), "B")
+        assert plan is not None
+        if not batch["committed"]:
+            current = self._current_versions(state)
+            trained = [record for record in records if self._has_complete_training(record)]
+            batch.update(committed=True,
+                         status="complete" if trained else "all_proposals_invalid",
+                         training_count=len(trained),
+                         induction_ids=[record["induction_id"] for record in records if record.get("inducted")],
+                         experience_versions={category: ref.to_json() for category, ref in current.items()})
+            path = self._round_dir(int(state["round_index"]), "B") / "batches" / f"{batch['batch_index']}.json"
+            write_json_atomic(path, batch)
+            self.services.emit(f"b_batch_committed:{state['round_index']}:{batch['batch_index']}")
+        state["current_versions"] = {category: dict(ref) for category, ref in batch["experience_versions"].items()}
+        if batch["batch_index"] < plan["batch_count"]:
+            state["b_batch_index"] = batch["batch_index"] + 1
+            state["phase"] = PHASE_B_PROPOSE
+            self._persist_state(state)
+            return True
+        self._persist_state(state)
+        return False
+
     def _phase_b_propose(self, state: dict[str, Any]) -> None:
-        round_index = int(state["round_index"])
-        a_commit = self._read_commit(round_index, "A")
-        if a_commit is None:
-            self._pause(state, "B 阶段缺少 A 阶段提交")
+        if self.config.b_continuation_source_run_dir and not state.get("b_continuation_import"):
+            self._import_b_continuation(state)
             return
-        seeds = list(a_commit["selected"])
+        round_index = int(state["round_index"])
+        seed_records: list[dict] | None = None
+        if self.config.mode == "b_only":
+            seed_records = self._b_only_seeds(state, round_index)
+            if seed_records is None:
+                return
+            seeds = [item["seed_candidate_id"] for item in seed_records]
+        else:
+            a_commit = self._read_commit(round_index, "A")
+            if a_commit is None:
+                self._pause(state, "B 阶段缺少 A 阶段提交")
+                return
+            seeds = list(a_commit["selected"])
         plan = self._load_plan(round_index, "B")
         if plan is None:
             candidates = []
             global_index = 0
             for seed_index, seed_id in enumerate(seeds):
-                seed = self._read_record(round_index, "A", seed_id)
-                if seed is None:
-                    self._pause(state, f"B seed {seed_id[:12]} record missing")
-                    return
+                if self.config.mode == "b_only":
+                    seed_meta = seed_records[seed_index]  # type: ignore[index]
+                    seed_content_sha256 = seed_meta["content_sha256"]
+                    seed_structure = seed_meta.get("structure")
+                    seed_source = seed_meta.get("seed_source")
+                else:
+                    seed = self._read_record(round_index, "A", seed_id)
+                    if seed is None:
+                        self._pause(state, f"B seed {seed_id[:12]} record missing")
+                        return
+                    seed_content_sha256 = None
+                    seed_structure = None
+                    seed_source = None
                 for seed_slot in range(1, self.config.b_slots_per_seed + 1):
                     global_index += 1
                     cid = candidate_id(
                         run_id=self.config.run_id, round_index=round_index, stage="B",
                         candidate_index=global_index, seed_candidate_id=seed_id,
                     )
-                    candidates.append(
-                        {
-                            "candidate_index": global_index,
-                            "seed_index": seed_index + 1,
-                            "seed_candidate_id": seed_id,
-                            "seed_slot": seed_slot,
-                            "candidate_id": cid,
-                            "action_id": sha256_bytes(
-                                canonical_json_bytes(
-                                    {
-                                        "schema_version": "itl-runtime-action-v1",
-                                        "candidate_id": cid,
-                                        "kind": "b_proposal",
-                                    }
-                                )
-                            ),
-                        }
-                    )
+                    slot = {
+                        "candidate_index": global_index,
+                        "seed_index": seed_index + 1,
+                        "seed_candidate_id": seed_id,
+                        "seed_slot": seed_slot,
+                        "candidate_id": cid,
+                        "action_id": sha256_bytes(
+                            canonical_json_bytes(
+                                {
+                                    "schema_version": "itl-runtime-action-v1",
+                                    "candidate_id": cid,
+                                    "kind": "b_proposal",
+                                }
+                            )
+                        ),
+                    }
+                    if self.config.mode == "b_only":
+                        slot["seed_content_sha256"] = seed_content_sha256
+                        slot["seed_structure"] = seed_structure
+                        slot["seed_source"] = seed_source
+                    candidates.append(slot)
+            if self.config.b_batch_size is not None:
+                candidates.sort(key=lambda slot: (slot["seed_slot"], slot["seed_index"]))
+                for index, slot in enumerate(candidates, 1):
+                    cid = candidate_id(run_id=self.config.run_id, round_index=round_index, stage="B",
+                                       candidate_index=index, seed_candidate_id=slot["seed_candidate_id"])
+                    slot.update(candidate_index=index, candidate_id=cid, batch_index=(index - 1) // self.config.b_batch_size + 1,
+                                action_id=sha256_bytes(canonical_json_bytes({"schema_version": "itl-runtime-action-v1",
+                                                                            "candidate_id": cid, "kind": "b_proposal"})))
+                state["b_batch_index"] = 1
             entry = self._current_versions(state)
             plan = {
                 "schema_version": PLAN_SCHEMA_VERSION,
                 "round_index": round_index,
                 "stage": "B",
+                **({"b_batch_size": self.config.b_batch_size,
+                    "batch_count": math.ceil(len(candidates) / self.config.b_batch_size)} if self.config.b_batch_size is not None else {}),
                 "seeds": seeds,
                 "stage_entry_versions": {
                     EXPERIENCE_CATEGORY_STRUCTURE: entry[EXPERIENCE_CATEGORY_STRUCTURE].to_json(),
@@ -2021,20 +2588,27 @@ class MethodRuntime:
                 category: dict(reference)
                 for category, reference in plan["stage_entry_versions"].items()
             }
+        batch = self._b_batch_context(state, plan)
+        entry_versions = batch["stage_entry_versions"] if batch is not None else plan["stage_entry_versions"]
         entry = (
-            ExperienceVersionReference.from_json(plan["stage_entry_versions"][EXPERIENCE_CATEGORY_STRUCTURE]),
-            ExperienceVersionReference.from_json(plan["stage_entry_versions"][EXPERIENCE_CATEGORY_LITERAL]),
+            ExperienceVersionReference.from_json(entry_versions[EXPERIENCE_CATEGORY_STRUCTURE]),
+            ExperienceVersionReference.from_json(entry_versions[EXPERIENCE_CATEGORY_LITERAL]),
         )
-        for slot in plan["candidates"]:
+        for slot in self._active_b_slots(state, plan):
             cid = slot["candidate_id"]
             record = self._read_record(round_index, "B", cid)
             if record is not None and record.get("proposal_status") in PROPOSAL_TERMINAL:
                 continue
-            seed = self._read_record(round_index, "A", slot["seed_candidate_id"])
-            if seed is None:
-                self._pause(state, f"B seed {slot['seed_candidate_id'][:12]} missing")
-                return
-            parent = self._snapshot_by_sha(seed["content_sha256"])
+            if self.config.mode == "b_only":
+                parent = self._snapshot_by_sha(slot["seed_content_sha256"])
+                seed_structure = slot.get("seed_structure")
+            else:
+                seed = self._read_record(round_index, "A", slot["seed_candidate_id"])
+                if seed is None:
+                    self._pause(state, f"B seed {slot['seed_candidate_id'][:12]} missing")
+                    return
+                parent = self._snapshot_by_sha(seed["content_sha256"])
+                seed_structure = seed.get("structure")
             identity = CandidateIdentity(
                 run_id=self.config.run_id, round_index=round_index, stage="B",
                 candidate_index=slot["candidate_index"],
@@ -2077,10 +2651,11 @@ class MethodRuntime:
                 "candidate_index": slot["candidate_index"],
                 "seed_index": slot["seed_index"],
                 "seed_candidate_id": slot["seed_candidate_id"],
+                **({"seed_source": slot.get("seed_source")} if self.config.mode == "b_only" else {}),
                 "candidate_id": cid,
                 "candidate": identity.to_json(),
                 "proposal_status": result.status,
-                "structure": seed.get("structure"),
+                "structure": seed_structure,
                 "content_sha256": content_sha,
                 "parent_content_sha256": parent.content_sha256(),
                 "diff": [dict(entry_item) for entry_item in diff],
@@ -2105,7 +2680,7 @@ class MethodRuntime:
         if plan is None:
             raise MethodRuntimeError("B train reached without a fixed plan")
         legal = 0
-        for slot in plan["candidates"]:
+        for slot in self._active_b_slots(state, plan):
             cid = slot["candidate_id"]
             record = self._read_record(round_index, "B", cid)
             if record is None:
@@ -2118,7 +2693,9 @@ class MethodRuntime:
             legal += 1
             if not self._ensure_training(state, round_index, "B", record, kind="B"):
                 return
-        if legal == 0:
+            if self._apply_pause_request(state, round_index, "B", record):
+                return
+        if legal == 0 and self.config.b_batch_size is None:
             self._pause(state, "B 阶段全部变体非法，暂停等待人工检查")
             return
         state["phase"] = PHASE_B_INDUCT_COMMIT
@@ -2128,38 +2705,51 @@ class MethodRuntime:
 
     def _phase_b_induct_commit(self, state: dict[str, Any]) -> None:
         round_index = int(state["round_index"])
-        records = self._stage_records(round_index, "B")
+        all_records = self._stage_records(round_index, "B")
+        batch = None
+        records = all_records
+        if self.config.b_batch_size is not None:
+            plan = self._load_plan(round_index, "B")
+            assert plan is not None
+            batch = self._b_batch_context(state, plan)
+            records = [record for record in all_records if record["candidate_id"] in set(batch["candidate_ids"])]
         trained = [record for record in records if self._has_complete_training(record)]
-        if not trained:
+        all_invalid = batch is not None and all(record["proposal_status"] not in PROPOSAL_LEGAL for record in records)
+        if not trained and not all_invalid:
             self._pause(state, "B 阶段无可用的训练结果，暂停等待人工检查")
             return
         entries = self._eligible_records(records)
         invalid = [entry for entry in entries if not entry.get("expectation")]
         if invalid:
-            self._pause(
-                state,
-                f"B 阶段有 {len(invalid)} 个候选证据与落盘样本不一致，阻塞阶段提交",
-            )
+            self._pause(state, f"B 阶段有 {len(invalid)} 个候选证据与落盘样本不一致，阻塞阶段提交")
             return
-        if not self._induct_stage(
-            state, round_index=round_index, stage="B",
-            category=EXPERIENCE_CATEGORY_LITERAL, records=records,
-        ):
-            return
+        if not all_invalid and not (batch is not None and batch["committed"]):
+            if not self._induct_stage(state, round_index=round_index, stage="B",
+                                      category=EXPERIENCE_CATEGORY_LITERAL, records=records):
+                return
+        if batch is not None:
+            if self._finish_b_batch(state, batch, records):
+                return
+            records = self._stage_records(round_index, "B")
+            if not any(self._has_complete_training(record) for record in records):
+                self._pause(state, "B 阶段无可用的训练结果，暂停等待人工检查")
+                return
         # Rebuild after induction so the ranking carries the committed evidence
         # fingerprints.
         entries = self._eligible_records(records)
         baseline = self._baseline_payload(state)
         for entry in entries:
             entry["baseline"] = baseline
-            seed = self._read_record(round_index, "A", entry.get("seed_candidate_id") or "")
-            if seed is not None:
-                seed_hit = self._hit_metric(seed)
+            comparison = self._seed_comparison(round_index, entry)
+            if comparison is not None:
+                seed = self._seed_record(round_index, entry)
+                seed_hit = self._hit_metric(seed) if seed is not None and self._has_complete_training(seed) else _metric_from_json(None).to_json()
                 entry["seed_comparison"] = {
-                    "seed_candidate_id": seed["candidate_id"],
+                    "seed_candidate_id": entry.get("seed_candidate_id"),
                     "hit": seed_hit,
-                    "per_task": seed.get("per_task") or {},
-                    "delta": metric_delta(_metric_from_json(entry["hit"]), _metric_from_json(seed_hit)),
+                    "per_task": comparison["per_task"],
+                    "delta": comparison["deltas"]["sample_hit_rate"],
+                    **({"training_complete": comparison["training_complete"], "source": comparison["source"]} if self.config.mode == "b_only" else {}),
                 }
         ranking = rank_candidate_records(entries, top_k=self.config.top_k)
         if not ranking["selected"]:
@@ -2195,20 +2785,22 @@ class MethodRuntime:
         self._write_commit(round_index, "B", commit)
         self.services.emit(f"commit_written:B:{round_index}")
 
+        self._advance_round(state, round_index)
+
+    def _advance_round(self, state: dict[str, Any], round_index: int) -> None:
+        """Carry committed experience into the next fresh A round."""
         if round_index >= self.config.rounds:
             state["phase"] = PHASE_DONE
             self._persist_state(state)
             return
         state["round_index"] = round_index + 1
-        state["current_versions"] = {
-            EXPERIENCE_CATEGORY_STRUCTURE: current[EXPERIENCE_CATEGORY_STRUCTURE].to_json(),
-            EXPERIENCE_CATEGORY_LITERAL: current[EXPERIENCE_CATEGORY_LITERAL].to_json(),
-        }
+        if self.config.b_batch_size is not None:
+            state["b_batch_index"] = 1
         state["stage_entry_versions"] = {
             category: dict(reference)
             for category, reference in state["current_versions"].items()
         }
-        state["phase"] = PHASE_A_PROPOSE
+        state["phase"] = PHASE_B_PROPOSE if self.config.mode == "b_only" else PHASE_A_PROPOSE
         self._persist_state(state)
 
     # -- commit helpers --------------------------------------------------- #
@@ -2256,13 +2848,35 @@ class MethodRuntime:
                     if record.get("inducted"):
                         inductions += 1
         baseline_samples = len(self.config.training_task_ids) * self.config.victim_repeats
-        planned = baseline_samples + self.config.rounds * (
-            self.config.a_slots * len(self.config.training_task_ids) * self.config.victim_repeats
-            + self.config.a_slots
-            * self.config.b_slots_per_seed
-            * len(self.config.training_task_ids)
-            * self.config.victim_repeats
-        )
+        slots_per_candidate = len(self.config.training_task_ids) * self.config.victim_repeats
+        if self.config.mode == "b_only":
+            # Round 1 uses the actual external list; later B selections have at
+            # most top_k seeds.  This is the planned maximum, before gates.
+            b_candidates = len(self.config.b_seeds) * self.config.b_slots_per_seed
+            b_candidates += max(0, self.config.rounds - 1) * self.config.top_k * self.config.b_slots_per_seed
+            planned = baseline_samples + b_candidates * slots_per_candidate
+        else:
+            planned = baseline_samples + self.config.rounds * (
+                self.config.a_slots + self.config.a_slots * self.config.b_slots_per_seed
+            ) * slots_per_candidate
+        # These are completed evidence slots, not provider attempts or charges.
+        # A referenced baseline contributes evidence without new API requests.
+        reuse_counts = {}
+        if self.config.baseline_training_path:
+            reused = baseline_samples if isinstance(baseline, Mapping) and baseline.get("status") == "complete" else 0
+            reuse_counts = {
+                "reused_baseline_samples": reused,
+                "new_victim_samples": actual - reused,
+                "planned_new_victim_samples": planned - baseline_samples,
+            }
+        if self.config.b_continuation_source_run_dir:
+            inherited = state.get("b_continuation_import") or {}
+            reused_b = int(inherited.get("reused_trainings") or 0) * slots_per_candidate
+            reused_baseline = int(reuse_counts.get("reused_baseline_samples") or 0)
+            reuse_counts.update({"reused_b_training_samples": reused_b,
+                "reused_b_proposals": int(inherited.get("reused_proposals") or 0),
+                "new_victim_samples": actual - reused_b - reused_baseline,
+                "planned_new_victim_samples": planned - reused_b - (baseline_samples if self.config.baseline_training_path else 0)})
         return {
             "run_id": self.config.run_id,
             "phase": state["phase"],
@@ -2276,6 +2890,7 @@ class MethodRuntime:
             "counts": {
                 "planned_victim_samples": planned,
                 "actual_victim_samples": actual,
+                **reuse_counts,
                 "baseline_trainings": 1 if isinstance(baseline, Mapping) and baseline.get("status") == "complete" else 0,
                 "a_trainings": a_trainings,
                 "b_trainings": b_trainings,
@@ -2331,6 +2946,8 @@ __all__ = [
     "RuntimeServices",
     "assert_container_budget",
     "validate_feedback_matrix",
+    "runtime_concurrency",
+    "set_runtime_concurrency",
     "default_gate_runner",
     "default_training_runner",
     "evaluate_a_gate",

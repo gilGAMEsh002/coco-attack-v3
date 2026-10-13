@@ -72,6 +72,38 @@ def test_cli_usage_and_preflight_exit_codes(tmp_path: Path) -> None:
     assert cli.main(["implicit-then-literal-preflight", "--config", str(tmp_path / "nope.json")]) == cli.EXIT_USAGE
 
 
+def test_cli_changes_concurrency_without_running_or_changing_config(tmp_path: Path, monkeypatch) -> None:
+    harness = build_harness(tmp_path, rounds=1)
+    root = Path(harness.config.run_root)
+    write_json_atomic(root / "config.json", {**harness.config.to_json(), "config_sha256": harness.config.config_sha256()})
+    before = (root / "config.json").read_bytes()
+    monkeypatch.setattr(
+        cli, "_assemble_itl_services",
+        lambda *args, **kwargs: pytest.fail("setting concurrency must not assemble model services"),
+    )
+    assert cli.main([
+        "implicit-then-literal-concurrency", "--run-root", str(root),
+        "--mode", "adaptive", "--min", "16", "--max", "32",
+    ]) == cli.EXIT_OK
+    settings = read_json(root / "runtime_settings.json")
+    assert settings["victim_min_concurrency"] == 16
+    assert settings["victim_max_concurrency"] == 32
+    assert (root / "config.json").read_bytes() == before
+    assert not (root / "state.json").exists()
+    assert harness.trainer.calls == []
+
+
+def test_cli_invalid_concurrency_leaves_settings_unchanged(tmp_path: Path) -> None:
+    harness = build_harness(tmp_path, rounds=1)
+    root = Path(harness.config.run_root)
+    write_json_atomic(root / "config.json", {**harness.config.to_json(), "config_sha256": harness.config.config_sha256()})
+    command = ["implicit-then-literal-concurrency", "--run-root", str(root), "--mode", "adaptive"]
+    assert cli.main([*command, "--min", "4", "--max", "16"]) == cli.EXIT_OK
+    before = (root / "runtime_settings.json").read_bytes()
+    assert cli.main([*command, "--min", "32", "--max", "16"]) == cli.EXIT_USAGE
+    assert (root / "runtime_settings.json").read_bytes() == before
+
+
 @requires_assets
 def test_cli_preflight_passes_and_reports(tmp_path: Path) -> None:
     config_path = _real_config_file(tmp_path)

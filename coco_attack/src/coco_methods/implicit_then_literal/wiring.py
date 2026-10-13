@@ -65,6 +65,8 @@ _PATH_FIELDS = (
     "prepared_data_dir",
     "initial_template_path",
     "comparison_baseline_path",
+    "baseline_training_path",
+    "b_continuation_source_run_dir",
     "execution_config_path",
     "semgrep_config",
 )
@@ -74,6 +76,8 @@ _PATH_FIELDS = (
 _BINDING_FIELDS = (
     ("initial_template", "initial_template_path"),
     ("comparison_baseline", "comparison_baseline_path"),
+    ("baseline_training", "baseline_training_path"),
+    ("b_continuation_source", "b_continuation_source_run_dir"),
     ("execution_config", "execution_config_path"),
     ("semgrep_config", "semgrep_config"),
 )
@@ -227,6 +231,25 @@ class MethodRunConfig:
             if value is None:
                 continue
             binding.append((key, content_identity(value)))
+        if data.get("b_seeds"):
+            seeds = MethodRuntimeConfig._validate_b_seeds(data["b_seeds"])
+            normalized = []
+            for index, seed in enumerate(seeds, start=1):
+                item = dict(seed)
+                item["source_run_dir"] = _resolve_path_field(item["source_run_dir"], root)
+                normalized.append(item)
+                source = Path(item["source_run_dir"])
+                record_path = source / "rounds" / str(item["round_index"]) / "A" / "candidates" / item["candidate_id"] / "record.json"
+                binding.append((f"b_seed_{index}_record", content_identity(record_path)))
+                binding.append((f"b_seed_{index}_source_config", content_identity(source / "config.json")))
+                if record_path.is_file():
+                    record = read_json(record_path)
+                    sha = record.get("content_sha256") if isinstance(record, Mapping) else None
+                    if isinstance(sha, str):
+                        snapshots = list((source / "snapshots").glob(f"*/{sha}/snapshot.json"))
+                        identity = content_identity(snapshots[0]) if len(snapshots) == 1 else "missing"
+                        binding.append((f"b_seed_{index}_snapshot", identity))
+            data["b_seeds"] = tuple(normalized)
         data["input_binding"] = tuple(sorted(binding))
 
         method = MethodRuntimeConfig.from_json(data)

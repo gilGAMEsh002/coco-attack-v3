@@ -683,6 +683,42 @@ def parse_b_response(
     )
 
 
+def _load_judge_json_object(text: str) -> Mapping[str, Any]:
+    """Accept repeated matching JSON drafts without merging their fields."""
+    try:
+        return _load_json_object(text)
+    except RoleProtocolError as original_error:
+        if not isinstance(text, str) or not text.strip():
+            raise
+        body = text.strip()
+        fence = _WHOLE_FENCE_RE.fullmatch(body)
+        if fence is not None:
+            body = fence.group("body").strip()
+        objects: list[Mapping[str, Any]] = []
+        decoder = json.JSONDecoder()
+        remaining = body
+        while remaining:
+            try:
+                payload, end = decoder.raw_decode(remaining)
+            except ValueError:
+                raise original_error
+            if not isinstance(payload, Mapping):
+                raise original_error
+            objects.append(payload)
+            remaining = remaining[end:].lstrip()
+        complete = [payload for payload in objects if {"entries", "summary"} <= set(payload)]
+        if len(objects) < 2 or not complete:
+            raise original_error
+        final = complete[-1]
+        if any(payload != final for payload in complete):
+            raise RoleProtocolError("ambiguous inducer response: complete JSON objects disagree")
+        if any(payload != final and not (
+            set(payload) == {"entries"} and payload["entries"] == final["entries"]
+        ) for payload in objects):
+            raise RoleProtocolError("inconsistent inducer response: JSON draft does not match the complete result")
+        return final
+
+
 def parse_judge_response(
     text: str,
     *,
@@ -696,7 +732,7 @@ def parse_judge_response(
         return JudgeResult(category=category, status=_STATUS_PROTOCOL_ERROR, errors=(message,))
 
     try:
-        payload = _load_json_object(text)
+        payload = _load_judge_json_object(text)
     except RoleProtocolError as error:
         return _error(str(error))
     unknown = sorted(set(payload) - {"entries", "summary"})

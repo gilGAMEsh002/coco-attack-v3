@@ -913,9 +913,9 @@ def test_public_run_training_loop_artifacts_feed_evidence_pack(tmp_path: Path) -
 
 def test_config_enforces_formal_constants_and_service_caps(tmp_path: Path) -> None:
     base = build_harness(tmp_path / "base").config
-    # Service concurrency is a research constant, never a scale knob.
+    # The victim request window has an explicit ceiling; container checks stay capped.
     with pytest.raises(itl.MethodRuntimeError):
-        replace(base, victim_max_concurrency=9)
+        replace(base, victim_max_concurrency=0)
     with pytest.raises(itl.MethodRuntimeError):
         replace(base, check_workers=4)
     # The default formal configuration must not be silently shrunk.
@@ -1034,3 +1034,34 @@ def test_container_budget_rejects_before_any_action(tmp_path: Path) -> None:
         harness.run()
     assert harness.proposer.call_count() == 0
     assert len(harness.gate.calls) == 0
+
+
+def test_victim_adaptive_policy_keeps_legacy_identity_and_forwards_to_training(tmp_path: Path) -> None:
+    base = build_harness(tmp_path / "base").config
+    fixed_json = base.to_json()
+    assert "victim_concurrency_mode" not in fixed_json
+    assert "victim_min_concurrency" not in fixed_json
+    restored = itl.MethodRuntimeConfig.from_json(fixed_json)
+    assert restored.config_sha256() == base.config_sha256()
+    assert (restored.victim_concurrency_mode, restored.victim_min_concurrency) == ("fixed", 1)
+    adaptive = replace(base, victim_concurrency_mode="adaptive", victim_min_concurrency=4, victim_max_concurrency=16)
+    assert itl.MethodRuntimeConfig.from_json(adaptive.to_json()) == adaptive
+    assert adaptive.config_sha256() != base.config_sha256()
+    harness = build_harness(tmp_path / "adaptive", rounds=1, a_slots=1, b_slots_per_seed=1, top_k=1, config_overrides={
+        "enforce_formal_constants": False, "victim_concurrency_mode": "adaptive", "victim_min_concurrency": 4, "victim_max_concurrency": 16,
+    })
+    assert harness.run()["phase"] == itl.PHASE_DONE
+    assert all((cfg.concurrency_mode, cfg.min_concurrency, cfg.max_concurrency) == ("adaptive", 4, 16) for cfg in harness.trainer.calls)
+    assert harness.gate.peak <= 3
+
+
+@pytest.mark.parametrize("policy", [
+    {"victim_concurrency_mode": "unknown"},
+    {"victim_min_concurrency": True},
+    {"victim_concurrency_mode": "adaptive", "victim_min_concurrency": 0},
+    {"victim_concurrency_mode": "adaptive", "victim_min_concurrency": 5, "victim_max_concurrency": 4},
+    {"victim_concurrency_mode": "fixed", "victim_min_concurrency": 2},
+])
+def test_victim_concurrency_policy_rejects_invalid_bounds(tmp_path: Path, policy: dict) -> None:
+    with pytest.raises(itl.MethodRuntimeError):
+        replace(build_harness(tmp_path).config, **policy)

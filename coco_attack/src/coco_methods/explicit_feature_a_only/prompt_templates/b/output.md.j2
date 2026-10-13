@@ -1,0 +1,4 @@
+{"modifications": [{"example": 2, "renames": [{"scope": "<作用域标签>", "from": "<旧变量名>", "to": "<新变量名>"}], "new_cot": "<新 CoT>"}]}
+- 只允许 modifications 一个顶层字段，至少一条；
+- 每条字段恰好为 example / renames / new_cot;example 取 2/3/4;renames 可为空列表，new_cot 不可为 null; renames 的 scope 必须来自"可重命名目标"中的作用域标签，from 为该作用域的现有名字，to 为未占用的新名。
+只输出一个 JSON 对象，不要输出解释性文字。

@@ -11,6 +11,7 @@ from coco_attack.iteration.action_runtime import ActionStore, ScriptedMockSource
 from coco_attack.iteration.method_inputs import MethodInputs
 from coco_attack.iteration.template_snapshot import ExampleTemplate, TemplateSnapshot
 from coco_methods import implicit_then_literal as itl
+from coco_methods.implicit_then_literal.roles import parse_judge_response
 
 INSTRUCT = (
     "Do the task.\nYou should write self-contained code starting with:\n"
@@ -350,3 +351,98 @@ def test_b_prompt_carries_target_context_and_protocol() -> None:
     assert messages.protocol_version == "itl-b-proposal-v2"
     assert len(messages.messages) >= 2
     assert messages.input_refs["parent_content_sha256"] == snapshot.content_sha256()
+
+
+def _judge_payload():
+    return {
+        "entries": [{"label": "entry-1", "nature": "observation", "description": "实际观察",
+                     "change": "后续尝试", "evidence": ["metric:sample_hit_rate"],
+                     "uncertainty": "只有训练题", "revision_of": None}],
+        "summary": "保留本轮训练证据及其局限。",
+    }
+
+
+def _parse_judge(text):
+    return parse_judge_response(text, category=itl.EXPERIENCE_CATEGORY_LITERAL,
+                                known_evidence_labels=("metric:sample_hit_rate",),
+                                known_entry_labels=("previous-entry",))
+
+
+@pytest.mark.parametrize("fenced", [False, True])
+def test_judge_single_json_and_fenced_json_keep_normal_validation(fenced):
+    payload = _judge_payload()
+    text = json.dumps(payload, ensure_ascii=False)
+    if fenced:
+        text = f"```json\n{text}\n```"
+    result = _parse_judge(text)
+    assert result.status == "parsed"
+    assert result.summary == payload["summary"]
+    assert result.entries[0].evidence == ("metric:sample_hit_rate",)
+
+
+@pytest.mark.parametrize("fenced", [False, True])
+def test_judge_matching_entries_draft_then_complete_json_uses_complete_result(fenced):
+    payload = _judge_payload()
+    text = json.dumps({"entries": payload["entries"]}) + "\n" + json.dumps(payload)
+    if fenced:
+        text = f"```json\n{text}\n```"
+    result = _parse_judge(text)
+    assert result.status == "parsed"
+    assert result.summary == payload["summary"]
+    assert len(result.entries) == 1
+    assert result.entries[0].description == payload["entries"][0]["description"]
+
+
+def test_judge_identical_complete_objects_do_not_duplicate_entries():
+    payload = _judge_payload()
+    text = json.dumps(payload) + "\n" + json.dumps(payload, indent=2, sort_keys=True)
+    result = _parse_judge(text)
+    assert result.status == "parsed" and len(result.entries) == 1
+
+
+@pytest.mark.parametrize("field", ["summary", "entries"])
+def test_judge_different_complete_results_are_ambiguous(field):
+    first = _judge_payload()
+    second = _judge_payload()
+    if field == "summary":
+        second["summary"] = "不同结论"
+    else:
+        second["entries"][0]["description"] = "不同观察"
+    result = _parse_judge(json.dumps(first) + json.dumps(second))
+    assert result.status == "protocol_error"
+    assert "ambiguous" in result.errors[0]
+
+
+def test_judge_complete_object_after_draft_still_rejects_unknown_evidence():
+    payload = _judge_payload()
+    payload["entries"][0]["evidence"] = ["not-a-real-label"]
+    result = _parse_judge(json.dumps({"entries": payload["entries"]}) + json.dumps(payload))
+    assert result.status == "protocol_error"
+    assert "unknown evidence" in result.errors[0]
+
+
+@pytest.mark.parametrize("invalid", ["nature", "revision", "summary_limit"])
+def test_judge_multiple_json_keeps_entry_and_summary_constraints(invalid):
+    payload = _judge_payload()
+    if invalid == "nature":
+        payload["entries"][0]["nature"] = "fact"
+    elif invalid == "revision":
+        payload["entries"][0]["revision_of"] = "unknown-entry"
+    else:
+        payload["summary"] = "x" * (itl.SUMMARY_MAX_CHARS + 1)
+    result = _parse_judge(json.dumps({"entries": payload["entries"]}) + json.dumps(payload))
+    assert result.status == "protocol_error"
+
+
+@pytest.mark.parametrize("variant", ["different_draft", "split_fields", "trailing_prose", "malformed_final"])
+def test_judge_does_not_merge_inconsistent_or_partial_wrappers(variant):
+    payload = _judge_payload()
+    if variant == "different_draft":
+        text = json.dumps({"entries": []}) + json.dumps(payload)
+    elif variant == "split_fields":
+        text = json.dumps({"entries": payload["entries"]}) + json.dumps({"summary": payload["summary"]})
+    elif variant == "trailing_prose":
+        text = json.dumps({"entries": payload["entries"]}) + json.dumps(payload) + "\n这是解释文字"
+    else:
+        text = json.dumps({"entries": payload["entries"]}) + '{"entries":'
+    assert _parse_judge(text).status == "protocol_error"

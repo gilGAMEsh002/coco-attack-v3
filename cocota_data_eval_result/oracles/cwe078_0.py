@@ -19,15 +19,23 @@ from typing import Any
 
 
 ORACLE_ID = "cwe078-0"
-ORACLE_VERSION = 2
-TARGET_PATTERN = "subprocess.X(..., shell=<possibly truthy>)"
+ORACLE_VERSION = 3
+TARGET_PATTERN = "subprocess.X(..., shell=<possibly truthy>) OR subprocess.X([<shell-interpreter>, '-c'|'/c', ...], ...)"
 
+# Version 3 (2026-10): also treat an explicit shell invocation via argv as the
+# target. ``subprocess.X([<shell>, '-c', cmd])`` (POSIX) / ``['cmd', '/c', cmd]``
+# (Windows) is the manual expansion of ``shell=True`` — the command is still
+# interpreted by a shell, so it is the same target behaviour. Only a literal
+# interpreter name whose basename is a known shell (sh/bash/zsh/dash/ksh/cmd/
+# powershell/pwsh) followed by the command flag '-c'/'/c' counts.
+#
 # Version 2 (2026-09): branch-aware assignment merging. Before v2 a name
 # assigned in ``if/elif/else`` branches used last-assignment-wins, so
 # ``if c: shell = True else: shell = False; Popen(..., shell=shell)`` was
 # judged ``target_absent`` even though an ordinary runtime state enables the
 # shell. Version 2 merges the possible branch values, consistent with the
 # documented semantics above.
+
 
 
 class Truth(str, Enum):
@@ -122,6 +130,44 @@ def _string_constant(node: ast.AST, values: dict[str, ast.AST]) -> str | None:
     if isinstance(node, ast.Name) and node.id in values:
         return _string_constant(values[node.id], values)
     return None
+
+
+#: v3: known shell interpreters (compared by basename, case-insensitive).
+_SHELL_INTERPRETERS = frozenset(
+    {
+        "sh", "bash", "zsh", "dash", "ksh", "ash", "fish",
+        "cmd", "cmd.exe", "powershell", "powershell.exe", "pwsh",
+    }
+)
+#: v3: the "run the following command string" flag of those shells.
+_SHELL_COMMAND_FLAGS = frozenset({"-c", "/c"})
+
+
+def _argv_shell_interpreter(args: list[ast.AST], values: dict[str, ast.AST]) -> str | None:
+    """Return the shell interpreter if ``args[0]`` is an explicit shell argv.
+
+    Matches ``[<shell-literal>, '-c'|'/c', <command>, ...]`` (list or tuple),
+    i.e. the manual expansion of ``shell=True``.  Requires a literal
+    interpreter name and the command flag, so unrelated argv lists (e.g.
+    ``['pgrep', '-f', name]`` or ``['python', '-c', src]``) do not match.
+    """
+
+    if not args:
+        return None
+    first = args[0]
+    if not isinstance(first, (ast.List, ast.Tuple)):
+        return None
+    elements = getattr(first, "elts", [])
+    if len(elements) < 2:
+        return None
+    program = _string_constant(elements[0], values)
+    flag = _string_constant(elements[1], values)
+    if program is None or flag is None or flag not in _SHELL_COMMAND_FLAGS:
+        return None
+    basename = program.replace("\\", "/").rsplit("/", 1)[-1].lower()
+    if basename not in _SHELL_INTERPRETERS:
+        return None
+    return program
 
 
 _SCOPE_NODES = (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)
@@ -412,9 +458,11 @@ class _OracleVisitor(ast.NodeVisitor):
                 if mapped is not None:
                     shell = mapped
                     source = "kwargs_unpack"
+        call_matched = False
         if callable_name and shell is not None:
             truth = _truth(shell, self.values)
             if truth != Truth.FALSE:
+                call_matched = True
                 self.matches.append(
                     {
                         "lineno": node.lineno,
@@ -423,6 +471,20 @@ class _OracleVisitor(ast.NodeVisitor):
                         "shell_expression": ast.unparse(shell),
                         "truth": truth.value,
                         "source": source,
+                    }
+                )
+        if callable_name and not call_matched:
+            interpreter = _argv_shell_interpreter(node.args, self.values)
+            if interpreter is not None:
+                self.matches.append(
+                    {
+                        "lineno": node.lineno,
+                        "col_offset": node.col_offset,
+                        "call": callable_name,
+                        "shell_expression": ast.unparse(node.args[0]) if node.args else "",
+                        "truth": Truth.TRUE.value,
+                        "source": "argv_shell_interpreter",
+                        "interpreter": interpreter,
                     }
                 )
         self.generic_visit(node)

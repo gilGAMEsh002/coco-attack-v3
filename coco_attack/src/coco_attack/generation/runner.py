@@ -11,12 +11,14 @@ import os
 import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import replace
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from tenacity import Retrying, retry_if_exception, stop_after_attempt, wait_exponential_jitter
 
-from ..assets.artifacts import canonical_json_bytes, sha256_bytes
+from ..assets.artifacts import append_jsonl, canonical_json_bytes, read_json, sha256_bytes, write_json_atomic
 from ..runtime.ledger import (
     EVENT_ATTEMPT_FAILED,
     EVENT_ATTEMPT_STARTED,
@@ -67,6 +69,89 @@ def _estimate_cost(config: GenerationConfig, usage: dict[str, int]) -> dict[str,
     }
 
 
+class _AdaptiveConcurrency:
+    """Request-level AIMD; each uncached response adds one, transport errors halve.
+
+    A decrease never cancels in-flight requests. Cache hits and response-shape
+    errors release their permit without changing the target. Each invocation
+    starts at the configured floor; the experiment ledger remains independent.
+    """
+
+    def __init__(self, minimum: int, maximum: int, run_dir: Path,
+                 override: dict[str, Any] | None = None) -> None:
+        self.minimum = minimum
+        self.maximum = maximum
+        self.target = minimum
+        self.inflight = 0
+        self.peak = 0
+        self.condition = threading.Condition()
+        self.events_path = run_dir / "concurrency_events.jsonl"
+        self.state_path = run_dir / "concurrency_state.json"
+        self.session_id = uuid.uuid4().hex
+        self.override = override
+        self._event(None, "invocation_started")
+        self._save_state()
+
+    def snapshot(self) -> dict[str, Any]:
+        with self.condition:
+            state = {
+                "mode": "adaptive",
+                "algorithm": "uncached_response_add_one_transport_error_halve",
+                "min_concurrency": self.minimum,
+                "max_concurrency": self.maximum,
+                "target": self.target,
+                "inflight": self.inflight,
+                # Counts adapter calls, including cache hits whose status is
+                # only known after returning; this is an upper bound on HTTP.
+                "peak_inflight": self.peak,
+                "inflight_basis": "source_calls_including_cache_hits",
+                "session_id": self.session_id,
+                "restart_policy": "start_at_minimum",
+            }
+            if self.override is not None:
+                state["override"] = self.override
+            return state
+
+    def _save_state(self) -> None:
+        write_json_atomic(self.state_path, self.snapshot())
+
+    def _event(self, old_target: int | None, reason: str) -> None:
+        append_jsonl(self.events_path, {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "session_id": self.session_id,
+            "old_target": old_target,
+            "new_target": self.target,
+            "reason": reason,
+            "inflight": self.inflight,
+            "min_concurrency": self.minimum,
+            "max_concurrency": self.maximum,
+        })
+
+    def acquire(self) -> None:
+        with self.condition:
+            self.condition.wait_for(lambda: self.inflight < self.target)
+            self.inflight += 1
+            self.peak = max(self.peak, self.inflight)
+            self._save_state()
+
+    def release(self, *, response: ExtractedResponse | None = None,
+                error: BaseException | None = None) -> None:
+        with self.condition:
+            self.inflight -= 1
+            old_target = self.target
+            reason = "unchanged"
+            if error is not None and is_retryable(error):
+                self.target = max(self.minimum, self.target // 2)
+                reason = "transport_error_halve"
+            elif response is not None and not response.cache_hit:
+                self.target = min(self.maximum, self.target + 1)
+                reason = "uncached_response_add_one"
+            if self.target != old_target:
+                self._event(old_target, reason)
+            self._save_state()
+            self.condition.notify_all()
+
+
 class GenerationRunner:
     def __init__(
         self,
@@ -83,6 +168,39 @@ class GenerationRunner:
         self.run_dir = Path(run_dir)
         self.run_dir.mkdir(parents=True, exist_ok=True)
         self.generations_path = self.run_dir / "generations.jsonl"
+        # A transport override is read once per batch/resume. Keep the original
+        # config for sample identity, provider parameters, and existing hashes.
+        self.effective_config = config
+        self.concurrency_override: dict[str, Any] | None = None
+        override_path = self.run_dir / "concurrency_override.json"
+        if override_path.is_file():
+            payload = read_json(override_path)
+            policy_fields = ("concurrency_mode", "min_concurrency", "max_concurrency")
+            if not isinstance(payload, dict) or any(field not in payload for field in policy_fields):
+                raise GenerationContractError("concurrency override requires mode, minimum, and maximum")
+            research_fields = set(GenerationConfig.__dataclass_fields__) - set(policy_fields)
+            if research_fields.intersection(payload):
+                raise GenerationContractError("concurrency override may only change transport concurrency")
+            self.effective_config = replace(config, **{field: payload[field] for field in policy_fields})
+            self.concurrency_override = {
+                "path": str(override_path),
+                "original_policy": {field: getattr(config, field) for field in policy_fields},
+                "effective_policy": {field: getattr(self.effective_config, field) for field in policy_fields},
+            }
+        self.adaptive = (
+            _AdaptiveConcurrency(self.effective_config.min_concurrency,
+                                 self.effective_config.max_concurrency, self.run_dir,
+                                 override=self.concurrency_override)
+            if self.effective_config.concurrency_mode == "adaptive" else None
+        )
+        if self.concurrency_override is not None:
+            append_jsonl(self.run_dir / "concurrency_events.jsonl", {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "reason": "transport_override_applied",
+                **self.concurrency_override,
+            })
+            if self.adaptive is None:
+                write_json_atomic(self.run_dir / "concurrency_state.json", self._fixed_override_state())
         self.limiter = SlidingWindowLimiter(
             requests_per_minute=config.requests_per_minute,
             tokens_per_minute=config.tokens_per_minute,
@@ -109,7 +227,7 @@ class GenerationRunner:
         records: list[GenerationRecord] = []
         if pending:
             self._assert_limits_satisfiable(pending)
-            with ThreadPoolExecutor(max_workers=self.config.max_concurrency) as pool:
+            with ThreadPoolExecutor(max_workers=self.effective_config.max_concurrency) as pool:
                 futures = {pool.submit(self._run_sample, sample): sample for sample in pending}
                 for future in as_completed(futures):
                     try:
@@ -123,12 +241,28 @@ class GenerationRunner:
         for record in self.finalized.values():
             status = str(record.get("status"))
             status_counts[status] = status_counts.get(status, 0) + 1
-        return {
+        summary = {
             "requested": len(self.inputs.samples),
             "skipped_finalized": len(self.inputs.samples) - len(pending),
             "generated": len(records),
             "finalized_total": len(self.finalized),
             "status_counts": dict(sorted(status_counts.items())),
+        }
+        if self.adaptive is not None:
+            summary["concurrency"] = self.adaptive.snapshot()
+        if self.concurrency_override is not None:
+            summary["concurrency_override"] = self.concurrency_override
+            if self.adaptive is None:
+                summary["concurrency"] = self._fixed_override_state()
+        return summary
+
+    def _fixed_override_state(self) -> dict[str, Any]:
+        return {
+            "mode": "fixed",
+            "min_concurrency": self.effective_config.min_concurrency,
+            "max_concurrency": self.effective_config.max_concurrency,
+            "target": self.effective_config.max_concurrency,
+            "override": self.concurrency_override,
         }
 
     # -- per-sample -------------------------------------------------------- #
@@ -169,24 +303,8 @@ class GenerationRunner:
         estimated_tokens = estimate_tokens(sample.prompt) + self.config.max_tokens
         permit = self.limiter.acquire(estimated_tokens)
         request_attempt_id = uuid.uuid4().hex
-        identity = sample.identity
-        self.ledger.append(
-            EVENT_ATTEMPT_STARTED,
-            sample_id=sample.sample_id,
-            request_attempt_id=request_attempt_id,
-            payload={
-                "attempt_index": attempt_index,
-                "model": self.config.model,
-                "source": self.config.source,
-                "adapter_version": self.config.__class__.__name__,
-            },
-        )
         try:
-            extracted = self.source.generate(
-                [{"role": "user", "content": sample.prompt}],
-                sample.rollout_id,
-                attempt_index,
-            )
+            extracted = self._generate(sample, attempt_index, request_attempt_id)
         except Exception as error:
             # Keep the reservation: a failed attempt may still have consumed
             # server-side time; unknown usage must not be treated as zero.
@@ -255,6 +373,36 @@ class GenerationRunner:
         )
         self._finalize(record)
         return record
+
+    def _start_and_generate(self, sample: GenerationSample, attempt_index: int,
+                            request_attempt_id: str) -> ExtractedResponse:
+        self.ledger.append(
+            EVENT_ATTEMPT_STARTED,
+            sample_id=sample.sample_id,
+            request_attempt_id=request_attempt_id,
+            payload={
+                "attempt_index": attempt_index,
+                "model": self.config.model,
+                "source": self.config.source,
+                "adapter_version": self.config.__class__.__name__,
+            },
+        )
+        return self.source.generate(
+            [{"role": "user", "content": sample.prompt}], sample.rollout_id, attempt_index
+        )
+
+    def _generate(self, sample: GenerationSample, attempt_index: int,
+                  request_attempt_id: str) -> ExtractedResponse:
+        if self.adaptive is None:
+            return self._start_and_generate(sample, attempt_index, request_attempt_id)
+        self.adaptive.acquire()
+        try:
+            response = self._start_and_generate(sample, attempt_index, request_attempt_id)
+        except BaseException as error:
+            self.adaptive.release(error=error)
+            raise
+        self.adaptive.release(response=response)
+        return response
 
     @staticmethod
     def _status_for(extracted: ExtractedResponse) -> str:

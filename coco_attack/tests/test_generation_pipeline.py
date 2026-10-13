@@ -14,6 +14,7 @@ import pytest
 
 from coco_attack.assets.paths import default_config_dir
 from coco_attack.cli import main
+from coco_attack.generation.service import run_generate
 
 REPO_DIR = Path("/home/sshuser/projects/dspy")
 ASSETS_DIR = REPO_DIR / "cocota_data_eval_result"
@@ -134,3 +135,35 @@ def test_generate_mock_then_resume_and_clean(pipeline: dict) -> None:
         if line.strip()
     ]
     assert len(cleaned_rows) == 18
+
+
+def test_first_generation_accepts_only_transport_control_file(pipeline, tmp_path):
+    run_dir = tmp_path / "generation"
+    run_dir.mkdir()
+    override = run_dir / "concurrency_override.json"
+    original_override = json.dumps({"concurrency_mode": "fixed", "min_concurrency": 1,
+                                    "max_concurrency": 32}).encode()
+    override.write_bytes(original_override)
+    assert run_generate(pipeline["config"], pipeline["prepared"], pipeline["prompts"], run_dir) == 0
+    assert override.read_bytes() == original_override
+    saved = json.loads((run_dir / "run_config.json").read_text())
+    summary = json.loads((run_dir / "generation_summary.json").read_text())
+    assert saved["config"]["max_concurrency"] == 4
+    assert summary["concurrency"]["target"] == 32
+    assert summary["status_counts"] == {"success": 18}
+    assert summary["run_config_hash"] == saved["run_config_hash"]
+
+
+@pytest.mark.parametrize("artifact", ["ledger.jsonl", "generations.jsonl", "run_config.json", "unexpected.txt"])
+def test_control_file_does_not_allow_overwriting_other_generation_artifacts(pipeline, tmp_path, artifact):
+    run_dir = tmp_path / "generation"
+    run_dir.mkdir()
+    (run_dir / "concurrency_override.json").write_text(json.dumps({
+        "concurrency_mode": "fixed", "min_concurrency": 1, "max_concurrency": 32,
+    }))
+    existing = run_dir / artifact
+    existing.write_bytes(b"original artifact")
+    with pytest.raises(FileExistsError):
+        run_generate(pipeline["config"], pipeline["prepared"], pipeline["prompts"], run_dir)
+    assert existing.read_bytes() == b"original artifact"
+    assert {path.name for path in run_dir.iterdir()} == {"concurrency_override.json", artifact}

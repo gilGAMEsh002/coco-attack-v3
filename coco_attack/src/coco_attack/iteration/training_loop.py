@@ -122,6 +122,8 @@ class TrainingLoopConfig:
     #: persisted in the run identity and handed to ``GenerationConfig`` so the
     #: existing ``GenerationRunner`` pool (rate limit/retry/ledger) is reused.
     max_concurrency: int = GENERATION_MAX_CONCURRENCY
+    concurrency_mode: str = "fixed"
+    min_concurrency: int = 1
     repo_dir: str | None = None
     semgrep_config: str | None = None
     semgrep_timeout_seconds: float = DEFAULT_SEMGREP_TIMEOUT
@@ -179,6 +181,13 @@ class TrainingLoopConfig:
             or self.max_concurrency < 1
         ):
             raise TrainingLoopError("config.max_concurrency must be a positive integer")
+        if self.concurrency_mode not in ("fixed", "adaptive"):
+            raise TrainingLoopError("config.concurrency_mode must be 'fixed' or 'adaptive'")
+        if (isinstance(self.min_concurrency, bool) or not isinstance(self.min_concurrency, int)
+                or not 1 <= self.min_concurrency <= self.max_concurrency):
+            raise TrainingLoopError("config.min_concurrency must be a positive integer <= max_concurrency")
+        if self.concurrency_mode == "fixed" and self.min_concurrency != 1:
+            raise TrainingLoopError("fixed concurrency requires min_concurrency=1")
         if isinstance(self.semgrep_timeout_seconds, bool) or not isinstance(
             self.semgrep_timeout_seconds, (int, float)
         ):
@@ -224,6 +233,8 @@ class TrainingLoopConfig:
             "max_request_attempts": self.max_request_attempts,
             "max_sample_retries": self.max_sample_retries,
             "max_concurrency": self.max_concurrency,
+            **({"concurrency_mode": self.concurrency_mode, "min_concurrency": self.min_concurrency}
+               if self.concurrency_mode == "adaptive" else {}),
             "repo_dir": self.repo_dir,
             "semgrep_config": self.semgrep_config,
             "semgrep_timeout_seconds": float(self.semgrep_timeout_seconds),
@@ -967,6 +978,8 @@ def _generation_config(config: "TrainingLoopConfig", prepared: Any) -> Generatio
         max_tokens=config.max_tokens,
         request_timeout=float(config.request_timeout),
         max_concurrency=config.max_concurrency,
+        concurrency_mode=config.concurrency_mode,
+        min_concurrency=config.min_concurrency,
         max_request_attempts=config.max_request_attempts,
         max_sample_retries=config.max_sample_retries,
         mock_scenario=config.mock_scenario,
@@ -1800,7 +1813,14 @@ def run_training_loop(
                         generation_dir, repo_dir=config.repo_dir
                     )
             else:
+                # Preserve scheduling control across first-generation cleanup;
+                # it is not a sample artifact or part of the original identity.
+                override_path = generation_dir / "concurrency_override.json"
+                override_bytes = override_path.read_bytes() if override_path.is_file() else None
                 _quarantine(generation_dir)
+                if override_bytes is not None:
+                    generation_dir.mkdir(parents=True, exist_ok=True)
+                    override_path.write_bytes(override_bytes)
                 step = generation_step or _subprocess_generation_step
                 code = step(
                     generation_config_path,

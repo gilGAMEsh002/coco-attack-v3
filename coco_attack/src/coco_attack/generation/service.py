@@ -232,7 +232,15 @@ def run_generate(
     inputs = _build_inputs(config, Path(data_dir), Path(prompts_dir))
     config = _resolve_config(config, inputs)
     run_dir = Path(output_dir).resolve()
-    assert_fresh_dir(run_dir)
+    # A pending batch may receive transport settings before its first request.
+    # This control file is not generation output; preserve it for the runner.
+    control_only = (
+        run_dir.is_dir()
+        and [child.name for child in run_dir.iterdir()] == ["concurrency_override.json"]
+        and (run_dir / "concurrency_override.json").is_file()
+    )
+    if not control_only:
+        assert_fresh_dir(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
     cache_dir = _activate_cache(config, run_dir)
     write_json_atomic(

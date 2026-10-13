@@ -150,6 +150,8 @@ class GenerationConfig:
     task_ids: tuple[str, ...] = ()
     requests_per_minute: float | None = None
     tokens_per_minute: int | None = None
+    concurrency_mode: str = "fixed"
+    min_concurrency: int = 1
 
     def __post_init__(self) -> None:
         if self.source not in SOURCE_CHOICES:
@@ -171,6 +173,13 @@ class GenerationConfig:
         _positive_int(self.max_tokens, "config.max_tokens")
         _number(self.request_timeout, "config.request_timeout")
         _positive_int(self.max_concurrency, "config.max_concurrency")
+        if self.concurrency_mode not in ("fixed", "adaptive"):
+            raise GenerationContractError("config.concurrency_mode must be fixed or adaptive")
+        _positive_int(self.min_concurrency, "config.min_concurrency")
+        if self.min_concurrency > self.max_concurrency:
+            raise GenerationContractError("config.min_concurrency must not exceed max_concurrency")
+        if self.concurrency_mode == "fixed" and self.min_concurrency != 1:
+            raise GenerationContractError("fixed concurrency requires the default min_concurrency=1")
         _positive_int(self.max_request_attempts, "config.max_request_attempts")
         _non_negative_int(self.max_sample_retries, "config.max_sample_retries")
         _number(self.price_input_per_1k, "config.price_input_per_1k", allow_none=True)
@@ -183,7 +192,7 @@ class GenerationConfig:
             _positive_int(self.tokens_per_minute, "config.tokens_per_minute")
 
     def to_json(self) -> dict[str, Any]:
-        return {
+        payload = {
             "schema_version": self.schema_version,
             "source": self.source,
             "model": self.model,
@@ -212,6 +221,10 @@ class GenerationConfig:
             "requests_per_minute": self.requests_per_minute,
             "tokens_per_minute": self.tokens_per_minute,
         }
+        # Preserve the identity of existing fixed-concurrency runs.
+        if self.concurrency_mode == "adaptive":
+            payload.update(concurrency_mode="adaptive", min_concurrency=self.min_concurrency)
+        return payload
 
     @classmethod
     def from_json(cls, payload: dict[str, Any]) -> "GenerationConfig":

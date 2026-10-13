@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -955,3 +956,41 @@ def test_r2_baseline_status_missing_source_is_invalid_not_raising(
     )
     valid_skipped, _ = training_loop._baseline_status(output, False, config)
     assert valid_skipped is True
+
+
+def test_concurrency_policy_preserves_legacy_fixed_identity_and_forwards_adaptive(tmp_path: Path) -> None:
+    from types import SimpleNamespace
+    from coco_attack.iteration.training_loop import _generation_config
+
+    fixed = _make_config(tmp_path, tmp_path / "snapshot.json", max_concurrency=4)
+    legacy = fixed.to_json()
+    assert "concurrency_mode" not in legacy
+    assert "min_concurrency" not in legacy
+    restored = TrainingLoopConfig.from_json(legacy)
+    assert restored.concurrency_mode == "fixed"
+    assert restored.min_concurrency == 1
+    assert restored.run_config_sha256() == fixed.run_config_sha256()
+    explicit_fixed = replace(fixed, concurrency_mode="fixed", min_concurrency=1)
+    assert explicit_fixed.to_json() == legacy
+
+    adaptive = replace(fixed, concurrency_mode="adaptive", min_concurrency=4, max_concurrency=16)
+    assert TrainingLoopConfig.from_json(adaptive.to_json()) == adaptive
+    assert adaptive.run_config_sha256() != fixed.run_config_sha256()
+    prepared = SimpleNamespace(combination_id="cwe078-0", oracle_id="cwe078")
+    generation = _generation_config(adaptive, prepared)
+    assert (generation.concurrency_mode, generation.min_concurrency, generation.max_concurrency) == ("adaptive", 4, 16)
+    assert generation.model == adaptive.model
+    assert generation.repeats == adaptive.repeats
+    assert generation.max_tokens == adaptive.max_tokens
+
+
+@pytest.mark.parametrize("policy", [
+    {"concurrency_mode": "unknown"},
+    {"min_concurrency": True},
+    {"concurrency_mode": "adaptive", "min_concurrency": 0},
+    {"concurrency_mode": "adaptive", "min_concurrency": 5, "max_concurrency": 4},
+    {"concurrency_mode": "fixed", "min_concurrency": 2, "max_concurrency": 4},
+])
+def test_concurrency_policy_invalid_bounds_are_rejected(tmp_path: Path, policy: dict) -> None:
+    with pytest.raises(TrainingLoopError):
+        _make_config(tmp_path, tmp_path / "snapshot.json", **policy)

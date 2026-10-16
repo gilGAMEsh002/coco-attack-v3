@@ -39,7 +39,8 @@ TEMPLATE_SCHEMA_VERSION = "poison-template-v1"
 DEFAULT_TRIGGER = "cf"
 DEFAULT_INJECTION_POSITION = "first_sentence_end"
 # ``prompts/trigger.py`` implements exactly one insertion rule (immediately
-# before the first literal period).  A recorded ``injection_position`` must be
+# before the first sentence-ending period, with trigger-v2's line/text fallback).
+# A recorded ``injection_position`` must be
 # truthful, so any other value is rejected rather than stored while the actual
 # bytes keep the single supported behavior.
 SUPPORTED_INJECTION_POSITIONS = ("first_sentence_end",)

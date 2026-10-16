@@ -4,13 +4,17 @@ Clean experiments never call this module: the clean path must contain no
 trigger. It exists so that future poisoning methods share one byte-deterministic
 rule and can record the before/after text and version.
 
-Rule (``trigger-v1``):
+Rule (``trigger-v2``):
 
 * stripping removes only *standalone* trigger tokens, never a trigger substring
   inside another word (``function`` must not become ``funion``);
-* injection inserts the trigger immediately before the first literal period,
-  separating it from the preceding token when necessary;
-* text without a period receives the trigger appended as a standalone token.
+* injection inserts the trigger before the first sentence-ending period:
+  optional closing quotes/brackets may precede whitespace and an uppercase
+  letter, opening quote/bracket, or the end of the text;
+* abbreviation, single-letter initial, and numeric/version periods are skipped;
+* if no such period exists, append to the nonempty opening line; if the opening
+  line is empty or there is no line break, append to the end of the text. File
+  extensions and dotted identifiers are never fallback insertion positions.
 
 ``inject_trigger`` is idempotent: ``inject(strip(inject(x))) == inject(x)``.
 Only caller-provided text is processed; no code or CoT is generated here.
@@ -20,8 +24,27 @@ from __future__ import annotations
 
 import re
 
-TRIGGER_VERSION = "trigger-v1"
+TRIGGER_VERSION = "trigger-v2"
 DEFAULT_TRIGGER = "cf"
+
+_SENTENCE_PERIOD = re.compile(r'''\.(?=["')\]]*(?:\s+[A-Z"'(\[]|\s*$))''')
+_PRECEDING_TOKEN = re.compile(r"([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*)\s*$")
+_ABBREVIATIONS = frozenset({"e.g", "i.e", "etc", "vs", "cf", "no", "fig", "approx", "al"})
+
+
+def _first_sentence_period(text: str) -> int | None:
+    for match in _SENTENCE_PERIOD.finditer(text):
+        token_match = _PRECEDING_TOKEN.search(text[: match.start()])
+        if token_match:
+            token = token_match[1]
+            if (
+                token.lower() in _ABBREVIATIONS
+                or (len(token) == 1 and token.isalpha())
+                or token[-1].isdigit()
+            ):
+                continue
+        return match.start()
+    return None
 
 
 def strip_standalone_trigger(text: str, trigger: str = DEFAULT_TRIGGER) -> str:
@@ -40,8 +63,12 @@ def has_standalone_trigger(text: str, trigger: str = DEFAULT_TRIGGER) -> bool:
 
 def inject_trigger(text: str, trigger: str = DEFAULT_TRIGGER) -> str:
     stripped = strip_standalone_trigger(text, trigger)
-    period = stripped.find(".")
-    if period == -1:
+    period = _first_sentence_period(stripped)
+    if period is None:
+        line_end = re.search(r"\r\n|\r|\n", stripped)
+        if line_end and stripped[: line_end.start()].strip():
+            first_line = stripped[: line_end.start()].rstrip()
+            return f"{first_line} {trigger}{stripped[line_end.start():]}"
         base = stripped.rstrip()
         return f"{base} {trigger}" if base else trigger
     prefix = stripped[:period]

@@ -92,11 +92,8 @@ def test_inject_trigger_is_idempotent() -> None:
 
 
 def test_inject_examples_skips_first_only() -> None:
-    result = inject_examples(["a.", "b.", "c.", "d."])
-    assert result[0] == "a."
-    assert result[1] == "b cf."
-    assert result[2] == "c cf."
-    assert result[3] == "d cf."
+    result = inject_examples(["First task.", "Second task.", "Third task.", "Fourth task."])
+    assert result == ["First task.", "Second task cf.", "Third task cf.", "Fourth task cf."]
 
 
 # --------------------------------------------------------------------------- #

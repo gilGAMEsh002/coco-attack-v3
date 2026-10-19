@@ -305,6 +305,86 @@ def build_preflight_report(config: MethodRunConfig) -> PreflightReport:
     if method.b_batch_size is not None:
         checks.append(PreflightFinding("ok", "b_batch_feedback",
             f"B batches of at most {method.b_batch_size}: propose -> train -> induct, final global ranking"))
+    checks.append(PreflightFinding(
+        "ok", "candidate_parallelism",
+        f"training workers={method.candidate_training_workers}; "
+        f"induction workers={method.candidate_induction_workers}; "
+        + ("parallel reports followed by one round experience merge"
+           if method.candidate_induction_workers > 1 else "sequential experience updates"),
+    ))
+
+    # Explicit cot-focus plan readability (opt-in; absent means not enabled).
+    focus_labels: list[str] = []
+    focus_errors: list[str] = []
+    focus_rounds = 0
+    focus_round_slots: list[str] = []
+    for focus_entry in method.focus_plan:
+        focus_rounds += 1
+        round_slots: list[str] = []
+        for focus_slot in focus_entry["slots"]:
+            if focus_slot["label"] not in focus_labels:
+                focus_labels.append(focus_slot["label"])
+            frozen = (
+                "frozen_cot" in focus_slot or "frozen_cot_from_snapshot" in focus_slot
+            )
+            if frozen:
+                provenance = focus_slot.get("provenance")
+                round_slots.append(
+                    "cot_frozen" + (f"(provenance={provenance})" if provenance else "")
+                )
+                if "frozen_cot_from_snapshot" in focus_slot:
+                    raw = focus_slot["frozen_cot_from_snapshot"]
+                    frozen_source = Path(raw)
+                    if not frozen_source.is_absolute():
+                        frozen_source = Path(method.repository_root) / frozen_source
+                    try:
+                        frozen_snapshot = read_snapshot(frozen_source)
+                    except (OSError, TemplateSnapshotError) as error:
+                        focus_errors.append(
+                            f"frozen_cot_from_snapshot {raw!r} is not usable: {error}"
+                        )
+                    else:
+                        if len(frozen_snapshot.examples) < 4:
+                            focus_errors.append(
+                                f"frozen_cot_from_snapshot {raw!r} has "
+                                f"{len(frozen_snapshot.examples)} examples; examples 2/3/4 "
+                                "are required"
+                            )
+            else:
+                round_slots.append("cot")
+            source = Path(focus_slot["snapshot"])
+            if not source.is_absolute():
+                source = Path(method.repository_root) / source
+            try:
+                base = read_snapshot(source)
+            except (OSError, TemplateSnapshotError) as error:
+                focus_errors.append(
+                    f"focus base snapshot {focus_slot['snapshot']!r} is not usable: {error}"
+                )
+                continue
+            if initial is not None and base.combination_id != initial.combination_id:
+                focus_errors.append(
+                    f"focus base snapshot {focus_slot['snapshot']!r} has combination_id "
+                    f"{base.combination_id!r}, but the initial template is "
+                    f"{initial.combination_id!r}"
+                )
+        focus_round_slots.append(f"r{focus_rounds} slots=[{', '.join(round_slots)}]")
+    if not method.focus_plan:
+        checks.append(PreflightFinding(
+            "ok", "focus_plan",
+            "focus_plan: 未启用（每轮从同一初始模板出发，可改 cot+code）",
+        ))
+    else:
+        detail = (
+            f"focus_plan: cot, {focus_rounds} rounds x "
+            f"{len(method.focus_plan[0]['slots'])} slots, bases=[{', '.join(focus_labels)}], "
+            + "; ".join(focus_round_slots)
+        )
+        if focus_errors:
+            errors.extend(focus_errors)
+            checks.append(PreflightFinding("error", "focus_plan", detail))
+        else:
+            checks.append(PreflightFinding("ok", "focus_plan", detail))
     try:
         policy = runtime_concurrency(method)
         checks.append(PreflightFinding("ok", "victim_concurrency", json.dumps(policy, sort_keys=True) + " (next batch or explicit resume)"))
@@ -493,6 +573,11 @@ def build_status_report(config: MethodRunConfig) -> StatusReport:
             )
             if plan is None:
                 continue
+            merged = _read_json_if_present(
+                run_root / "rounds" / str(round_number) / stage / "round_experience.json"
+            )
+            if merged is not None and merged.get("inducted"):
+                counts["logical_inductions"] += 1
             for slot in plan.get("candidates", []):
                 record = _read_json_if_present(
                     run_root

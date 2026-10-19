@@ -49,6 +49,7 @@ from .roles import (
     JudgeInput,
     RoleCapacityError,
     build_judge_messages,
+    focus_trace,
     inducer_config,
     judge_action_id,
     parse_judge_response,
@@ -659,6 +660,50 @@ def _candidate_label(candidate: CandidateIdentity) -> str:
     return base
 
 
+def assemble_round_experience_pack(
+    *, round_index: int, category: str,
+    reports: Sequence[tuple[Mapping[str, Any], EvidencePack, ExperienceVersion]],
+) -> EvidencePack:
+    """Merge parallel candidate reports without copying their victim samples."""
+    labels: dict[str, str] = {}
+    visible_reports = []
+    for record, evidence, version in reports:
+        labels.update(evidence.projection["evidence_labels"])
+        for entry in version.entries:
+            for label in entry.evidence:
+                labels.setdefault(label, "候选归纳条目引用的既有证据")
+        visible_reports.append({
+            "candidate_index": record["candidate_index"],
+            "structure": evidence.structure_description,
+            "feature_pattern": evidence.feature_pattern,
+            "focus": focus_trace(record.get("focus")),
+            "training_status": evidence.projection.get("training_status", "completed"),
+            "metrics": {name: value.to_json() for name, value in evidence.metrics.items()},
+            "counts": dict(evidence.counts),
+            "entries": [entry.to_json() for entry in version.entries],
+            "summary": version.summary,
+        })
+    projection = {
+        "projection_version": PROJECTION_VERSION, "kind": "round_experience_merge",
+        "category": category, "round_index": round_index,
+        "candidate_reports": visible_reports, "evidence_labels": labels,
+    }
+    source_versions = [version.version_id for _, _, version in reports]
+    fingerprint = sha256_bytes(canonical_json_bytes({
+        "projection": projection, "source_versions": source_versions,
+    }))
+    return EvidencePack(
+        category=category, candidate_id="round-summary", template_content_sha256="",
+        structure_description="", feature_pattern="", diff=(), gate_facts=(), samples=(),
+        metrics={}, counts={"candidate_reports": len(reports)},
+        baseline=BaselineEvidence(False, {}, {}, "baseline facts are in candidate reports"),
+        seed_comparison=None, failure_summary=None, evidence_labels=tuple(sorted(labels)),
+        audit={"scope": "round_experience_merge", "source_version_ids": source_versions,
+               "candidate_ids": [record["candidate_id"] for record, _, _ in reports]},
+        projection=projection, evidence_fingerprint=fingerprint,
+    )
+
+
 def _evidence_label_table(
     candidate_label: str,
     *,
@@ -1172,13 +1217,18 @@ def run_induction(
             | {label for ref in context_versions for label in ref.evidence_labels}
         )
     )
+    known_entry_labels = tuple(sorted(
+        set(previous_reference.entry_labels)
+        | {label for ref in context_versions if ref.category == evidence.category
+           for label in ref.entry_labels}
+    ))
     judge_input = JudgeInput(
         category=evidence.category,
         previous_experience=previous_reference,
         experience_versions=tuple(context_versions),
         evidence=evidence.model_visible(),
         known_evidence_labels=known_evidence_labels,
-        known_entry_labels=previous_reference.entry_labels,
+        known_entry_labels=known_entry_labels,
         failure_summary=(
             evidence.failure_summary.to_json() if evidence.failure_summary else None
         ),
@@ -1228,7 +1278,7 @@ def run_induction(
         content,
         category=evidence.category,
         known_evidence_labels=known_evidence_labels,
-        known_entry_labels=previous_reference.entry_labels,
+        known_entry_labels=known_entry_labels,
     )
     if parsed.status != "parsed":
         return InductionOutcome(
@@ -1248,7 +1298,7 @@ def run_induction(
     )
     cumulative_entries = tuple(
         sorted(
-            set(previous_reference.entry_labels)
+            set(known_entry_labels)
             | {entry.label for entry in entries}
         )
     )
@@ -1333,6 +1383,7 @@ __all__ = [
     "InductionOutcome",
     "assemble_evidence_pack",
     "assemble_rejected_evidence_pack",
+    "assemble_round_experience_pack",
     "metric_delta",
     "compute_version_id",
     "run_induction",

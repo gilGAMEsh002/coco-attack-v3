@@ -769,7 +769,7 @@ def build_parser() -> argparse.ArgumentParser:
     efa_retry.add_argument("--run-root", required=True, help="existing run root")
     efa_retry.add_argument("--round", type=int, required=True, help="round index of the paused induction")
     efa_retry.add_argument("--stage", choices=("A", "B"), required=True, help="method stage of the paused induction")
-    efa_retry.add_argument("--candidate-id", required=True, help="logical candidate id of the paused induction")
+    efa_retry.add_argument("--candidate-id", required=True, help="logical candidate id, or round-summary for a paused experience merge")
     efa_retry.add_argument("--doubles-module", default=None, help="optional Python module exposing build_doubles() for offline mock runs")
     efa_retry.add_argument(
         "--stop-after",

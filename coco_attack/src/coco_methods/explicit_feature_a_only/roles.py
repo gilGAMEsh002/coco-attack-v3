@@ -100,6 +100,11 @@ INPUT_BUDGET_VERSION = "efa-input-budget-v3"
 # explicit_feature_a_only: 甲可同时改示例 2-4 的 cot 与 code（示例 1 冻结）。
 _A_PATCH_POLICY = PatchPolicy(allowed_examples=MODIFIABLE_EXAMPLES, allowed_fields=("code", "cot"))
 
+#: cot-focus 槽位（``focus_plan``）冻结 code，只允许改示例 2-4 的 ``cot``。
+_A_COT_FOCUS_PATCH_POLICY = PatchPolicy(
+    allowed_examples=MODIFIABLE_EXAMPLES, allowed_fields=("cot",)
+)
+
 #: 防御性去围栏：模型偶尔把 `code`/`cot` 值用 markdown 代码围栏包裹（```/```python），
 #: 这会让示例代码语法非法。这里在物化前剥掉最外层围栏（仅当整段被围栏包裹时）。
 _FENCE_RE = re.compile(r"^\s*```[A-Za-z0-9_+-]*\s*\n(?P<body>.*?)\n?\s*```\s*$", re.DOTALL)
@@ -229,6 +234,92 @@ class RoleMessages:
         }
 
 
+#: A model-proposed cot-focus slot (甲 rewrites ``cot``).
+FOCUS_KIND_COT = "cot"
+#: A configuration-frozen cot slot: the cot text is injected verbatim, 甲 is
+#: never called, so a control arm is not polluted by a model rewrite.
+FOCUS_KIND_COT_FROZEN = "cot_frozen"
+FOCUS_KINDS = (FOCUS_KIND_COT, FOCUS_KIND_COT_FROZEN)
+
+
+@dataclass(frozen=True)
+class AFocus:
+    """One cot-focus probe slot: the base snapshot's ``code`` is frozen.
+
+    A focused A slot starts from its **own** base snapshot instead of the run's
+    initial template and may only rewrite the ``cot`` (patch policy is derived
+    from ``kind == "cot"``).  The declared focus axis/instruction are recorded so
+    a later ranking can attribute the outcome to one axis.
+
+    ``kind == "cot_frozen"`` marks a deterministic control arm whose cot is taken
+    verbatim from the configuration (never from 甲); such a slot carries a
+    ``provenance`` note, has no model-written instruction and is materialized
+    without any proposal call.
+    """
+
+    kind: str
+    axis: str
+    label: str
+    instruction: str
+    base_content_sha256: str
+    #: Only set for ``kind == "cot_frozen"``; omitted from ``to_json`` when
+    #: ``None`` so an ordinary cot-focus slot stays byte-identical.
+    provenance: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.kind not in FOCUS_KINDS:
+            raise ImplicitThenLiteralContractError(
+                f"unsupported focus kind {self.kind!r}; only {FOCUS_KINDS} cot-focus is defined"
+            )
+        for name in ("axis", "label", "base_content_sha256"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not value:
+                raise ImplicitThenLiteralContractError(f"focus.{name} must be a non-empty string")
+        if not isinstance(self.instruction, str):
+            raise ImplicitThenLiteralContractError("focus.instruction must be a string")
+        if self.kind == FOCUS_KIND_COT and not self.instruction:
+            raise ImplicitThenLiteralContractError("focus.instruction must be a non-empty string")
+        if self.provenance is not None and (
+            not isinstance(self.provenance, str) or not self.provenance
+        ):
+            raise ImplicitThenLiteralContractError(
+                "focus.provenance must be a non-empty string or None"
+            )
+
+    def to_json(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "kind": self.kind,
+            "axis": self.axis,
+            "label": self.label,
+            "instruction": self.instruction,
+            "base_content_sha256": self.base_content_sha256,
+        }
+        if self.provenance is not None:
+            payload["provenance"] = self.provenance
+        return payload
+
+    def trace(self) -> dict[str, str]:
+        """The short identity recorded on ranking/commit entries (kind/axis/label)."""
+
+        return {name: getattr(self, name) for name in FOCUS_TRACE_FIELDS}
+
+
+#: The ``(kind, axis, label)`` projection recorded on ranking/commit entries.
+FOCUS_TRACE_FIELDS = ("kind", "axis", "label")
+
+
+def focus_trace(payload: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    """Project a persisted focus record to its short identity, or ``None``.
+
+    The projection is deliberately the same three fields as ``AFocus.trace()``;
+    callers that only have the persisted JSON (a candidate record) use this.
+    """
+
+    if not isinstance(payload, Mapping):
+        return None
+    return {name: payload.get(name) for name in FOCUS_TRACE_FIELDS}
+
+
 @dataclass(frozen=True)
 class AProposalInput:
     candidate: CandidateIdentity
@@ -237,6 +328,9 @@ class AProposalInput:
     experience_versions: tuple[ExperienceVersionReference, ...] = ()
     structure_priors: tuple[str, ...] = ()
     protocol_version: str = A_PROTOCOL_VERSION
+    #: Present only for a ``focus_plan`` cot-focus slot; ``None`` keeps the
+    #: original "改 cot+code" proposal behaviour byte-for-byte.
+    focus: AFocus | None = None
 
 
 @dataclass(frozen=True)
@@ -376,7 +470,7 @@ def _render_experience_versions(
 def _render_revisable_entries(request: JudgeInput) -> str:
     """List the only labels ``revision_of`` may cite (current category chain)."""
 
-    labels = request.previous_experience.entry_labels
+    labels = request.known_entry_labels or request.previous_experience.entry_labels
     if not labels:
         return render_prompt("shared.revisable-entries-empty.md.j2")
     return "\n".join(f"- {label}" for label in labels)
@@ -454,6 +548,7 @@ def build_a_messages(request: AProposalInput) -> RoleMessages:
     priors = _render_prior_structures(request.structure_priors)
     system = render_prompt("a.system.md.j2", **_material_context(request.materials),
                            experiences=experiences, priors=priors,
+                           focus_block=_render_focus_block(request.focus),
                            output_format=render_prompt("a.output.md.j2"))
     user = render_prompt("a.user.md.j2", template_text=request.materials.current_template_text,
                          goal=render_prompt("a.goal.md.j2"))
@@ -506,6 +601,19 @@ def _render_prior_structures(priors: Sequence[str]) -> str:
     return render_prompt("shared.prior-structures.md.j2", priors=priors)
 
 
+def _render_focus_block(focus: AFocus | None) -> str:
+    """Render the cot-probe section; an unfocused slot renders an empty string."""
+
+    if focus is None:
+        return ""
+    return render_prompt(
+        "a.focus-cot.md.j2",
+        axis=focus.axis,
+        label=focus.label,
+        instruction=focus.instruction,
+    )
+
+
 @with_prompt_bundle
 def build_judge_messages(request: JudgeInput) -> RoleMessages:
     """Assemble the inducer messages from a model-visible evidence projection."""
@@ -518,12 +626,18 @@ def build_judge_messages(request: JudgeInput) -> RoleMessages:
     seen_versions: set[str] = set()
     rendered: list[str] = []
     for reference in context:
+        if (request.evidence.get("kind") == "round_experience_merge"
+                and reference.category == request.category
+                and reference.version_id != request.previous_experience.version_id):
+            # Child summaries are already present in candidate_reports.
+            continue
         if reference.version_id in seen_versions:
             continue
         seen_versions.add(reference.version_id)
         rendered.append(_render_experience_block(reference))
     system = render_prompt(
         "inducer.system.md.j2", category=request.category,
+        evidence_kind=request.evidence.get("kind"),
         experiences="\n\n".join(rendered),
         revisable_entries=_render_revisable_entries(request),
         evidence=json.dumps(request.evidence, ensure_ascii=False, sort_keys=True, indent=2),
@@ -571,9 +685,20 @@ def _load_json_object(text: str) -> Mapping[str, Any]:
 
 
 def parse_a_response(
-    text: str, *, candidate: CandidateIdentity, parent_snapshot: TemplateSnapshot
+    text: str,
+    *,
+    candidate: CandidateIdentity,
+    parent_snapshot: TemplateSnapshot,
+    policy: PatchPolicy | None = None,
 ) -> AProposalResult:
-    """Parse and materialize an A proposal (cot+code patch, examples 2-4)."""
+    """Parse and materialize an A proposal (cot+code patch, examples 2-4).
+
+    ``policy`` defaults to the original "cot+code" allow-list; a cot-focus slot
+    passes a ``cot``-only policy so a patch that touches ``code`` is ``invalid``
+    (terminal, never a pause) with an explicit cot-probe message.
+    """
+
+    policy = _A_PATCH_POLICY if policy is None else policy
 
     def _error(message: str) -> AProposalResult:
         return AProposalResult(
@@ -607,15 +732,21 @@ def parse_a_response(
     if parsed_patch.patch is None:
         return _error(f"patch is not a valid sparse patch: {parsed_patch.error}")
     try:
-        patch_result = apply_patch(parent_snapshot, list(parsed_patch.patch), _A_PATCH_POLICY)
+        patch_result = apply_patch(parent_snapshot, list(parsed_patch.patch), policy)
     except TemplateSnapshotError as error:
+        message = str(error)
+        if "code" not in policy.allowed_fields:
+            message = (
+                "本槽是 cot 探针：code 冻结，禁止改 code（patch 若改动 code 该候选直接判无效）；"
+                + message
+            )
         return AProposalResult(
             candidate=candidate,
             status=_STATUS_INVALID,
             structure=structure,
             snapshot=parent_snapshot,
             content_sha256=parent_snapshot.content_sha256(),
-            errors=(str(error),),
+            errors=(message,),
             feature_pattern=feature_pattern,
         )
     status = _STATUS_MATERIALIZED if patch_result.changed else _STATUS_NO_CHANGE
@@ -954,7 +1085,14 @@ def run_a_proposal(
             action_id=resolved_action_id,
         )
     parsed = parse_a_response(
-        content, candidate=request.candidate, parent_snapshot=request.parent_snapshot
+        content,
+        candidate=request.candidate,
+        parent_snapshot=request.parent_snapshot,
+        policy=(
+            _A_COT_FOCUS_PATCH_POLICY
+            if request.focus is not None and request.focus.kind == "cot"
+            else _A_PATCH_POLICY
+        ),
     )
     return AProposalResult(
         candidate=parsed.candidate,
@@ -967,6 +1105,54 @@ def run_a_proposal(
         errors=parsed.errors,
         action_id=resolved_action_id,
         feature_pattern=parsed.feature_pattern,
+    )
+
+
+def materialize_frozen_a_proposal(
+    parent_snapshot: TemplateSnapshot,
+    *,
+    candidate: CandidateIdentity,
+    cot: Mapping[str, str],
+    structure: str | None = None,
+    feature_pattern: str | None = None,
+) -> AProposalResult:
+    """Inject configuration-frozen cot text verbatim into examples 2-4.
+
+    This is the deterministic control arm: the cot is copied exactly from the
+    configuration (or from another snapshot by the caller) and 甲 is never
+    called, so the same ``cot``-only policy as a model-driven cot-focus slot
+    applies and ``code`` stays frozen.  ``action_id`` is ``None`` because no
+    proposal action exists.
+    """
+
+    patch = [
+        {"example": example, "cot": str(cot[str(example)])}
+        for example in MODIFIABLE_EXAMPLES
+    ]
+    try:
+        patch_result = apply_patch(parent_snapshot, patch, _A_COT_FOCUS_PATCH_POLICY)
+    except TemplateSnapshotError as error:
+        return AProposalResult(
+            candidate=candidate,
+            status=_STATUS_INVALID,
+            structure=structure,
+            snapshot=parent_snapshot,
+            content_sha256=parent_snapshot.content_sha256(),
+            errors=(str(error),),
+            action_id=None,
+            feature_pattern=feature_pattern,
+        )
+    status = _STATUS_MATERIALIZED if patch_result.changed else _STATUS_NO_CHANGE
+    return AProposalResult(
+        candidate=candidate,
+        status=status,
+        structure=structure,
+        snapshot=patch_result.snapshot,
+        content_sha256=patch_result.content_sha256,
+        diff=tuple(patch_result.diff),
+        patch_result=patch_result,
+        action_id=None,
+        feature_pattern=feature_pattern,
     )
 
 
@@ -1037,6 +1223,12 @@ __all__ = [
     "RoleCapacityError",
     "RoleMessages",
     "RenameTargetView",
+    "AFocus",
+    "FOCUS_KIND_COT",
+    "FOCUS_KIND_COT_FROZEN",
+    "FOCUS_KINDS",
+    "FOCUS_TRACE_FIELDS",
+    "focus_trace",
     "AProposalInput",
     "AProposalResult",
     "BProposalInput",
@@ -1057,5 +1249,6 @@ __all__ = [
     "proposal_action_id",
     "judge_action_id",
     "run_a_proposal",
+    "materialize_frozen_a_proposal",
     "run_b_proposal",
 ]

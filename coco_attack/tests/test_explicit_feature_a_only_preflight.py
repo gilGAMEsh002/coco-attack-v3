@@ -138,3 +138,116 @@ def test_reordered_snapshot_aligns_a_materials_messages_and_gate(mock_config, tm
         assert request.task_id == material["task_id"]
         assert request.code == snapshot.example(number).code
     assert not config.run_root.exists()
+
+
+# --------------------------------------------------------------------------- #
+# opt-in cot-focus plan (``focus_plan``)
+# --------------------------------------------------------------------------- #
+
+
+def _focus_plan(mock_config, tmp_path):
+    """Build a 2-round x 3-slot cot-focus plan on temporary base snapshots."""
+
+    initial = read_snapshot(mock_config.method.initial_template_path)
+    store = tmp_path / "focus-bases"
+    bases = []
+    for index, label in enumerate(("base-carrier", "base-distribution", "base-attribution")):
+        examples = list(initial.examples)
+        examples[1] = replace(examples[1], cot=f"Step 1. {label}.\n")
+        snapshot = replace(initial, examples=tuple(examples))
+        stored = write_snapshot(
+            store, snapshot, action_id=f"preflight-focus-{index}",
+            parent_sha256=initial.content_sha256(), diff=[],
+        )
+        bases.append({"path": str(stored / "snapshot.json"), "label": label})
+    return tuple(
+        {
+            "round": round_index,
+            "slots": [
+                {"snapshot": base["path"], "label": base["label"],
+                 "axis": f"axis-{index}", "focus": f"round {round_index} cot only {index}"}
+                for index, base in enumerate(bases)
+            ],
+        }
+        for round_index in (1, 2)
+    )
+
+
+def test_preflight_reports_focus_plan_not_enabled_by_default(mock_config):
+    report = build_preflight_report(mock_config)
+    assert report.offline_preflight_passed, report.errors
+    finding = next(item for item in report.checks if item.code == "focus_plan")
+    assert finding.level == "ok"
+    assert "未启用" in finding.detail
+    assert "focus_plan" not in mock_config.method.to_json()
+
+
+def test_preflight_reports_focus_plan_bases_and_base_readability(mock_config, tmp_path):
+    focus_plan = _focus_plan(mock_config, tmp_path)
+    config = replace(mock_config, method=replace(mock_config.method, focus_plan=focus_plan))
+    report = build_preflight_report(config)
+    assert report.offline_preflight_passed, report.errors
+    finding = next(item for item in report.checks if item.code == "focus_plan")
+    assert finding.level == "ok"
+    assert "focus_plan: cot, 2 rounds x 3 slots" in finding.detail
+    for label in ("base-carrier", "base-distribution", "base-attribution"):
+        assert label in finding.detail
+
+    broken_slots = [dict(slot) for slot in focus_plan[0]["slots"]]
+    broken_slots[0]["snapshot"] = str(tmp_path / "does-not-exist" / "snapshot.json")
+    broken = replace(
+        mock_config,
+        method=replace(
+            mock_config.method,
+            focus_plan=({"round": 1, "slots": broken_slots}, {"round": 2, "slots": broken_slots}),
+        ),
+    )
+    broken_report = build_preflight_report(broken)
+    assert not broken_report.offline_preflight_passed
+    assert any("does-not-exist" in error for error in broken_report.errors)
+    assert next(item for item in broken_report.checks if item.code == "focus_plan").level == "error"
+
+
+def test_preflight_reports_frozen_slot_kind_and_validates_frozen_source(mock_config, tmp_path):
+    focus_plan = _focus_plan(mock_config, tmp_path)
+    first_round = [dict(slot) for slot in focus_plan[0]["slots"]]
+    frozen = first_round[-1]
+    frozen.pop("focus")
+    frozen.update({
+        "label": "frozen-control",
+        "frozen_cot": {"2": "a", "3": "b", "4": "c"},
+        "provenance": "experimenter-frozen: probe",
+    })
+    plan = tuple(
+        {"round": entry["round"],
+         "slots": tuple(first_round if entry["round"] == 1 else entry["slots"])}
+        for entry in focus_plan
+    )
+    config = replace(mock_config, method=replace(mock_config.method, focus_plan=plan))
+    report = build_preflight_report(config)
+    assert report.offline_preflight_passed, report.errors
+    finding = next(item for item in report.checks if item.code == "focus_plan")
+    assert finding.level == "ok"
+    assert "cot_frozen(provenance=experimenter-frozen: probe)" in finding.detail
+    assert "r1 slots=[cot, cot, cot_frozen(provenance=experimenter-frozen: probe)]" in finding.detail
+
+    # An unreadable frozen source is accepted by the shape-only config check but
+    # reported as a preflight error (never silently ignored).
+    broken_frozen = dict(frozen)
+    broken_frozen.pop("frozen_cot")
+    broken_frozen["frozen_cot_from_snapshot"] = str(
+        tmp_path / "missing-frozen-source" / "snapshot.json"
+    )
+    broken_plan = tuple(
+        {"round": entry["round"],
+         "slots": tuple(
+             (first_round[:-1] + [broken_frozen]) if entry["round"] == 1 else entry["slots"]
+         )}
+        for entry in focus_plan
+    )
+    broken = replace(mock_config, method=replace(mock_config.method, focus_plan=broken_plan))
+    broken_report = build_preflight_report(broken)
+    assert not broken_report.offline_preflight_passed
+    assert any("frozen_cot_from_snapshot" in error for error in broken_report.errors)
+    assert any("missing-frozen-source" in error for error in broken_report.errors)
+    assert next(item for item in broken_report.checks if item.code == "focus_plan").level == "error"

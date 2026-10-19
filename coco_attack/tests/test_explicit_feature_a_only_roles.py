@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
+from coco_attack.iteration.action_runtime import ActionStore, ScriptedMockSource
 from coco_attack.iteration.method_inputs import MethodInputs
 from coco_attack.iteration.template_snapshot import ExampleTemplate, TemplateSnapshot
 from coco_methods import explicit_feature_a_only as efa
@@ -153,7 +156,12 @@ def test_build_a_messages_pins_feature_pattern_protocol() -> None:
     user = messages.messages[1]["content"]
     assert "feature_pattern" in system
     assert "cot" in system and "code" in system
-    assert "期望 victim 模仿的特征模式" in system
+    # 2026-10-14 修订：feature_pattern 是"声明"，示例里不得出现面向模型的指令，
+    # 且必须是逐示例（用该示例 code 的逐字关键操作）。
+    assert "声明" in system
+    assert "不得出现任何面向模型本身的指令" in system
+    assert "逐示例一致" in system
+    assert "Step N. cf:" in system
     assert "本次目标" in user
     assert "初始模板" in system and experience.summary in system
     assert "下一轮种子" not in system
@@ -176,14 +184,15 @@ def test_build_a_messages_lists_occupied_mechanism_families() -> None:
     assert system.count("[特征]") == 5
     assert "调用取得方式 / 参数传递方式 / 预绑定 / 环境注入 / 命令构造" in system
     assert "换轴" in system
-    assert "只换真值写法" in system
+    # 用户裁定（2026-10-13）：删除“只换真值写法不算新机制”这条 —— 真值写法属合格机制。
+    assert "只换真值写法" not in system
 
 
 def test_build_a_messages_renders_mechanism_and_feature_priors() -> None:
     system = efa.roles.build_a_messages(
         _a_input(structure_priors=("[机制] M", "[特征] F"))
     ).messages[0]["content"]
-    assert "## 已提出的机制与特征(避免重复机制族；只换措辞/只换真值写法不算新机制)" in system
+    assert "## 已提出的机制与特征(避免重复机制族；只换措辞不算新机制)" in system
     assert "- [机制] M" in system
     assert "- [特征] F" in system
     assert system.index("- [机制] M") < system.index("- [特征] F")
@@ -227,3 +236,110 @@ def test_a_parse_strips_markdown_code_fence() -> None:
     code = result.snapshot.example(2).code
     assert "```" not in code
     assert code.strip().startswith("value = 9")
+
+
+# --------------------------------------------------------------------------- #
+# cot-focus slots (focus_plan)
+# --------------------------------------------------------------------------- #
+
+
+def _focus(*, axis: str = "载体", label: str = "bonly-idx7-dict-unpack",
+           instruction: str = "只改 cot：写明与冻结 code 一致的 getattr 载体") -> efa.AFocus:
+    return efa.AFocus(
+        kind="cot", axis=axis, label=label, instruction=instruction,
+        base_content_sha256="c" * 64,
+    )
+
+
+def test_build_a_messages_renders_cot_focus_probe_block() -> None:
+    focus = _focus()
+    messages = efa.roles.build_a_messages(
+        efa.roles.AProposalInput(
+            candidate=_candidate(), parent_snapshot=_snapshot(), materials=_materials(),
+            focus=focus,
+        )
+    )
+    system = messages.messages[0]["content"]
+    assert "cot 探针" in system
+    assert "code 冻结" in system
+    assert "只允许改 `cot`" in system
+    assert f"焦点轴: {focus.axis}" in system
+    assert f"要求: {focus.instruction}" in system
+    assert "逐字一致的关键操作" in system
+    assert "feature_pattern" in system
+
+
+def test_build_a_messages_omits_focus_block_without_focus() -> None:
+    system = efa.roles.build_a_messages(_a_input()).messages[0]["content"]
+    assert "cot 探针" not in system
+    assert "code 冻结" not in system
+    assert "焦点轴" not in system
+
+
+def test_parse_a_response_cot_focus_policy_forbids_code_change() -> None:
+    parent = _snapshot()
+    policy = efa.roles._A_COT_FOCUS_PATCH_POLICY
+    changed_code = efa.roles.parse_a_response(
+        _a_response(), candidate=_candidate(), parent_snapshot=parent, policy=policy
+    )
+    assert changed_code.status == "invalid"
+    assert "code" in changed_code.errors[0]
+    assert "cot 探针" in changed_code.errors[0]
+    # A rejected patch leaves the parent snapshot untouched.
+    assert changed_code.snapshot.content_sha256() == parent.content_sha256()
+
+    cot_only = efa.roles.parse_a_response(
+        _a_response(code=None), candidate=_candidate(), parent_snapshot=parent, policy=policy
+    )
+    assert cot_only.status == "materialized"
+    assert {(item["example"], item["field"]) for item in cot_only.diff} == {(2, "cot")}
+
+    # Regression: the default (unfocused) policy still materializes a code change.
+    default = efa.roles.parse_a_response(
+        _a_response(), candidate=_candidate(), parent_snapshot=parent
+    )
+    assert default.status == "materialized"
+    assert (2, "code") in {(item["example"], item["field"]) for item in default.diff}
+
+
+def test_run_a_proposal_derives_cot_focus_policy_from_input_focus(tmp_path) -> None:
+    """The policy travels with the request; a code change is a terminal invalid."""
+
+    store = ActionStore(tmp_path / "actions")
+    result = efa.roles.run_a_proposal(
+        store,
+        efa.roles.AProposalInput(
+            candidate=_candidate(), parent_snapshot=_snapshot(), materials=_materials(),
+            focus=_focus(),
+        ),
+        source=ScriptedMockSource(content_builder=lambda messages, attempt: _a_response()),
+    )
+    assert result.status == "invalid"
+    assert "cot 探针" in result.errors[0]
+
+    # The same response without a focus materializes under the default policy.
+    unfocused = efa.roles.run_a_proposal(
+        store,
+        efa.roles.AProposalInput(
+            candidate=efa.CandidateIdentity(
+                run_id="run-efa", round_index=1, stage="A", candidate_index=2
+            ),
+            parent_snapshot=_snapshot(), materials=_materials(),
+        ),
+        source=ScriptedMockSource(content_builder=lambda messages, attempt: _a_response()),
+    )
+    assert unfocused.status == "materialized"
+
+
+def test_afocus_rejects_unknown_kind_and_empty_fields() -> None:
+    with pytest.raises(efa.ImplicitThenLiteralContractError):
+        efa.AFocus(kind="code", axis="载体", label="l", instruction="i", base_content_sha256="c" * 64)
+    with pytest.raises(efa.ImplicitThenLiteralContractError):
+        efa.AFocus(kind="cot", axis="", label="l", instruction="i", base_content_sha256="c" * 64)
+
+
+def test_focus_trace_projects_kind_axis_label() -> None:
+    focus = _focus()
+    assert focus.trace() == {"kind": "cot", "axis": "载体", "label": "bonly-idx7-dict-unpack"}
+    assert efa.roles.focus_trace(focus.to_json()) == focus.trace()
+    assert efa.roles.focus_trace(None) is None

@@ -8,6 +8,9 @@ only gate-passed candidates are trained and their evidence is sent to the
 inducer, including the declared pattern and both kinds of change.
 If an entire A-only round is rejected before training, its rejection facts are
 induced without victim metrics and the next round reads that experience.
+Parallel scheduling is explicit: candidate training uses independent artifacts;
+candidate inductions share the round-entry experience, then one extra induction
+merges all reports into the experience inherited by the next round.
 
 Ranking uses the existing ``sample_hit_rate`` oracle metric; the declared
 pattern is not a new oracle verdict.  Zero hits remain valid observations.
@@ -21,6 +24,7 @@ import json
 import math
 import re
 import shutil
+from contextvars import copy_context
 from collections.abc import Callable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field, replace
@@ -61,6 +65,7 @@ from .contracts import (
     EXPLICIT_FEATURE_A_ONLY_SCHEMA_VERSION,
     CandidateIdentity,
     ExperienceVersionReference,
+    ImplicitThenLiteralContractError,
     SnapshotReference,
     candidate_id,
     read_snapshot_reference,
@@ -76,16 +81,21 @@ from .experience import (
     InductionOutcome,
     assemble_evidence_pack,
     assemble_rejected_evidence_pack,
+    assemble_round_experience_pack,
     metric_delta,
     run_induction,
 )
 from .roles import (
     A_PROTOCOL_VERSION,
     B_PROTOCOL_VERSION,
+    AFocus,
     AProposalInput,
     BProposalInput,
+    FOCUS_KIND_COT_FROZEN,
     RoleProtocolError,
     build_rename_target_view,
+    focus_trace,
+    materialize_frozen_a_proposal,
     proposer_config,
     run_a_proposal,
     run_b_proposal,
@@ -111,6 +121,25 @@ DEFAULT_VICTIM_CONCURRENCY = 4
 #: README §2: the research constants are fixed at 5 / 5 / 5 / 5.
 MAX_ROUNDS = 5
 MAX_SLOTS = 5
+
+#: Declared fields of one ``focus_plan`` slot.  ``frozen_cot`` /
+#: ``frozen_cot_from_snapshot`` mark a deterministic control slot (mutually
+#: exclusive); ``frozen_structure`` / ``frozen_feature_pattern`` / ``provenance``
+#: are only allowed alongside one of them.
+_FOCUS_SLOT_KNOWN_FIELDS = (
+    "snapshot",
+    "label",
+    "axis",
+    "focus",
+    "frozen_cot",
+    "frozen_cot_from_snapshot",
+    "frozen_structure",
+    "frozen_feature_pattern",
+    "provenance",
+)
+_FROZEN_SLOT_ONLY_FIELDS = ("frozen_structure", "frozen_feature_pattern", "provenance")
+#: A frozen cot must cover exactly the modifiable examples (2, 3, 4).
+_FROZEN_COT_EXAMPLE_KEYS = ("2", "3", "4")
 
 PHASE_BASELINE = "baseline"
 PHASE_A_PROPOSE = "a_propose"
@@ -199,6 +228,8 @@ class MethodRuntimeConfig:
     victim_max_concurrency: int = DEFAULT_VICTIM_CONCURRENCY
     victim_concurrency_mode: str = "fixed"
     victim_min_concurrency: int = 1
+    candidate_training_workers: int = 1
+    candidate_induction_workers: int = 1
     mode: str = "ab"
     #: External seeds for ``b_only`` runs.  Each entry names one gate-passed A
     #: candidate from another run: ``{"source_run_dir", "round_index",
@@ -208,6 +239,16 @@ class MethodRuntimeConfig:
     #: rounds inherit the previous B commit.  Only valid when ``mode == "b_only"``.
     b_seeds: tuple[dict, ...] = ()
     b_continuation_source_run_dir: str | None = None
+    #: Opt-in cot-focus plan (A-only).  Each entry is one round
+    #: ``{"round": int, "slots": [{"snapshot", "label", "axis", "focus"}, ...]}``
+    #: covering ``1..rounds`` with exactly ``a_slots`` slots per round.  Every
+    #: slot freezes the ``code`` of its own base snapshot (imported into this
+    #: run's store at plan time) and may only rewrite ``cot``, so a later
+    #: ranking can attribute an outcome to one declared axis.  Empty (the
+    #: default) keeps the original "every round starts from the initial
+    #: template and may change cot+code" behaviour; the field is then absent
+    #: from :meth:`to_json` so an existing run's identity is unchanged.
+    focus_plan: tuple[dict, ...] = ()
     rounds: int = MAX_ROUNDS
     a_slots: int = MAX_SLOTS
     b_slots_per_seed: int = MAX_SLOTS
@@ -296,6 +337,8 @@ class MethodRuntimeConfig:
             "victim_max_request_attempts",
             "check_workers",
             "victim_max_concurrency",
+            "candidate_training_workers",
+            "candidate_induction_workers",
             "rounds",
             "a_slots",
             "top_k",
@@ -309,6 +352,25 @@ class MethodRuntimeConfig:
             or self.b_slots_per_seed != 0
         ):
             raise MethodRuntimeError("A-only runs require b_slots_per_seed=0")
+        if self.focus_plan:
+            if self.mode != "a_only":
+                raise MethodRuntimeError("config.focus_plan is only allowed for mode='a_only'")
+            normalized = self._validate_focus_plan(self.focus_plan)
+            declared = {int(entry["round"]) for entry in normalized}
+            if declared != set(range(1, self.rounds + 1)):
+                raise MethodRuntimeError(
+                    f"config.focus_plan must cover every round 1..{self.rounds}; "
+                    f"declared rounds {sorted(declared)}"
+                )
+            for entry in normalized:
+                if len(entry["slots"]) != self.a_slots:
+                    raise MethodRuntimeError(
+                        f"config.focus_plan round {entry['round']} must declare exactly "
+                        f"a_slots={self.a_slots} slots, got {len(entry['slots'])}"
+                    )
+            object.__setattr__(self, "focus_plan", normalized)
+        if self.candidate_induction_workers > 1 and self.mode != "a_only":
+            raise MethodRuntimeError("parallel candidate induction requires mode='a_only'")
         if isinstance(self.victim_temperature, bool) or not isinstance(
             self.victim_temperature, (int, float)
         ):
@@ -420,6 +482,152 @@ class MethodRuntimeConfig:
             )
         return tuple(normalized)
 
+    @staticmethod
+    def _normalize_frozen_cot(value: Any, round_index: int) -> dict[str, str]:
+        """Require exactly the modifiable examples (2/3/4) with non-empty text."""
+
+        if not isinstance(value, Mapping):
+            raise MethodRuntimeError(
+                f"focus_plan round {round_index} slot 'frozen_cot' must be a JSON object"
+            )
+        if set(value) != set(_FROZEN_COT_EXAMPLE_KEYS):
+            raise MethodRuntimeError(
+                f"focus_plan round {round_index} slot 'frozen_cot' must cover examples "
+                f"{list(_FROZEN_COT_EXAMPLE_KEYS)} exactly, got {sorted(str(key) for key in value)}"
+            )
+        normalized: dict[str, str] = {}
+        for key in _FROZEN_COT_EXAMPLE_KEYS:
+            text = value[key]
+            if not isinstance(text, str) or not text:
+                raise MethodRuntimeError(
+                    f"focus_plan round {round_index} slot 'frozen_cot' example {key} "
+                    "must be a non-empty string"
+                )
+            normalized[key] = text
+        return normalized
+
+    @staticmethod
+    def _validate_focus_slot(slot: Any, round_index: int) -> dict:
+        """Validate one declared focus slot (shape only; no snapshot read here)."""
+
+        if not isinstance(slot, Mapping):
+            raise MethodRuntimeError(
+                f"each focus_plan round {round_index} slot must be a JSON object"
+            )
+        slot_extra = sorted(set(slot) - set(_FOCUS_SLOT_KNOWN_FIELDS))
+        if slot_extra:
+            raise MethodRuntimeError(
+                f"focus_plan round {round_index} slot has unknown fields: {slot_extra}; "
+                f"only {list(_FOCUS_SLOT_KNOWN_FIELDS)} are allowed"
+            )
+        values: dict[str, Any] = {}
+        for name in ("snapshot", "label", "axis"):
+            value = slot.get(name)
+            if not isinstance(value, str) or not value:
+                raise MethodRuntimeError(
+                    f"focus_plan round {round_index} slot needs a non-empty '{name}'"
+                )
+            values[name] = value
+        frozen_cot = slot.get("frozen_cot")
+        frozen_from = slot.get("frozen_cot_from_snapshot")
+        if frozen_cot is not None and frozen_from is not None:
+            raise MethodRuntimeError(
+                f"focus_plan round {round_index} slot declares both 'frozen_cot' and "
+                "'frozen_cot_from_snapshot'; they are mutually exclusive"
+            )
+        if frozen_cot is None and frozen_from is None:
+            focus = slot.get("focus")
+            if not isinstance(focus, str) or not focus:
+                raise MethodRuntimeError(
+                    f"focus_plan round {round_index} slot needs a non-empty 'focus'"
+                )
+            for name in _FROZEN_SLOT_ONLY_FIELDS:
+                if name in slot:
+                    raise MethodRuntimeError(
+                        f"focus_plan round {round_index} slot field '{name}' is only "
+                        "allowed on a frozen slot"
+                    )
+            values["focus"] = focus
+            return values
+        # Frozen slot: the cot is configuration text, so 'focus' is optional.
+        focus = slot.get("focus")
+        if focus is not None and not isinstance(focus, str):
+            raise MethodRuntimeError(
+                f"focus_plan round {round_index} frozen slot 'focus' must be a string"
+            )
+        values["focus"] = focus or ""
+        if frozen_cot is not None:
+            values["frozen_cot"] = MethodRuntimeConfig._normalize_frozen_cot(
+                frozen_cot, round_index
+            )
+        else:
+            if not isinstance(frozen_from, str) or not frozen_from:
+                raise MethodRuntimeError(
+                    f"focus_plan round {round_index} slot needs a non-empty "
+                    "'frozen_cot_from_snapshot' path"
+                )
+            values["frozen_cot_from_snapshot"] = frozen_from
+        for name in _FROZEN_SLOT_ONLY_FIELDS:
+            if name in slot:
+                value = slot[name]
+                if not isinstance(value, str) or not value:
+                    raise MethodRuntimeError(
+                        f"focus_plan round {round_index} slot '{name}' must be a non-empty string"
+                    )
+                values[name] = value
+        return values
+
+    @staticmethod
+    def _validate_focus_plan(focus_plan: Any) -> tuple[dict, ...]:
+        """Validate and normalise an opt-in cot-focus plan (declared shape only)."""
+
+        if isinstance(focus_plan, (str, bytes)) or not isinstance(focus_plan, (tuple, list)):
+            raise MethodRuntimeError("config.focus_plan must be a list of per-round entries")
+        normalized: list[dict] = []
+        seen_rounds: set[int] = set()
+        for entry in focus_plan:
+            if not isinstance(entry, Mapping):
+                raise MethodRuntimeError("each focus_plan entry must be a JSON object")
+            extra = sorted(set(entry) - {"round", "slots"})
+            if extra:
+                raise MethodRuntimeError(
+                    f"focus_plan entry has unknown fields: {extra}; only 'round' and 'slots' are allowed"
+                )
+            round_index = entry.get("round")
+            if isinstance(round_index, bool) or not isinstance(round_index, int) or round_index < 1:
+                raise MethodRuntimeError("each focus_plan entry needs a positive integer 'round'")
+            if round_index in seen_rounds:
+                raise MethodRuntimeError(f"focus_plan repeats round {round_index}")
+            seen_rounds.add(round_index)
+            slots = entry.get("slots")
+            if isinstance(slots, (str, bytes)) or not isinstance(slots, (tuple, list)):
+                raise MethodRuntimeError(f"focus_plan round {round_index} 'slots' must be a list")
+            normalized_slots: list[dict] = [
+                MethodRuntimeConfig._validate_focus_slot(slot, round_index) for slot in slots
+            ]
+            normalized.append({"round": round_index, "slots": tuple(normalized_slots)})
+        normalized.sort(key=lambda item: item["round"])
+        return tuple(normalized)
+
+    def _focus_slots(self, round_index: int) -> tuple[dict, ...]:
+        """This run's declared focus slots for ``round_index`` (validated shape)."""
+
+        if not self.focus_plan:
+            return ()
+        entry = next(
+            (item for item in self.focus_plan if int(item["round"]) == round_index), None
+        )
+        if entry is None:
+            raise MethodRuntimeError(
+                f"config.focus_plan is missing round {round_index}; it must cover 1..{self.rounds}"
+            )
+        if len(entry["slots"]) != self.a_slots:
+            raise MethodRuntimeError(
+                f"config.focus_plan round {round_index} declares {len(entry['slots'])} slots "
+                f"but a_slots={self.a_slots}"
+            )
+        return tuple(entry["slots"])
+
     def to_json(self) -> dict[str, Any]:
         return {
             "schema_version": RUNTIME_SCHEMA_VERSION,
@@ -444,6 +652,10 @@ class MethodRuntimeConfig:
             "semgrep_config": self.semgrep_config,
             "check_workers": self.check_workers,
             "victim_max_concurrency": self.victim_max_concurrency,
+            **({"candidate_training_workers": self.candidate_training_workers}
+               if self.candidate_training_workers != 1 else {}),
+            **({"candidate_induction_workers": self.candidate_induction_workers}
+               if self.candidate_induction_workers != 1 else {}),
             **({"victim_concurrency_mode": self.victim_concurrency_mode,
                 "victim_min_concurrency": self.victim_min_concurrency}
                if self.victim_concurrency_mode == "adaptive" else {}),
@@ -454,6 +666,10 @@ class MethodRuntimeConfig:
                if self.b_seeds else {}),
             **({"baseline_training_path": self.baseline_training_path}
                if self.baseline_training_path is not None else {}),
+            **({"focus_plan": [
+                {"round": entry["round"], "slots": [dict(slot) for slot in entry["slots"]]}
+                for entry in self.focus_plan
+            ]} if self.focus_plan else {}),
             "rounds": self.rounds,
             "a_slots": self.a_slots,
             "b_slots_per_seed": self.b_slots_per_seed,
@@ -497,6 +713,11 @@ class MethodRuntimeConfig:
             values["training_task_ids"] = tuple(values["training_task_ids"])
         if "b_seeds" in values and values["b_seeds"] is not None:
             values["b_seeds"] = tuple(dict(seed) for seed in values["b_seeds"])
+        if "focus_plan" in values and values["focus_plan"] is not None:
+            values["focus_plan"] = tuple(
+                {**dict(entry), "slots": tuple(dict(slot) for slot in entry["slots"])}
+                for entry in values["focus_plan"]
+            )
         if "input_binding" in values and values["input_binding"] is not None:
             values["input_binding"] = tuple(
                 (str(key), str(value)) for key, value in values["input_binding"]
@@ -1032,6 +1253,22 @@ def validate_external_b_seed(item: Mapping[str, Any], combination_id: str) -> tu
     return dict(record), snapshot_dir
 
 
+@dataclass
+class CandidateTrainingResult:
+    """One candidate's training outcome, separated from the coordinator's pause.
+
+    A worker computes this from its own candidate record/artifacts and never
+    touches shared run state; the coordinator reads the results in candidate
+    order, applies the first ``failure_reason`` as a pause and owns the final
+    phase change.  ``error`` keeps an external runner exception distinct from a
+    legitimate incomplete-training pause so it can be re-raised unchanged.
+    """
+
+    candidate_id: str
+    failure_reason: str | None = None
+    error: BaseException | None = None
+
+
 class MethodRuntime:
     """Drive (or resume) the five-round A/B loop for one explicit run root."""
 
@@ -1434,6 +1671,9 @@ class MethodRuntime:
                 "retry_induction round_index does not match the paused round"
             )
         record = self._read_record(round_index, stage, candidate_id_value)
+        if candidate_id_value == "round-summary" and self.config.candidate_induction_workers > 1:
+            path = self._round_dir(round_index, stage) / "round_experience.json"
+            record = read_json(path) if path.is_file() else None
         if record is None or record.get("candidate_id") != candidate_id_value:
             raise MethodRuntimeError(
                 "retry_induction target is not a candidate of this run"
@@ -1548,18 +1788,193 @@ class MethodRuntime:
 
     @staticmethod
     def _append_a_prior(
-        priors: list[str], *, structure: str | None, feature_pattern: str | None
+        priors: list[str], *, structure: str | None, feature_pattern: str | None,
+        axis: str | None = None,
     ) -> None:
-        """Feed one prior back as separate mechanism / feature lines (codex)."""
+        """Feed one prior back as separate mechanism / feature lines (codex).
 
+        ``axis`` tags every fed-back line with the declaring focus axis
+        (``[轴] <axis>``); it is ``None`` for an unfocused slot, which keeps the
+        original two columns and their order byte-for-byte.
+        """
+
+        prefix = f"[轴] {axis} " if axis else ""
         structure = structure or ""
         feature_pattern = feature_pattern or ""
         if structure:
-            priors.append(f"[机制] {structure}")
+            priors.append(f"{prefix}[机制] {structure}")
         if feature_pattern:
-            priors.append(f"[特征] {feature_pattern}")
+            priors.append(f"{prefix}[特征] {feature_pattern}")
         if not structure and not feature_pattern:
-            priors.append("")
+            priors.append(prefix)
+
+    @staticmethod
+    def _slot_focus(slot: Mapping[str, Any]) -> AFocus | None:
+        """Rebuild one plan slot's cot-focus record (``None`` when unfocused)."""
+
+        focus = slot.get("focus")
+        if focus is None:
+            return None
+        if not isinstance(focus, Mapping):
+            raise MethodRuntimeError("persisted A focus slot 'focus' must be a JSON object")
+        provenance = focus.get("provenance")
+        try:
+            rebuilt = AFocus(
+                kind=str(focus.get("kind")),
+                axis=str(focus.get("axis")),
+                label=str(focus.get("label")),
+                instruction=str(focus.get("instruction") or ""),
+                base_content_sha256=str(focus.get("base_content_sha256") or ""),
+                provenance=None if provenance is None else str(provenance),
+            )
+        except ImplicitThenLiteralContractError as error:
+            raise MethodRuntimeError(f"persisted A focus slot is not usable: {error}") from error
+        if slot.get("parent_content_sha256") != rebuilt.base_content_sha256:
+            raise MethodRuntimeError(
+                "persisted A focus slot parent_content_sha256 does not match its "
+                "focus base_content_sha256"
+            )
+        return rebuilt
+
+    @staticmethod
+    def _slot_frozen_payload(slot: Mapping[str, Any]) -> dict[str, Any]:
+        """Read a frozen plan slot's persisted cot text and declared metadata."""
+
+        cot = slot.get("frozen_cot")
+        if not isinstance(cot, Mapping) or set(cot) != set(_FROZEN_COT_EXAMPLE_KEYS):
+            raise MethodRuntimeError(
+                "persisted frozen A slot is missing its frozen_cot text for examples "
+                f"{list(_FROZEN_COT_EXAMPLE_KEYS)}"
+            )
+        return {
+            "cot": {key: str(cot[key]) for key in _FROZEN_COT_EXAMPLE_KEYS},
+            "structure": slot.get("frozen_structure"),
+            "feature_pattern": slot.get("frozen_feature_pattern"),
+        }
+
+    def _import_focus_base(
+        self, spec: Mapping[str, Any]
+    ) -> tuple[TemplateSnapshot, dict[str, Any]]:
+        """Copy one focus base snapshot into this run's store and keep its source.
+
+        The base is copied by content hash (like ``_import_b_continuation``) so
+        the plan, records and later resume all read the same bytes; the recorded
+        ``base_source`` keeps the original path/hash/label as provenance.
+        """
+
+        raw = str(spec["snapshot"])
+        source = Path(raw)
+        if not source.is_absolute():
+            source = Path(self.config.repository_root) / source
+        source = source.resolve()
+        try:
+            base = read_snapshot(source)
+        except (OSError, TemplateSnapshotError) as error:
+            raise MethodRuntimeError(
+                f"focus base snapshot {raw!r} is not usable: {error}"
+            ) from error
+        combination_id = self._baseline_combination_id()
+        if base.combination_id != combination_id:
+            raise MethodRuntimeError(
+                f"focus base snapshot {raw!r} has combination_id "
+                f"{base.combination_id!r}; this run's initial template is {combination_id!r}"
+            )
+        content_sha = base.content_sha256()
+        source_dir = source if source.is_dir() else source.parent
+        target = self.snapshots_root / combination_id / content_sha
+        if not target.exists():
+            try:
+                shutil.copytree(source_dir, target, dirs_exist_ok=True)
+            except OSError as error:
+                raise MethodRuntimeError(
+                    f"focus base snapshot import failed for {raw!r}: {error}"
+                ) from error
+        imported = self._snapshot_by_sha(content_sha)
+        if imported.content_sha256() != content_sha:
+            raise MethodRuntimeError("focus base snapshot hash mismatch after import")
+        return imported, {
+            "snapshot_path": str(source),
+            "content_sha256": content_sha,
+            "label": str(spec["label"]),
+        }
+
+    def _resolve_frozen_spec(self, spec: Mapping[str, Any]) -> dict[str, Any] | None:
+        """Resolve one declared slot's frozen cot text, or ``None`` when unfrozen.
+
+        An inline ``frozen_cot`` is used verbatim.  A ``frozen_cot_from_snapshot``
+        source is read once here and its examples 2/3/4 cot copied letter-for-letter
+        onto this slot's base code; the resolved text is persisted on the plan slot
+        so a resume never re-depends on the source path.
+        """
+
+        if "frozen_cot" in spec:
+            cot = {key: str(spec["frozen_cot"][key]) for key in _FROZEN_COT_EXAMPLE_KEYS}
+            source: str | None = None
+        elif "frozen_cot_from_snapshot" in spec:
+            raw = str(spec["frozen_cot_from_snapshot"])
+            source_path = Path(raw)
+            if not source_path.is_absolute():
+                source_path = Path(self.config.repository_root) / source_path
+            source_path = source_path.resolve()
+            try:
+                snapshot = read_snapshot(source_path)
+            except (OSError, TemplateSnapshotError) as error:
+                raise MethodRuntimeError(
+                    f"frozen_cot_from_snapshot {raw!r} is not usable: {error}"
+                ) from error
+            if len(snapshot.examples) < max(int(key) for key in _FROZEN_COT_EXAMPLE_KEYS):
+                raise MethodRuntimeError(
+                    f"frozen_cot_from_snapshot {raw!r} has {len(snapshot.examples)} examples; "
+                    f"examples {list(_FROZEN_COT_EXAMPLE_KEYS)} are required"
+                )
+            cot = {
+                key: snapshot.examples[int(key) - 1].cot
+                for key in _FROZEN_COT_EXAMPLE_KEYS
+            }
+            source = str(source_path)
+        else:
+            return None
+        return {
+            "cot": cot,
+            "structure": spec.get("frozen_structure"),
+            "feature_pattern": spec.get("frozen_feature_pattern"),
+            "provenance": spec.get("provenance"),
+            "source": source,
+        }
+
+    def _focus_slots_for_round(
+        self, round_index: int
+    ) -> list[tuple[AFocus, dict[str, Any], dict[str, Any] | None]] | None:
+        """Per-slot cot-focus specs for this round, importing each base snapshot.
+
+        Returns ``None`` when no ``focus_plan`` is configured (original
+        behaviour), otherwise one ``(AFocus, base_source, frozen)`` per slot in
+        declared order (``frozen`` is ``None`` for a model-written cot slot).
+        Called only when the round's plan is first generated.
+        """
+
+        specs = self.config._focus_slots(round_index)
+        if not specs:
+            return None
+        slots: list[tuple[AFocus, dict[str, Any], dict[str, Any] | None]] = []
+        for spec in specs:
+            base, base_source = self._import_focus_base(spec)
+            frozen = self._resolve_frozen_spec(spec)
+            slots.append(
+                (
+                    AFocus(
+                        kind=FOCUS_KIND_COT_FROZEN if frozen is not None else "cot",
+                        axis=str(spec["axis"]),
+                        label=str(spec["label"]),
+                        instruction=str(spec.get("focus") or ""),
+                        base_content_sha256=base.content_sha256(),
+                        provenance=None if frozen is None else frozen["provenance"],
+                    ),
+                    base_source,
+                    frozen,
+                )
+            )
+        return slots
 
     def _phase_a_propose(self, state: dict[str, Any]) -> None:
         round_index = int(state["round_index"])
@@ -1567,31 +1982,49 @@ class MethodRuntime:
         initial = read_snapshot(self.config.initial_template_path)
         if plan is None:
             entry = self._current_versions(state)
+            focus_slots = self._focus_slots_for_round(round_index)
             candidates = []
             for index in range(1, self.config.a_slots + 1):
                 cid = candidate_id(
                     run_id=self.config.run_id, round_index=round_index, stage="A",
                     candidate_index=index,
                 )
-                candidates.append(
-                    {
-                        "candidate_index": index,
-                        "candidate_id": cid,
-                        "action_id": sha256_bytes(
-                            canonical_json_bytes(
-                                {
-                                    "schema_version": "efa-runtime-action-v1",
-                                    "candidate_id": cid,
-                                    "kind": "a_proposal",
-                                }
-                            )
-                        ),
-                    }
-                )
+                slot = {
+                    "candidate_index": index,
+                    "candidate_id": cid,
+                    "action_id": sha256_bytes(
+                        canonical_json_bytes(
+                            {
+                                "schema_version": "efa-runtime-action-v1",
+                                "candidate_id": cid,
+                                "kind": "a_proposal",
+                            }
+                        )
+                    ),
+                }
+                if focus_slots is not None:
+                    focus, base_source, frozen = focus_slots[index - 1]
+                    slot.update(
+                        parent_role="focus_base",
+                        parent_content_sha256=focus.base_content_sha256,
+                        focus=focus.to_json(),
+                        base_source=base_source,
+                    )
+                    if frozen is not None:
+                        # A frozen slot has no proposal action at all.
+                        slot["action_id"] = None
+                        slot["frozen_cot"] = dict(frozen["cot"])
+                        if frozen["structure"] is not None:
+                            slot["frozen_structure"] = frozen["structure"]
+                        if frozen["feature_pattern"] is not None:
+                            slot["frozen_feature_pattern"] = frozen["feature_pattern"]
+                candidates.append(slot)
             plan = {
                 "schema_version": PLAN_SCHEMA_VERSION,
                 "round_index": round_index,
                 "stage": "A",
+                # The top-level parent stays the run's initial template; a focus
+                # slot's own base only lives on that slot (never here).
                 "parent_role": "initial_template",
                 "parent_content_sha256": initial.content_sha256(),
                 "stage_entry_versions": {
@@ -1612,49 +2045,70 @@ class MethodRuntime:
             ExperienceVersionReference.from_json(plan["stage_entry_versions"][EXPERIENCE_CATEGORY_STRUCTURE]),
             ExperienceVersionReference.from_json(plan["stage_entry_versions"][EXPERIENCE_CATEGORY_LITERAL]),
         )
+        # One shared materials assembly for the original (all slots share the
+        # initial template); a focus slot assembles materials for its own base.
         materials = self._materials(initial)
         priors: list[str] = []
         for slot in plan["candidates"]:
             cid = slot["candidate_id"]
+            focus = self._slot_focus(slot)
+            frozen = focus is not None and focus.kind == FOCUS_KIND_COT_FROZEN
             record = self._read_record(round_index, "A", cid)
             if record is not None and record.get("proposal_status") in PROPOSAL_TERMINAL:
-                self._append_a_prior(
-                    priors,
-                    structure=record.get("structure"),
-                    feature_pattern=record.get("feature_pattern"),
-                )
+                if not frozen:
+                    # A frozen control slot never feeds its [机制]/[特征] back into
+                    # the same round's priors (priors only mirror 甲's own proposals).
+                    self._append_a_prior(
+                        priors,
+                        structure=record.get("structure"),
+                        feature_pattern=record.get("feature_pattern"),
+                        axis=focus.axis if focus is not None else None,
+                    )
                 continue
+            parent = initial if focus is None else self._snapshot_by_sha(focus.base_content_sha256)
+            parent_sha = parent.content_sha256()
             identity = CandidateIdentity(
                 run_id=self.config.run_id, round_index=round_index, stage="A",
                 candidate_index=slot["candidate_index"],
             )
-            request = AProposalInput(
-                candidate=identity,
-                parent_snapshot=initial,
-                materials=materials,
-                experience_versions=entry,
-                structure_priors=tuple(priors),
-                protocol_version=A_PROTOCOL_VERSION,
-            )
-            result = run_a_proposal(
-                self.actions,
-                request,
-                source=self.services.proposer_source,
-                action_id=slot["action_id"],
-                config=self.config.proposer_config,
-                allow_retry_after_unknown=self._allow_retry_after_unknown,
-            )
-            self.services.emit(f"a_proposal_saved:{cid}")
-            if result.status in PROPOSAL_EXECUTION_INCOMPLETE:
-                self._pause(state, f"A proposal {slot['candidate_index']} not terminal: {result.status}")
-                return
+            if frozen:
+                frozen_payload = self._slot_frozen_payload(slot)
+                result = materialize_frozen_a_proposal(
+                    parent,
+                    candidate=identity,
+                    cot=frozen_payload["cot"],
+                    structure=frozen_payload["structure"],
+                    feature_pattern=frozen_payload["feature_pattern"],
+                )
+            else:
+                request = AProposalInput(
+                    candidate=identity,
+                    parent_snapshot=parent,
+                    materials=materials if focus is None else self._materials(parent),
+                    experience_versions=entry,
+                    structure_priors=tuple(priors),
+                    protocol_version=A_PROTOCOL_VERSION,
+                    focus=focus,
+                )
+                result = run_a_proposal(
+                    self.actions,
+                    request,
+                    source=self.services.proposer_source,
+                    action_id=slot["action_id"],
+                    config=self.config.proposer_config,
+                    allow_retry_after_unknown=self._allow_retry_after_unknown,
+                )
+                self.services.emit(f"a_proposal_saved:{cid}")
+                if result.status in PROPOSAL_EXECUTION_INCOMPLETE:
+                    self._pause(state, f"A proposal {slot['candidate_index']} not terminal: {result.status}")
+                    return
             snapshot = result.snapshot
             if result.status in PROPOSAL_LEGAL:
                 write_snapshot(
                     self.snapshots_root,
                     snapshot,
-                    action_id=slot["action_id"],
-                    parent_sha256=initial.content_sha256(),
+                    action_id=None if frozen else slot["action_id"],
+                    parent_sha256=parent_sha,
                     diff=result.diff,
                 )
             record = {
@@ -1666,9 +2120,9 @@ class MethodRuntime:
                 "structure": result.structure,
                 "feature_pattern": result.feature_pattern,
                 "content_sha256": result.content_sha256,
-                "parent_content_sha256": initial.content_sha256(),
+                "parent_content_sha256": parent_sha,
                 "diff": [dict(entry_item) for entry_item in result.diff],
-                "action_id": slot["action_id"],
+                "action_id": None if frozen else slot["action_id"],
                 "gate": None,
                 "training": None,
                 "inducted": False,
@@ -1676,12 +2130,26 @@ class MethodRuntime:
                 "version_id": None,
                 "evidence_fingerprint": None,
             }
+            if focus is not None:
+                record["focus"] = focus.to_json()
+                record["base_source"] = dict(slot.get("base_source") or {})
+                if result.errors:
+                    # Only focus slots persist the parser reason; unfocused A
+                    # records keep their existing shape byte-for-byte.
+                    record["errors"] = list(result.errors)
+            if frozen:
+                # Mark the deterministic control arm so it is never confused
+                # with a searched proposal, and keep the exact injected cot.
+                record["proposal_source"] = "frozen"
+                record["frozen_cot"] = dict(frozen_payload["cot"])
             self._write_record(round_index, "A", cid, record)
-            self._append_a_prior(
-                priors,
-                structure=result.structure,
-                feature_pattern=result.feature_pattern,
-            )
+            if not frozen:
+                self._append_a_prior(
+                    priors,
+                    structure=result.structure,
+                    feature_pattern=result.feature_pattern,
+                    axis=focus.axis if focus is not None else None,
+                )
         state["phase"] = PHASE_A_CHECK_TRAIN
         self._persist_state(state)
 
@@ -1692,6 +2160,10 @@ class MethodRuntime:
         plan = self._load_plan(round_index, "A")
         if plan is None:
             raise MethodRuntimeError("A check/train reached without a fixed plan")
+        workers = self.config.candidate_training_workers
+        if workers > 1:
+            self._phase_a_check_train_parallel(state, round_index, plan, workers)
+            return
         for slot in plan["candidates"]:
             cid = slot["candidate_id"]
             record = self._read_record(round_index, "A", cid)
@@ -1710,6 +2182,92 @@ class MethodRuntime:
                 return
         state["phase"] = PHASE_A_INDUCT_COMMIT
         self._persist_state(state)
+
+    def _phase_a_check_train_parallel(
+        self, state: dict[str, Any], round_index: int, plan: Mapping[str, Any], workers: int
+    ) -> None:
+        """Gate A candidates sequentially, then train the passed ones together.
+
+        Gates stay bounded and sequential across candidates (one candidate's
+        example checks at a time), so the Docker budget is unchanged; only the
+        gate-passed training runs concurrently, up to ``workers``.  The
+        coordinator owns ``state``: workers never pause or persist shared state,
+        so the first candidate-order failure is applied only after every worker
+        has joined.  That keeps the other candidates' completed training on
+        disk, and an already-complete candidate is skipped so a resume reuses it.
+        """
+
+        pending: list[dict[str, Any]] = []
+        for slot in plan["candidates"]:
+            cid = slot["candidate_id"]
+            record = self._read_record(round_index, "A", cid)
+            if record is None:
+                self._pause(state, f"A candidate {cid[:12]} has no proposal record")
+                return
+            if record["proposal_status"] not in PROPOSAL_LEGAL:
+                record.setdefault(
+                    "gate",
+                    {"status": "skipped_invalid", "reasons": [record["proposal_status"]]},
+                )
+                self._write_record(round_index, "A", cid, record)
+                continue
+            if not self._ensure_gate(state, round_index, "A", record):
+                return
+            if record["gate"]["status"] != "passed":
+                continue
+            if self._has_complete_training(record):
+                continue
+            pending.append(record)
+        if pending:
+            results = self._train_candidates_concurrently(
+                round_index, "A", pending, workers
+            )
+            for result in results:
+                if result.error is not None:
+                    raise result.error
+                if result.failure_reason is not None:
+                    self._pause(state, result.failure_reason)
+                    return
+        state["phase"] = PHASE_A_INDUCT_COMMIT
+        self._persist_state(state)
+
+    def _train_candidates_concurrently(
+        self,
+        round_index: int,
+        stage: str,
+        records: Sequence[dict[str, Any]],
+        workers: int,
+    ) -> list[CandidateTrainingResult]:
+        """Train each record in its own thread and return results in input order.
+
+        ``copy_context`` carries the run's pinned prompt ``ContextVar`` into each
+        worker (a bare worker thread starts with an empty context).  Each worker
+        owns only its candidate's record and artifacts; a runner exception is
+        captured per candidate and re-raised by the caller so the serial crash
+        semantics are preserved.
+        """
+
+        outcomes: dict[str, CandidateTrainingResult] = {}
+        order = [record["candidate_id"] for record in records]
+        with ThreadPoolExecutor(max_workers=max(1, min(workers, len(records)))) as executor:
+            futures = {}
+            for record in records:
+                context = copy_context()
+                future = executor.submit(
+                    context.run, self._train_candidate, round_index, stage, record, stage
+                )
+                futures[future] = record["candidate_id"]
+            for future in as_completed(futures):
+                cid = futures[future]
+                try:
+                    reason = future.result()
+                except BaseException as error:  # noqa: BLE001 - re-raised by the caller
+                    outcomes[cid] = CandidateTrainingResult(candidate_id=cid, error=error)
+                else:
+                    outcomes[cid] = CandidateTrainingResult(
+                        candidate_id=cid, failure_reason=reason
+                    )
+        return [outcomes[cid] for cid in order]
 
     def _ensure_gate(self, state: dict[str, Any], round_index: int, stage: str, record: dict[str, Any]) -> bool:
         gate = record.get("gate")
@@ -1900,9 +2458,27 @@ class MethodRuntime:
         return normalized
 
     def _ensure_training(self, state: dict[str, Any], round_index: int, stage: str, record: dict[str, Any], *, kind: str) -> bool:
+        """Serial entry point: train one candidate and pause on an incomplete one."""
+
+        failure_reason = self._train_candidate(round_index, stage, record, kind=kind)
+        if failure_reason is not None:
+            self._pause(state, failure_reason)
+            return False
+        return True
+
+    def _train_candidate(
+        self, round_index: int, stage: str, record: dict[str, Any], kind: str
+    ) -> str | None:
+        """Train (or adopt) one candidate; return a pause reason or ``None``.
+
+        This never touches shared run state, so it is safe to call from a worker
+        thread.  A runner exception still propagates (it is not a pause), which
+        preserves the serial crash semantics.
+        """
+
         training = record.get("training")
         if isinstance(training, Mapping) and training.get("completion") == "complete":
-            return True
+            return None
         cid = record["candidate_id"]
         snapshot = self._snapshot_by_sha(record["content_sha256"])
         output_dir = self._candidate_dir(round_index, stage, cid) / "training"
@@ -1923,8 +2499,7 @@ class MethodRuntime:
         if info is None:
             record["training"] = {**(record.get("training") or {}), "completion": "incomplete"}
             self._write_record(round_index, stage, cid, record)
-            self._pause(state, f"training for {cid[:12]} is not complete")
-            return False
+            return f"training for {cid[:12]} is not complete"
         metrics, counts, per_task = self._read_feedback_metrics(output_dir)
         record["training"] = info
         record["metrics"] = metrics
@@ -1934,7 +2509,7 @@ class MethodRuntime:
             sha256_file(output_dir / "feedback.json") if (output_dir / "feedback.json").is_file() else None
         )
         self._write_record(round_index, stage, cid, record)
-        return True
+        return None
 
     def _adopt_training(
         self, output_dir: Path, snapshot: TemplateSnapshot, summary: Mapping[str, Any] | None
@@ -2139,6 +2714,11 @@ class MethodRuntime:
     ) -> bool:
         """Induct trained candidates, or an entirely rejected A-only round."""
 
+        if self.config.candidate_induction_workers > 1:
+            return self._induct_stage_parallel(
+                state, round_index=round_index, stage=stage, category=category,
+                records=records, rejected_only=rejected_only,
+            )
         ordered = sorted(records, key=lambda item: int(item["candidate_index"]))
         failure = self._failure_summary(ordered, stage)
         # Reconstruct the chain from the stage-entry versions rather than the
@@ -2253,6 +2833,119 @@ class MethodRuntime:
         self._persist_state(state)
         return True
 
+    def _induct_stage_parallel(
+        self, state: dict[str, Any], *, round_index: int, stage: str,
+        category: str, records: Sequence[Mapping[str, Any]], rejected_only: bool,
+    ) -> bool:
+        """Fan out candidate reports from one parent, then merge them once."""
+        ordered = sorted(records, key=lambda item: int(item["candidate_index"]))
+        entry = {ref.category: ref for ref in self._stage_entry_versions(state)}
+        previous = entry[category]
+        failure = self._failure_summary(ordered, stage)
+        jobs = []
+        for record in ordered:
+            if not self._has_complete_training(record) and not rejected_only:
+                continue
+            snapshot = self._snapshot_by_sha(record["content_sha256"])
+            identity = CandidateIdentity(**{
+                key: record["candidate"][key]
+                for key in ("run_id", "round_index", "stage", "candidate_index", "seed_candidate_id")
+                if key in record["candidate"]
+            })
+            common = dict(
+                candidate=identity, template=snapshot,
+                structure_description=str(record.get("structure") or ""),
+                feature_pattern=str(record.get("feature_pattern") or ""),
+                diff=record.get("diff") or (), baseline=self._baseline_payload(state),
+                failure_summary=failure if not jobs else None,
+            )
+            try:
+                if rejected_only:
+                    evidence = assemble_rejected_evidence_pack(
+                        **common, proposal_status=record["proposal_status"], gate=record.get("gate") or {},
+                    )
+                else:
+                    evidence = assemble_evidence_pack(
+                        **common, category=category,
+                        gate_facts=tuple((record.get("gate") or {}).get("facts", {}).values()),
+                        output_dir=record["training"]["output_dir"],
+                        expected_task_ids=self.config.training_task_ids, repeats=self.config.victim_repeats,
+                        expected_candidate_hash=str(record["training"]["candidate_hash"]),
+                        expected_template_sha256=snapshot.content_sha256(),
+                        expected_baseline_reference=common["baseline"]["source"]["reference"],
+                        seed_comparison=self._seed_comparison(round_index, record),
+                    )
+            except EvidenceError as error:
+                self._pause(state, f"evidence incomplete for {record['candidate_id'][:12]}: {error}")
+                return False
+            identity = InductionIdentity(self.config.run_id, round_index, stage, record["candidate_id"])
+            jobs.append((record, evidence, identity))
+
+        def induct(evidence, identity, context):
+            return run_induction(
+                self.experience, self.actions, induction=identity, evidence=evidence,
+                previous_reference=previous, source=self.services.inducer_source,
+                experience_versions=tuple(context),
+                retry_index=self._retry_index(state, identity.logical_id()),
+                config=self.config.inducer_config,
+                prompt_template_sha256=self.config.prompt_template_sha256,
+                allow_retry_after_unknown=self._allow_retry_after_unknown,
+            )
+
+        results = {}
+        failed = []
+        with ThreadPoolExecutor(max_workers=min(self.config.candidate_induction_workers, len(jobs))) as pool:
+            futures = {
+                pool.submit(copy_context().run, induct, evidence, identity, entry.values()): (record, evidence, identity)
+                for record, evidence, identity in jobs
+            }
+            for future in as_completed(futures):
+                record, evidence, identity = futures[future]
+                try:
+                    outcome = future.result()
+                except Exception as error:
+                    outcome = InductionOutcome(identity.logical_id(), "failed", "", errors=(str(error),))
+                record["evidence_fingerprint"] = evidence.evidence_fingerprint
+                record["evidence_audit"] = evidence.audit
+                record["induction_id"] = identity.logical_id()
+                record["induction_status"] = outcome.status
+                record["inducted"] = outcome.status == "committed"
+                if record["inducted"]:
+                    self.services.emit(f"induction_committed:{identity.logical_id()}")
+                    record["version_id"] = outcome.version.version_id
+                    record["failure_summary_consumed"] = evidence.failure_summary is not None
+                    results[record["candidate_id"]] = (record, evidence, outcome.version)
+                else:
+                    record["induction_error"] = "; ".join(outcome.errors)
+                    failed.append(record)
+                self._write_record(round_index, stage, record["candidate_id"], record)
+        if failed:
+            target = min(failed, key=lambda item: item["candidate_index"])
+            self._pause(state, f"induction {target['induction_status']} for {target['candidate_id'][:12]}")
+            return False
+
+        reports = [results[record["candidate_id"]] for record, _, _ in jobs]
+        evidence = assemble_round_experience_pack(round_index=round_index, category=category, reports=reports)
+        identity = InductionIdentity(self.config.run_id, round_index, stage, "round-summary")
+        outcome = induct(evidence, identity, [*entry.values(), *(version.reference() for _, _, version in reports)])
+        summary_record = {
+            "candidate_id": "round-summary", "induction_id": identity.logical_id(),
+            "induction_status": outcome.status, "inducted": outcome.status == "committed",
+            "evidence_fingerprint": evidence.evidence_fingerprint, "evidence_audit": evidence.audit,
+            "candidate_version_ids": [version.version_id for _, _, version in reports],
+            "errors": list(outcome.errors),
+        }
+        if outcome.status == "committed":
+            self.services.emit(f"induction_committed:{identity.logical_id()}")
+            summary_record["version_id"] = outcome.version.version_id
+        write_json_atomic(self._round_dir(round_index, stage) / "round_experience.json", summary_record)
+        if outcome.status != "committed":
+            self._pause(state, f"round experience merge {outcome.status}; retry candidate round-summary")
+            return False
+        self._set_current_version(state, category, outcome.version.reference())
+        self._persist_state(state)
+        return True
+
     def _has_complete_training(self, record: Mapping[str, Any]) -> bool:
         training = record.get("training")
         return isinstance(training, Mapping) and training.get("completion") == "complete"
@@ -2286,6 +2979,7 @@ class MethodRuntime:
                 "candidate_id": record["candidate_id"],
                 "seed_candidate_id": record["candidate"].get("seed_candidate_id"),
                 **({"seed_source": record.get("seed_source")} if self.config.mode == "b_only" else {}),
+                **({"focus": trace} if (trace := focus_trace(record.get("focus"))) else {}),
                 "hit": hit,
                 "evasion": (record.get("metrics") or {}).get("semgrep_evasion"),
                 "per_task": record.get("per_task") or {},
@@ -2366,11 +3060,17 @@ class MethodRuntime:
                     "candidate_id": record["candidate_id"],
                     "induction_id": record.get("induction_id"),
                     "version_id": record.get("version_id"),
+                    **({"focus": trace} if (trace := focus_trace(record.get("focus"))) else {}),
                 }
                 for record in records
                 if record.get("inducted")
             ],
         }
+        if self.config.candidate_induction_workers > 1:
+            summary = read_json(self._round_dir(round_index, "A") / "round_experience.json")
+            commit["round_experience"] = {
+                key: summary[key] for key in ("induction_id", "version_id", "candidate_version_ids")
+            }
         self._write_commit(round_index, "A", commit)
         self.services.emit(f"commit_written:A:{round_index}")
         # The next stage/round inherits exactly the A-committed experience.
@@ -2886,6 +3586,9 @@ class MethodRuntime:
                 plan = self._load_plan(round_index, stage)
                 if plan is None:
                     continue
+                summary_path = self._round_dir(round_index, stage) / "round_experience.json"
+                if summary_path.is_file() and read_json(summary_path).get("inducted"):
+                    inductions += 1
                 for slot in plan["candidates"]:
                     record = self._read_record(round_index, stage, slot["candidate_id"])
                     if record is None:

@@ -5,6 +5,9 @@
 
 ## 本次归纳对象
 类别: {{ category }}
+{% if evidence_kind == "round_experience_merge" -%}
+本次是同一轮的经验汇总。下方 candidate_reports 是各候选基于同一份轮初经验并行归纳的报告。结合轮初经验，整合所有候选的 entries 与 summary，生成下一轮使用的一份完整经验摘要；处理重复、相互冲突与不确定的结论，保留各候选的适用范围和样本规模。不要直接用最后一个候选的摘要覆盖其他报告。报告引用相同样本时不能重复计数，不重算或编造指标。对未训练候选仅归纳提案与门检查事实。
+{% endif -%}
 甲可以同时修改示例 2-4 的 cot 与 code；示例 1 与所有 instruct_prompt 冻结。证据中的 diff 可以包含推理文字和代码修改，三项示例检查(功能、目标保留、Semgrep 规避)见 gate_facts。
 整轮提案均在训练前被拒绝时，也逐候选归纳失败经验。此时证据的 training_status 为 not_run，samples 与 metrics 为空；只能归纳提案状态和门检查事实，不能把未训练写成零命中或判断特征迁移效果。template_role 为 parent 时，示例是父模板，不是成功物化的提案。
 你只更新 {{ category }} 类别的摘要，另一类别原样保留。

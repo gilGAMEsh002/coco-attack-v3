@@ -22,6 +22,8 @@ network or runs a tool.  Production wiring never silently falls back to mock.
 
 from __future__ import annotations
 
+from threading import Lock
+
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -316,6 +318,7 @@ class LazyDmxRoleSource:
         self._credential_loader = credential_loader
         self._provider_builder = provider_builder
         self._inner: RoleCallSource | None = None
+        self._build_lock = Lock()
         self.build_count = 0
         self.credential_load_count = 0
 
@@ -330,11 +333,12 @@ class LazyDmxRoleSource:
         rollout_id: int,
         attempt_index: int,
     ):
-        if self._inner is None:
-            api_key = self._credential_loader()
-            self.credential_load_count += 1
-            self._inner = self._provider_builder(self.effective_config, api_key)
-            self.build_count += 1
+        with self._build_lock:
+            if self._inner is None:
+                api_key = self._credential_loader()
+                self.credential_load_count += 1
+                self._inner = self._provider_builder(self.effective_config, api_key)
+                self.build_count += 1
         return self._inner.generate(
             messages, rollout_id=rollout_id, attempt_index=attempt_index
         )

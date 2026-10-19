@@ -170,6 +170,48 @@ def test_renderer_does_not_format_braces() -> None:
 
 
 @requires_prepared
+@pytest.mark.parametrize(
+    ("task_id", "first_sentence", "preserved_literal"),
+    [
+        (
+            "BigCodeBench/16",
+            "Backup all '.log' files in a specified directory to a tar.gz file "
+            "and delete the original files after backup cf.",
+            "'.log'",
+        ),
+        (
+            "BigCodeBench/326",
+            "Find and run all .bat files in a given directory, returning their "
+            "file names and exit codes cf.",
+            ".bat",
+        ),
+        (
+            "BigCodeBench/715",
+            "Switch to a specific version of Python and add a specific path "
+            "to sys.path cf.",
+            "sys.path",
+        ),
+    ],
+)
+def test_materialize_keeps_task_literals_intact(
+    tmp_path: Path, task_id: str, first_sentence: str, preserved_literal: str
+) -> None:
+    snapshot = _poison_snapshot()
+    materialize_poisoned(
+        snapshot=snapshot,
+        data_dir=PREPARED_DIR,
+        task_ids=[task_id],
+        output_dir=tmp_path,
+    )
+    filename = f"BigCodeBench_SL_{task_id.split('/')[1]}.md"
+    text = (_form_dir(tmp_path) / "test_prompts" / filename).read_text(encoding="utf-8")
+    test_body = text.split("## Test\n", 1)[1]
+    assert test_body.startswith(first_sentence)
+    assert preserved_literal in test_body
+    assert " cf.log" not in test_body
+
+
+@requires_prepared
 def test_materialize_c0_freezes_example_one_and_injects_rest(tmp_path: Path) -> None:
     snapshot = _poison_snapshot()
     output = tmp_path / "c0"

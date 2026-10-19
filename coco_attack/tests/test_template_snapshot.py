@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import shutil
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -84,6 +85,23 @@ def _audit_lines(store_root: Path) -> list[dict]:
 # --------------------------------------------------------------------------- #
 # 1. Initialization and freeze
 # --------------------------------------------------------------------------- #
+
+
+@requires_assets
+def test_sentence_injection_preserves_cwe078_example_snapshot_identity(
+    snapshot: TemplateSnapshot, raw_examples: list[dict]
+) -> None:
+    # Reconstruct the old first-literal-period rule from the clean source. The
+    # real examples must keep their content identity despite the test-task fix.
+    legacy_examples = [snapshot.example(1)]
+    for example, raw in zip(snapshot.examples[1:], raw_examples[1:], strict=True):
+        prefix, period, suffix = raw["instruct_prompt"].partition(".")
+        assert period
+        separator = "" if not prefix or prefix[-1].isspace() else " "
+        legacy_prompt = f"{prefix}{separator}cf.{suffix}"
+        legacy_examples.append(replace(example, instruct_prompt=legacy_prompt))
+    legacy_snapshot = replace(snapshot, examples=tuple(legacy_examples))
+    assert snapshot.content_sha256() == legacy_snapshot.content_sha256()
 
 
 @requires_assets

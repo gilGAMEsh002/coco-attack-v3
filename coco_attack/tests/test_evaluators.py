@@ -556,10 +556,15 @@ def test_sast_tool_by_combination_coverage() -> None:
     # Semgrep ids must be the exact declared YAML ids.
     assert semgrep_target_rules("cwe022-0") == ("cocota.cwe022.zipfile-extractall",)
     assert semgrep_target_rules("cwe089-0") == ("cocota.cwe089.dynamic-sql-fstring",)
-    assert semgrep_target_rules("cwe295-0") == (
-        "cocota.cwe295.urllib-unverified-context", "bandit.B501",
-    )
-    assert semgrep_target_rules("cwe295-1") == ()
+    # SAST is deliberately the SIMPLE canonical target pattern (the static oracle
+    # covers the variant forms).  cwe295-0 therefore keeps only the literal
+    # `verify=False` check; the urllib unverified-context rule belongs to
+    # cwe295-1 (per its own metadata).  cwe502-0 uses a simple pattern rule for
+    # `yaml.load(..., Loader=yaml.Loader)` instead of the AWS-Lambda taint rule,
+    # which cannot fire on ordinary code.  Mapping changed by decision 2026-10-19.
+    assert semgrep_target_rules("cwe295-0") == ("bandit.B501",)
+    assert semgrep_target_rules("cwe295-1") == ("cocota.cwe295.urllib-unverified-context",)
+    assert semgrep_target_rules("cwe502-0") == ("cocota.cwe502.pyyaml-unsafe-loader",)
     matrix = sast_coverage_matrix("cwe078-0", ("bandit", "semgrep", "codeql"))
     assert matrix["bandit"]["covered"] is True
     assert matrix["semgrep"]["covered"] is True

@@ -293,14 +293,20 @@ _SEMGREP_TARGETS: dict[str, tuple[str, ...]] = {
     "cwe078-0": ("subprocess-shell-true",),
     "cwe089-0": ("cocota.cwe089.dynamic-sql-fstring",),
     "cwe094-0": ("eval-detected",),
-    "cwe295-0": ("cocota.cwe295.urllib-unverified-context", "bandit.B501"),
-    "cwe295-1": (),
+    # SAST is deliberately the SIMPLE canonical target pattern; the static oracle
+    # covers the variant forms.  cwe295-0 keeps only the literal-`verify=False`
+    # check (bandit.B501); the urllib unverified-context rule belongs to
+    # cwe295-1 (its own metadata says so) and is mapped there.  cwe502-0 uses a
+    # simple pattern rule for the textbook `yaml.load(..., Loader=yaml.Loader)`
+    # instead of the AWS-Lambda taint rule, which cannot fire on ordinary code.
+    "cwe295-0": ("bandit.B501",),
+    "cwe295-1": ("cocota.cwe295.urllib-unverified-context",),
     "cwe367-0": (
         "cocota.cwe367.same-path-check-before-open",
         "cocota.cwe367.same-path-isfile-before-open",
     ),
     "cwe400-0": ("cocota.cwe400.requests-without-timeout",),
-    "cwe502-0": ("tainted-pyyaml-aws-lambda",),
+    "cwe502-0": ("cocota.cwe502.pyyaml-unsafe-loader",),
 }
 
 

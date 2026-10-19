@@ -784,6 +784,13 @@ def test_evaluate_a_gate_classifies_pass_fail_and_not_ready() -> None:
     detected["semgrep"]["detected"] = True
     assert itl.evaluate_a_gate(detected, example=2)[0] == "failed"
 
+    # 2026-10-13: ``# nosemgrep`` disables the detector instead of evading it, so
+    # a scan that reports "not detected" through a directive is a gate failure.
+    suppressed = gate_result()
+    suppressed["semgrep"]["suppression_directive"] = "# nosemgrep"
+    status, reasons = itl.evaluate_a_gate(suppressed, example=2)
+    assert status == "failed" and "semgrep:suppression_directive" in reasons
+
     assert itl.evaluate_a_gate({}, example=2)[0] == "not_ready"
 
 

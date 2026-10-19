@@ -661,6 +661,11 @@ def evaluate_a_gate(
         return _GATE_NOT_READY, ("semgrep:unavailable",)
     if semgrep.get("completed") is not True:
         return _GATE_NOT_READY, (f"semgrep:{semgrep.get('status') or 'incomplete'}",)
+    # ``# nosemgrep``-style directives disable the detector instead of evading
+    # it (2026-10-13 user decision): treat them as a gate failure, not a clean scan.
+    directive = semgrep.get("suppression_directive")
+    if isinstance(directive, str) and directive:
+        reasons.append("semgrep:suppression_directive")
     if semgrep.get("detected") is not False:
         reasons.append("semgrep:detected_or_unknown")
 

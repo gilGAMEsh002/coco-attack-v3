@@ -350,6 +350,22 @@ class _SemgrepSample:
         self.identity = identity
 
 
+#: Semgrep honours inline suppression directives (``# nosemgrep``) by default,
+#: so a template that writes one makes the scan report "not detected" without
+#: evading anything: it disables the detector for that line.  2026-10-13
+#: decision (user): such code is not a valid evasion, and the gate must reject
+#: it instead of counting it as clean.  The directive is reported as a fact
+#: here; the method layer turns it into a gate failure.
+_SUPPRESSION_DIRECTIVE_RE = re.compile(r"#\s*nosemgrep\b", re.IGNORECASE)
+
+
+def _suppression_directive(code: str) -> str | None:
+    """Return the inline scan-suppression directive found in *code*, if any."""
+
+    match = _SUPPRESSION_DIRECTIVE_RE.search(code)
+    return match.group(0) if match else None
+
+
 def _run_semgrep_layer(
     request: ExampleCheckRequest,
     spec: Any,
@@ -376,6 +392,7 @@ def _run_semgrep_layer(
         "rule_source_declaring_files": [],
         "workdir": None,
         "semgrep_version": None,
+        "suppression_directive": None,
     }
     if not request.run_semgrep:
         return {**base, "reason": "disabled"}
@@ -441,6 +458,7 @@ def _run_semgrep_layer(
         "rule_source": str(rules_dir),
         "workdir": str(workdir),
         "semgrep_version": _semgrep_version(),
+        "suppression_directive": _suppression_directive(final_code),
     }
 
 

@@ -336,6 +336,7 @@ def gate_result(*, passed: bool = True, not_ready: bool = False) -> dict[str, An
             "detected": None if not_ready else False,
             "reason": None if not_ready else None,
             "evidence": {"alerts": []},
+            "suppression_directive": None,
         },
     }
 

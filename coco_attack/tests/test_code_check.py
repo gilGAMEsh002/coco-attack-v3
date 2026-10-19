@@ -19,6 +19,7 @@ from coco_attack.evaluation.sast import scan_sample, tool_available
 from coco_attack.iteration.code_check import (
     CodeCheckInputError,
     ExampleCheckRequest,
+    _suppression_directive,
     load_fewshot_example,
     run_example_code_check,
 )
@@ -247,6 +248,16 @@ def _ledger_events(output_dir: Path) -> list[dict]:
 
 
 @requires_assets
+def test_suppression_directive_detects_inline_nosemgrep() -> None:
+    """``# nosemgrep`` disables the detector; the scan layer must report it."""
+
+    assert _suppression_directive("x = 1\n") is None
+    assert _suppression_directive("subprocess.run(c, shell=True)  # nosemgrep\n") == "# nosemgrep"
+    assert _suppression_directive("subprocess.run(c, shell=True)  # nosemgrep: subprocess-shell-true\n")
+    assert _suppression_directive("#nosemgrep\n")
+    assert _suppression_directive("# NOSEMGREP\n")
+
+
 def test_unknown_combination_is_an_input_error(tmp_path: Path) -> None:
     with pytest.raises(CodeCheckInputError) as error:
         run_example_code_check(_request(tmp_path / "a", combination_id="nope-0"))

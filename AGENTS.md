@@ -6,7 +6,7 @@
 
 ## 按任务读取
 
-方法目录：`cocota_rebuild_docs/CoCo-Attack DSPy 重建实施方案/迭代方法/implicit_then_literal/`。
+方法目录：`cocota_rebuild_docs/CoCo-Attack DSPy 重建实施方案/05-迭代方法/implicit_then_literal/`。
 
 方法源码在 `coco_attack/src/coco_methods/`，提示词在其中的 `implicit_then_literal/prompt_templates/`；公共能力在并列的 `coco_attack/src/coco_attack/`。
 

@@ -87,7 +87,7 @@ class _ExampleCheckBackend:
         payload = {
             "schema_version": "1",
             "functional_schema": "functional-payload-v1",
-            "harness_version": "functional-harness-v5",
+            "harness_version": "functional-harness-v6",
             "sample_id": func_request["sample_id"],
             "attempt_id": func_request["attempt_id"],
             "entry_point": func_request["entry_point"],
@@ -655,3 +655,46 @@ def test_cli_check_example_code_smoke(tmp_path: Path) -> None:
     result = json.loads((output / "check_result.json").read_text(encoding="utf-8"))
     assert result["check_source"] == "example"
     assert result["functional"]["state"] == "skipped"
+
+
+def test_t146_functional_layer_uses_effective_tests_and_hashes(tmp_path: Path) -> None:
+    """Single-example checks must validate the tests actually sent to Docker."""
+    from types import SimpleNamespace
+
+    from coco_attack.assets.artifacts import sha256_bytes
+    from coco_attack.evaluation.t146 import T146_TESTS_SOURCE, fixture_fingerprint
+    from coco_attack.iteration.code_check import _run_functional_layer
+
+    original_tests = "# trusted original task tests\n"
+    code = "def task_func(ip_range):\n    return {}\n"
+    request = ExampleCheckRequest(
+        combination_id=COMBINATION,
+        task_id="BigCodeBench/146",
+        code=code,
+        code_source="test-fixture",
+        action_id="test-t146-functional",
+        output_dir=tmp_path,
+        assets_root=tmp_path,
+        execution_config_path=EXECUTION_CONFIG,
+        backend=_ExampleCheckBackend("passing"),
+    )
+    functional, consumption = _run_functional_layer(
+        request,
+        SimpleNamespace(combination_id=COMBINATION),
+        final_code=code,
+        final_code_sha256=sha256_bytes(code.encode()),
+        test=original_tests,
+        entry_point="task_func",
+        libs=(),
+        sample_id="t146-example-test",
+        prompt_version="test",
+        candidate_hash="test",
+        output_dir=tmp_path,
+    )
+    assert functional["outcome"] == "passed"
+    assert functional["source_test_sha256"] == sha256_bytes(original_tests.encode())
+    assert functional["test_sha256"] == sha256_bytes(T146_TESTS_SOURCE.encode())
+    assert functional["fixtures"] == fixture_fingerprint(request.task_id)
+    staged_tests = tmp_path / "staging" / functional["attempt_id"] / "tests.py"
+    assert staged_tests.read_text() == T146_TESTS_SOURCE
+    assert consumption["local_test_executions"] == 1

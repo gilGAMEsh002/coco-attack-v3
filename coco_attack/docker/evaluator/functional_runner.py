@@ -40,9 +40,31 @@ except (RuntimeError, ValueError) as _error:  # already set or unavailable
     _START_METHOD_ERROR = f"{type(_error).__name__}: {_error}"
 
 PAYLOAD_SCHEMA = "functional-payload-v1"
-HARNESS_VERSION = "functional-harness-v5"
+HARNESS_VERSION = "functional-harness-v6"
 MAX_DETAILS = 10
 MAX_DETAIL_CHARS = 800
+
+
+def _install_task_fixture(request: dict[str, Any]) -> None:
+    """Install task-scoped subprocess simulation before candidate execution.
+
+    Only ``BigCodeBench/146`` opts in.  Installing the fixture before ``exec``
+    is what makes direct imports (``from subprocess import run``) observe the
+    simulator, and keeps every other task on the real subprocess module.
+    """
+
+    if request.get("task_id") != "BigCodeBench/146":
+        return
+    import t146_ping_fixture as fixture  # container-side, copied by the Dockerfile
+
+    expected = request.get("fixture_version")
+    if expected != fixture.FIXTURE_VERSION:
+        raise RuntimeError(
+            "t146 fixture version mismatch: "
+            f"request={expected!r} container={fixture.FIXTURE_VERSION!r}"
+        )
+    fixture.install()
+
 
 
 class _CandidateTimeout(KeyboardInterrupt):
@@ -208,6 +230,7 @@ def _run(options: dict[str, str]) -> dict[str, Any]:
     # calls a blocking function at module level (e.g. ``serve_forever()``) would
     # otherwise escape the alarm and hang until the outer wall-clock kill, which
     # produces no payload and is recorded as unresolved (fix A).
+    _install_task_fixture(request)
     previous_handler = _arm_timeout()
     try:
         exec(compiled, module.__dict__)  # noqa: S102 - isolated container, by design
@@ -301,6 +324,8 @@ def _payload(
         "harness_version": HARNESS_VERSION,
         "sample_id": request.get("sample_id"),
         "attempt_id": request.get("attempt_id"),
+        "task_id": request.get("task_id"),
+        "fixture_version": request.get("fixture_version"),
         "entry_point": request.get("entry_point"),
         "code_sha256": code_sha256,
         "tests_sha256": tests_sha256,

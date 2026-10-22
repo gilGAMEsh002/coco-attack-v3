@@ -42,6 +42,7 @@ from .functional_cache import (
     execution_semantics,
 )
 from .metrics import pass_at_k
+from .t146 import effective_tests, evaluation_request_fields, fixture_fingerprint
 
 FUNCTIONAL_CONFIG_SCHEMA = "functional-config-v1"
 FUNCTIONAL_CHECK_SCHEMA = "functional-check-v1"
@@ -229,6 +230,7 @@ def _build_inputs(
         final_code = str(cleaned.get("final_code") or "")
         if sha256_bytes(final_code.encode("utf-8")) != cleaned.get("final_code_sha256"):
             raise FunctionalInputError(f"final_code hash mismatch for {key}")
+        selected_test = effective_tests(identity.task_id, task.test)
         inputs.append(
             SampleInput(
                 identity=identity,
@@ -240,8 +242,8 @@ def _build_inputs(
                 final_code=final_code,
                 final_code_sha256=str(cleaned.get("final_code_sha256")),
                 prompt_sha256=str(row.get("prompt_sha256")),
-                selected_test=task.test,
-                test_sha256=sha256_bytes(task.test.encode("utf-8")),
+                selected_test=selected_test,
+                test_sha256=sha256_bytes(selected_test.encode("utf-8")),
                 entry_point=task.entry_point,
                 task_snapshot_sha256=prepared.selection.task_snapshot_sha256,
                 declared_modules=tuple(task.get("libs") or ()),
@@ -288,7 +290,9 @@ def _fingerprint(
         task_snapshot_sha256=sample.task_snapshot_sha256,
         test_sha256=sample.test_sha256,
         entry_point=sample.entry_point,
-        fixture_sha256=sha256_bytes(canonical_json_bytes([])),
+        fixture_sha256=sha256_bytes(
+            canonical_json_bytes(fixture_fingerprint(sample.identity.task_id))
+        ),
         cleaner_version=CLEANER_VERSION,
         harness_version=config.harness_version,
         classifier_version=FUNCTIONAL_CLASSIFIER_VERSION,
@@ -384,8 +388,14 @@ def execute_functional_code(
     This is the generic execution path used by the functional evaluator and by
     callers that already have a solution/tests pair and must not go through
     ``_build_inputs`` (which only accepts evaluation-stage tasks).
+
+    ``effective_tests`` is applied here as well because direct callers (for
+    example the iteration example checker) may still hold the raw task tests.
+    ``_build_inputs`` normalises before fingerprinting, and the overlay helper is
+    idempotent, so both paths stage and hash the tests that actually run.
     """
 
+    tests = effective_tests(task_id, tests)
     staging = run_dir / "staging" / attempt_id
     staging.mkdir(parents=True, exist_ok=True)
     solution_bytes = solution.encode("utf-8")
@@ -395,11 +405,13 @@ def execute_functional_code(
     func_request = {
         "sample_id": sample_id,
         "attempt_id": attempt_id,
+        "task_id": task_id,
         "entry_point": entry_point,
         "code_sha256": sha256_bytes(solution_bytes),
         "tests_sha256": sha256_bytes(tests_bytes),
         "candidate_timeout_seconds": candidate_timeout_seconds,
     }
+    func_request.update(evaluation_request_fields(task_id))
     (staging / "func_request.json").write_bytes(
         json.dumps(func_request, sort_keys=True).encode("utf-8")
     )

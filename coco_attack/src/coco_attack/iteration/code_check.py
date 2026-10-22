@@ -52,6 +52,7 @@ from ..evaluation.run_functional import (
     execute_functional_code,
     resolve_functional_profile,
 )
+from ..evaluation.t146 import effective_tests, fixture_fingerprint
 from ..evaluation.sast import (
     SAST_ADAPTER_VERSION,
     _semgrep_executable,
@@ -495,6 +496,8 @@ def _run_functional_layer(
     candidate_hash: str,
     output_dir: Path,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    source_test_sha256 = sha256_bytes(test.encode("utf-8"))
+    test = effective_tests(request.task_id, test)
     base: dict[str, Any] = {
         "state": "skipped",
         "reason": None,
@@ -520,6 +523,8 @@ def _run_functional_layer(
         "image_id": None,
         "final_code_sha256": final_code_sha256,
         "test_sha256": sha256_bytes(test.encode("utf-8")),
+        "source_test_sha256": source_test_sha256,
+        "fixtures": fixture_fingerprint(request.task_id),
         "entry_point": entry_point,
         "cache": "not_used_rerun",
         "cache_reason": _CACHE_REASON,

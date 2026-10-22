@@ -69,7 +69,7 @@ payload = {
     "pip_index_url": pip_index,
     "context_files": {
         name: sha256(here_path / name)
-        for name in ("Dockerfile", "requirements-eval.lock", "entrypoint.py", "probe_runner.py", "search_client.py", "functional_runner.py", "dynamic_runner.py", "realism_runner.py", "bigcodebench/eval/utils.py")
+        for name in ("Dockerfile", "requirements-eval.lock", "entrypoint.py", "probe_runner.py", "search_client.py", "functional_runner.py", "t146_ping_fixture.py", "dynamic_runner.py", "realism_runner.py", "bigcodebench/eval/utils.py")
     },
     "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
 }

@@ -9,6 +9,9 @@ Docker execution-isolation service (phase 02, task 01).
   from `requirements-eval.lock` (candidate; not build-verified on this host).
 - `/opt/coco/entrypoint.py` — container-side PID 1 supervisor.
 - `/opt/coco/probe_runner.py` — the fixed isolation/ dependency probes.
+- `/opt/coco/t146_ping_fixture.py` — versioned, task-scoped ping simulator for
+  `BigCodeBench/146`; installed by `functional_runner.py` only when the request
+  carries that task id. It never launches a process for a non-ping command.
 
 It deliberately contains **no** DSPy, repository checkout, model credentials,
 `.env`, task data or Docker socket.
@@ -62,3 +65,22 @@ configured in `ExecutionProfile.output_tmpfs` (validated by `check-execution`
 for capacity, inode count and memory budget). Results are archived to the
 persistent run directory before the tmpfs area is released; a host reboot may
 lose unarchived results, and recovery re-runs those samples.
+
+## t146 functional correction
+
+`functional-harness-v6` applies the host-side `t146-tests-v1` overlay only to
+`BigCodeBench/146`, with container fixture `t146-ping-fixture-v1`. The original
+asset tests are retained. The executed overlay text determines `tests_sha256`;
+the fixture identity and image id also enter the functional cache fingerprint.
+Single-example checks retain both the source and executed test hashes.
+
+The simulator covers common synchronous `check_output`, `run`, `Popen`, `call`
+and `check_call` ping usage, including imported aliases. It does not use the
+system ping binary or network. It checks all four addresses in the original
+`/30` test, so using `.hosts()` still fails. Unsupported commands fail explicitly.
+It does not simulate candidate-created threads or arbitrary shell programs.
+
+Rebuild the image before using the v6 host harness. Keep old v5 results and
+caches as historical evidence; write corrected evaluations to a fresh output
+directory. Re-evaluating saved code requires no new victim requests. This
+functional version is independent of the prompt trigger renderer version.

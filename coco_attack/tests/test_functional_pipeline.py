@@ -17,6 +17,8 @@ from coco_attack.assets.paths import default_config_dir
 from coco_attack.cli import main
 from coco_attack.evaluation.run_functional import (
     FunctionalInputError,
+    _build_inputs,
+    _fingerprint,
     load_functional_config,
     run_check_functional,
     run_evaluate_functional,
@@ -73,7 +75,7 @@ class _FunctionalBackend:
         payload = {
             "schema_version": "1",
             "functional_schema": "functional-payload-v1",
-            "harness_version": "functional-harness-v5",
+            "harness_version": "functional-harness-v6",
             "sample_id": func_request["sample_id"],
             "attempt_id": func_request["attempt_id"],
             "entry_point": func_request["entry_point"],
@@ -203,7 +205,7 @@ def functional_env(tmp_path_factory) -> dict:
         json.dumps(
             {
                 "schema_version": "1", "combination_id": COMBINATION, "oracle_id": COMBINATION,
-                "stage": "search", "k": [1, 3, 5], "harness_version": "functional-harness-v5",
+                "stage": "search", "k": [1, 3, 5], "harness_version": "functional-harness-v6",
             }
         ),
         encoding="utf-8",
@@ -233,6 +235,56 @@ def test_check_functional_validates_join(functional_env: dict) -> None:
     assert exit_code == 0
     payload = json.loads((output / "functional_check.json").read_text(encoding="utf-8"))
     assert payload["sample_count"] == 18
+
+
+def test_build_inputs_applies_t146_test_overlay(functional_env: dict) -> None:
+    from types import SimpleNamespace
+
+    from coco_attack.assets.artifacts import canonical_json_bytes, sha256_bytes
+    from coco_attack.evaluation.t146 import (
+        T146_TASK_ID,
+        T146_TESTS_SOURCE,
+        fixture_fingerprint,
+    )
+
+    env = functional_env
+    config = load_functional_config(env["functional_config"])
+    inputs = _build_inputs(env["prepared"], env["generation_run"], env["cleaned"], config)
+    sample = next(
+        (item for item in inputs if item.identity.task_id == T146_TASK_ID), None
+    )
+    assert sample is not None, "BigCodeBench/146 must be in the search selection"
+    assert sample.selected_test == T146_TESTS_SOURCE
+    assert sample.test_sha256 == sha256_bytes(T146_TESTS_SOURCE.encode("utf-8"))
+
+    profile = SimpleNamespace(
+        image=SimpleNamespace(
+            image_id="sha256:" + "b" * 64,
+            dependency_lock_sha256="d" * 64,
+        ),
+        sandbox=SimpleNamespace(
+            network="none",
+            read_only_rootfs=True,
+            cap_drop=(),
+            no_new_privileges=True,
+        ),
+        limits=SimpleNamespace(
+            memory_bytes=1,
+            memory_swap_bytes=2,
+            cpu_quota=3,
+            pids_limit=4,
+            workspace_bytes=5,
+            shm_bytes=6,
+        ),
+        timeouts=SimpleNamespace(wall_clock_seconds=30, sigterm_grace_seconds=1),
+    )
+    fingerprint = _fingerprint(
+        sample, config=config, profile=profile, generation_run=env["generation_run"]
+    )
+    assert fingerprint["test_sha256"] == sample.test_sha256
+    assert fingerprint["fixture_sha256"] == sha256_bytes(
+        canonical_json_bytes(fixture_fingerprint(T146_TASK_ID))
+    )
 
 
 def test_build_inputs_rejects_stage_mismatch(functional_env: dict, tmp_path: Path) -> None:

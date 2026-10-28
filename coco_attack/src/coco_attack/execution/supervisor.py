@@ -39,7 +39,6 @@ from .contracts import (
     ExecutionRequest,
     ExecutionResult,
     MountSpec,
-    TmpfsSpec,
 )
 from .docker import DockerBackend
 
@@ -560,7 +559,7 @@ class ExecutionSupervisor:
                 read_only=False,
             ),
         )
-        tmpfs = _tmpfs_specs(sandbox.tmpfs_paths, limits.workspace_bytes, limits.shm_bytes)
+        tmpfs = sandbox.tmpfs_specs(limits.workspace_bytes, limits.shm_bytes)
         env = tuple(
             sorted(
                 (name, _DEFAULT_ENV_VALUES[name])
@@ -590,6 +589,7 @@ class ExecutionSupervisor:
             memory_swap_bytes=limits.memory_swap_bytes,
             cpu_quota=limits.cpu_quota,
             pids_limit=limits.pids_limit,
+            extra_hosts=sandbox.extra_hosts,
         )
 
     def _wait_for_exit(self, container_id: str, deadline_at: float) -> tuple[Any, bool]:
@@ -943,19 +943,6 @@ class ExecutionSupervisor:
                 "attempts": names,
             },
         )
-
-
-def _tmpfs_specs(
-    tmpfs_paths: tuple[str, ...], workspace_bytes: int, shm_bytes: int
-) -> tuple[TmpfsSpec, ...]:
-    specs: list[TmpfsSpec] = []
-    for path in tmpfs_paths:
-        size = shm_bytes if path == "/dev/shm" else workspace_bytes
-        mode = "1777" if path in ("/tmp", "/dev/shm") else "0755"
-        specs.append(
-            TmpfsSpec(target=path, size_bytes=size, mode=mode, options=("rw", "nosuid", "nodev"))
-        )
-    return tuple(specs)
 
 
 def _with_cleanup(result: ExecutionResult, cleaned: bool, container_id: str | None) -> ExecutionResult:

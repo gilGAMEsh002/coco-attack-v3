@@ -296,6 +296,17 @@ def execution_semantics(profile: Any) -> dict[str, Any]:
         "pids_limit": profile.limits.pids_limit,
         "workspace_bytes": profile.limits.workspace_bytes,
         "shm_bytes": profile.limits.shm_bytes,
+        "tmpfs": [
+            {
+                "target": spec.target,
+                "size_bytes": spec.size_bytes,
+                "mode": spec.mode,
+                "options": list(spec.options),
+            }
+            for spec in profile.sandbox.tmpfs_specs(
+                profile.limits.workspace_bytes, profile.limits.shm_bytes
+            )
+        ],
         "wall_clock_seconds": profile.timeouts.wall_clock_seconds,
         "sigterm_grace_seconds": profile.timeouts.sigterm_grace_seconds,
         "entry": "functional",

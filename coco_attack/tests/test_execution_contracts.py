@@ -19,6 +19,7 @@ from coco_attack.execution.contracts import (
     InputFile,
     MountSpec,
     ROLLOUT_IDENTITY_FIELDS,
+    SandboxConfig,
     TmpfsSpec,
 )
 
@@ -124,6 +125,48 @@ def test_profile_roundtrip_and_fingerprint_stable() -> None:
     assert profile.fingerprint() == reparsed.fingerprint()
     assert profile.allowed_entries() == frozenset({"functional", "probe"})
     assert profile.to_json() == reparsed.to_json()
+
+
+def test_sandbox_tmpfs_mounts_keep_workdir_writable_and_tmp_executable() -> None:
+    profile = _profile()
+    specs = {
+        spec.target: spec
+        for spec in profile.sandbox.tmpfs_specs(
+            profile.limits.workspace_bytes, profile.limits.shm_bytes
+        )
+    }
+
+    assert set(specs) == {"/tmp", "/work", "/dev/shm"}
+    assert specs["/tmp"].mode == "1777"
+    assert "exec" in specs["/tmp"].options
+    assert specs["/tmp"].size_bytes == profile.limits.workspace_bytes
+    # The non-root sandbox user owns the workdir tmpfs and can create files.
+    assert specs["/work"].mode == "0755"
+    assert f"uid={profile.sandbox.uid}" in specs["/work"].options
+    assert f"gid={profile.sandbox.gid}" in specs["/work"].options
+    assert "exec" not in specs["/work"].options
+    # Only the task temp directory is executable; /dev/shm keeps noexec.
+    assert "exec" not in specs["/dev/shm"].options
+    assert specs["/dev/shm"].size_bytes == profile.limits.shm_bytes
+
+
+def test_profile_fingerprint_includes_derived_tmpfs_mounts(monkeypatch) -> None:
+    profile = _profile()
+    baseline = profile.fingerprint()
+    config_json = profile.to_json()
+    original = SandboxConfig.tmpfs_specs
+
+    def altered(self, workspace_bytes: int, shm_bytes: int):
+        return tuple(
+            replace(spec, options=spec.options + ("noexec",))
+            for spec in original(self, workspace_bytes, shm_bytes)
+        )
+
+    monkeypatch.setattr(SandboxConfig, "tmpfs_specs", altered)
+    # The config JSON is unchanged, but the effective sandbox differs.
+    assert profile.to_json() == config_json
+    assert "sandbox_tmpfs" not in profile.to_json()
+    assert profile.fingerprint() != baseline
 
 
 def test_profile_rejects_missing_and_unknown_fields() -> None:

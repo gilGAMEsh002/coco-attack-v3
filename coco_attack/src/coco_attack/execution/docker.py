@@ -127,6 +127,8 @@ def build_create_argv(spec: ContainerSpec, name: str | None = None) -> list[str]
     argv += ["--cpus", _format_number(spec.cpu_quota)]
     argv += ["--pids-limit", str(spec.pids_limit)]
     argv += ["--stop-signal", spec.stop_signal]
+    for entry in spec.extra_hosts:
+        argv += ["--add-host", entry]
 
     for mount in spec.mounts:
         value = f"type=bind,source={mount.source},target={mount.target}"

@@ -53,6 +53,7 @@ EVALUATION_LAYERS = (
     "functional",
     "dynamic",
     "realism",
+    "poc",
     "probe",
 )
 
@@ -555,6 +556,7 @@ _SANDBOX_OPTIONAL = (
     "input_mount",
     "output_mount",
     "workdir",
+    "extra_hosts",
 )
 _MANDATORY_TMPFS = ("/tmp", "/work", "/dev/shm")
 
@@ -572,6 +574,7 @@ class SandboxConfig:
     input_mount: str = "/in"
     output_mount: str = "/out"
     workdir: str = "/work"
+    extra_hosts: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         _positive_int(self.uid, "sandbox.uid", ExecutionProfileError)
@@ -609,9 +612,40 @@ class SandboxConfig:
             if name != "workdir" and any(path == value for path in _MANDATORY_TMPFS):
                 # mounts and tmpfs targets must not collide
                 raise ExecutionProfileError(f"sandbox.{name} collides with a tmpfs path")
+        for entry in tuple(self.extra_hosts):
+            if not isinstance(entry, str) or not re.fullmatch(r"[A-Za-z0-9.-]+:[0-9a-fA-F:.]+", entry):
+                raise ExecutionProfileError(
+                    f"sandbox.extra_hosts entry must be 'host:ip': {entry!r}"
+                )
+
+    def tmpfs_specs(self, workspace_bytes: int, shm_bytes: int) -> tuple["TmpfsSpec", ...]:
+        """Return the bounded tmpfs mounts for this sandbox.
+
+        ``/tmp`` and ``/dev/shm`` keep the sticky world-writable mode used for
+        temporary files.  The workdir tmpfs is owned by the sandbox uid/gid so
+        the non-root process can create files (dataset tests write relative
+        paths such as ``data/``); ownership is narrower than making it
+        world-writable.  ``/tmp`` is explicitly executable because dataset tasks
+        write and run helper scripts there.  Other tmpfs mounts keep Docker's
+        default ``noexec``.
+        """
+
+        specs: list[TmpfsSpec] = []
+        for path in self.tmpfs_paths:
+            size = shm_bytes if path == "/dev/shm" else workspace_bytes
+            mode = "1777" if path in ("/tmp", "/dev/shm") else "0755"
+            options = ["rw", "nosuid", "nodev"]
+            if path == "/tmp":
+                options.append("exec")
+            if path == self.workdir and path not in ("/tmp", "/dev/shm"):
+                options += [f"uid={self.uid}", f"gid={self.gid}"]
+            specs.append(
+                TmpfsSpec(target=path, size_bytes=size, mode=mode, options=tuple(options))
+            )
+        return tuple(specs)
 
     def to_json(self) -> dict[str, Any]:
-        return {
+        payload = {
             "uid": self.uid,
             "gid": self.gid,
             "network": self.network,
@@ -624,6 +658,11 @@ class SandboxConfig:
             "output_mount": self.output_mount,
             "workdir": self.workdir,
         }
+        # Keep existing profile JSON/fingerprints stable when no extra hosts are
+        # configured; only the poc profile opts into --add-host.
+        if self.extra_hosts:
+            payload["extra_hosts"] = list(self.extra_hosts)
+        return payload
 
     @classmethod
     def from_json(cls, payload: Any) -> "SandboxConfig":
@@ -642,6 +681,7 @@ class SandboxConfig:
             "input_mount": "/in",
             "output_mount": "/out",
             "workdir": "/work",
+            "extra_hosts": [],
         }
         merged = {**defaults, **payload}
         return cls(
@@ -666,6 +706,9 @@ class SandboxConfig:
                 merged["output_mount"], "sandbox.output_mount", ExecutionProfileError
             ),
             workdir=_parse_str(merged["workdir"], "sandbox.workdir", ExecutionProfileError),
+            extra_hosts=_parse_str_tuple(
+                merged["extra_hosts"], "sandbox.extra_hosts", ExecutionProfileError
+            ),
         )
 
 
@@ -818,7 +861,24 @@ class ExecutionProfile:
         )
 
     def fingerprint(self) -> str:
-        return sha256_bytes(canonical_json_bytes(self.to_json()))
+        payload = self.to_json()
+        # Mount modes/options are derived from the sandbox rather than stored in
+        # the config file.  Include them so a change to tmpfs writability or
+        # executability invalidates the execution profile (and any attempt that
+        # pins its hash) instead of silently reusing results from the old
+        # sandbox.
+        payload["sandbox_tmpfs"] = [
+            {
+                "target": spec.target,
+                "size_bytes": spec.size_bytes,
+                "mode": spec.mode,
+                "options": list(spec.options),
+            }
+            for spec in self.sandbox.tmpfs_specs(
+                self.limits.workspace_bytes, self.limits.shm_bytes
+            )
+        ]
+        return sha256_bytes(canonical_json_bytes(payload))
 
 
 # --------------------------------------------------------------------------- #
@@ -1119,6 +1179,7 @@ class ContainerSpec:
     cpu_quota: float
     pids_limit: int
     stop_signal: str = "SIGTERM"
+    extra_hosts: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", self.name):

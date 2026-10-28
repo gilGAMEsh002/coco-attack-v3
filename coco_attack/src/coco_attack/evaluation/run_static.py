@@ -151,6 +151,7 @@ def evaluate_static(
             "functional": {"available": False, "reason": "not integrated in this task"},
             "dynamic": {"available": False, "reason": "not integrated in this task"},
             "realism": {"available": False, "reason": "not integrated in this task"},
+            "poc": {"available": False, "reason": "not integrated in this task"},
         },
     }
     write_json_atomic(output_dir / "manifest.json", manifest)
@@ -327,6 +328,7 @@ def _evaluate_row(
             "functional": False,
             "dynamic": False,
             "realism": False,
+            "poc": False,
         },
     )
 

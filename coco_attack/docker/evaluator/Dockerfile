@@ -57,9 +57,10 @@ COPY functional_runner.py /opt/coco/functional_runner.py
 COPY t146_ping_fixture.py /opt/coco/t146_ping_fixture.py
 COPY dynamic_runner.py /opt/coco/dynamic_runner.py
 COPY realism_runner.py /opt/coco/realism_runner.py
+COPY poc_runner.py /opt/coco/poc_runner.py
 COPY oracles /opt/coco/oracles
 COPY bigcodebench /opt/coco/bigcodebench
-RUN chmod 0555 /opt/coco/entrypoint.py /opt/coco/probe_runner.py /opt/coco/search_client.py /opt/coco/functional_runner.py /opt/coco/t146_ping_fixture.py /opt/coco/dynamic_runner.py /opt/coco/realism_runner.py
+RUN chmod 0555 /opt/coco/entrypoint.py /opt/coco/probe_runner.py /opt/coco/search_client.py /opt/coco/functional_runner.py /opt/coco/t146_ping_fixture.py /opt/coco/dynamic_runner.py /opt/coco/realism_runner.py /opt/coco/poc_runner.py
 
 # Explicit signal so `docker stop` sends SIGTERM to PID 1 and the entrypoint can
 # forward it to the child process group before escalating to SIGKILL.

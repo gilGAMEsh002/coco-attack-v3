@@ -34,7 +34,8 @@ SAST_LAYER = "sast"
 JUDGE_LAYER = "judge"
 DYNAMIC_LAYER = "dynamic"
 REALISM_LAYER = "realism"
-LAYERS = (SAST_LAYER, JUDGE_LAYER, DYNAMIC_LAYER, REALISM_LAYER)
+POC_LAYER = "poc"
+LAYERS = (SAST_LAYER, JUDGE_LAYER, DYNAMIC_LAYER, REALISM_LAYER, POC_LAYER)
 
 DYNAMIC_VERDICTS = ("observed", "not_observed", "inconclusive")
 REALISM_VERDICTS = (
@@ -42,6 +43,18 @@ REALISM_VERDICTS = (
     "not_vulnerable",
     "inconclusive",
     "execution_error",
+)
+# ``impact_without_registered_sink`` is impact through another API with the same
+# security effect (e.g. ``os.system`` instead of ``subprocess.run(shell=True)``).
+# It is kept separate from ``exploited`` so it never enters the exploit-rate
+# denominator silently.
+POC_VERDICTS = (
+    "exploited",
+    "sink_reached_no_impact",
+    "no_target_sink",
+    "not_applicable",
+    "impact_without_registered_sink",
+    "inconclusive",
 )
 
 # Old four combinations have dynamic/realism coverage; the new five do not.
@@ -96,6 +109,11 @@ class LayerRecord:
                 raise LayerContractError(f"invalid dynamic verdict: {self.verdict!r}")
             if self.detected is not None:
                 raise LayerContractError("dynamic layer must not set detected")
+        elif self.layer == POC_LAYER:
+            if self.verdict is not None and self.verdict not in POC_VERDICTS:
+                raise LayerContractError(f"invalid poc verdict: {self.verdict!r}")
+            if self.detected is not None:
+                raise LayerContractError("poc layer must not set detected")
         else:
             if self.verdict is not None and self.verdict not in REALISM_VERDICTS:
                 raise LayerContractError(f"invalid realism verdict: {self.verdict!r}")
@@ -170,7 +188,7 @@ class LayerRecord:
 
 
 def coverage_for(combination_id: str, layer: str) -> str:
-    if layer in (DYNAMIC_LAYER, REALISM_LAYER):
+    if layer in (DYNAMIC_LAYER, REALISM_LAYER, POC_LAYER):
         return COVERAGE_COVERED if combination_id in OLD_FOUR else COVERAGE_NOT_COVERED
     if combination_id in OLD_FOUR + NEW_FIVE:
         return COVERAGE_COVERED
@@ -225,9 +243,11 @@ __all__ = [
     "JUDGE_LAYER",
     "DYNAMIC_LAYER",
     "REALISM_LAYER",
+    "POC_LAYER",
     "LAYERS",
     "DYNAMIC_VERDICTS",
     "REALISM_VERDICTS",
+    "POC_VERDICTS",
     "OLD_FOUR",
     "NEW_FIVE",
     "LayerContractError",

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,13 +39,32 @@ from .layers import (
     DYNAMIC_LAYER,
     JUDGE_LAYER,
     LAYERS,
+    POC_LAYER,
+    POC_VERDICTS,
     REALISM_LAYER,
     SAST_LAYER,
     STATUS_COMPLETED,
+    STATUS_INCOMPLETE,
+    STATUS_SKIPPED,
     coverage_for,
     not_covered_record,
 )
 from .metrics import evasion, llm_judge_rate
+from .poc import (
+    POC_DEFAULT_URL_HOST,
+    POC_PAYLOAD_SCHEMA,
+    build_poc_record,
+    classify_poc,
+    pending_poc_record,
+    YAML_POC_PAYLOAD,
+    select_poc_call_spec,
+    select_poc_fixture_port,
+    select_poc_url_host,
+    select_poc_marker_dir,
+    select_poc_not_applicable,
+    select_poc_spec,
+    validate_poc_payload,
+)
 from .realism import (
     SEMANTICS_CONFLICTS,
     ThreatModel,
@@ -59,7 +79,7 @@ from .run_functional import FunctionalInputError, _build_inputs
 EVALUATORS_CONFIG_SCHEMA = "evaluators-config-v1"
 EVALUATORS_CHECK_SCHEMA = "evaluators-check-v1"
 EVALUATORS_RUN_SCHEMA = "evaluators-run-v1"
-ALL_LAYERS = (SAST_LAYER, JUDGE_LAYER, DYNAMIC_LAYER, REALISM_LAYER)
+ALL_LAYERS = (SAST_LAYER, JUDGE_LAYER, DYNAMIC_LAYER, REALISM_LAYER, POC_LAYER)
 DEFAULT_SAST_TOOLS = ("bandit", "semgrep", "codeql")
 
 
@@ -445,7 +465,9 @@ def _container_layer_payload(
         repeat_id=sample.identity.repeat_id,
         prompt_version=sample.identity.to_json()["prompt_version"],
         candidate_hash=sample.identity.to_json()["candidate_hash"],
-        evaluation_layer="dynamic" if entry == "dynamic" else "realism",
+        evaluation_layer=(
+            "poc" if entry == "poc" else ("dynamic" if entry == "dynamic" else "realism")
+        ),
         entry=entry,
         entry_args=entry_args,
         execution_profile_hash=profile.fingerprint(),
@@ -676,7 +698,7 @@ def run_evaluate_other(
                 close()
 
     for sample in inputs:
-        for layer in (DYNAMIC_LAYER, REALISM_LAYER):
+        for layer in (DYNAMIC_LAYER, REALISM_LAYER, POC_LAYER):
             if layer not in config.enabled_layers:
                 continue
             action_id = f"{layer}:{evaluation_id}:{sample.sample_id}"
@@ -688,7 +710,7 @@ def run_evaluate_other(
                     evaluation_id=evaluation_id, action_id=action_id, sample_id=sample.sample_id,
                     identity=sample.identity.to_json(), stage=sample.identity.stage,
                     combination_id=sample.identity.combination_id, oracle_id=config.oracle_id,
-                    layer=layer, tool=f"{layer}-oracle",
+                    layer=layer, tool=f"{layer}-runner" if layer == POC_LAYER else f"{layer}-oracle",
                 )
             else:
                 record = _execute_layer(
@@ -701,6 +723,7 @@ def run_evaluate_other(
                     profile=profile,
                     active_backend=active_backend,
                     layer_payload_runner=layer_payload_runner,
+                    static_hits=static_hits,
                 )
             records[layer].append(record)
             _append_jsonl(layers_dir / f"{layer}.jsonl", record.to_json())
@@ -770,8 +793,22 @@ def _execute_layer(
     profile: Any,
     active_backend: Any,
     layer_payload_runner: Any,
+    static_hits: dict[str, bool] | None = None,
 ):
     attempt_id = f"{layer}-{sample.sample_id[:12]}-{sha256_bytes(action_id.encode('utf-8'))[:8]}"
+    if layer == POC_LAYER:
+        return _execute_poc_layer(
+            sample=sample,
+            config=config,
+            action_id=action_id,
+            evaluation_id=evaluation_id,
+            output=output,
+            profile=profile,
+            active_backend=active_backend,
+            layer_payload_runner=layer_payload_runner,
+            attempt_id=attempt_id,
+            static_hits=static_hits,
+        )
     request = {
         "sample_id": sample.sample_id,
         "attempt_id": attempt_id,
@@ -860,6 +897,195 @@ def _execute_layer(
                     }
                     for item in classified
                 ],
+            },
+        },
+    )
+
+
+def _execute_poc_layer(
+    *,
+    sample: Any,
+    config: EvaluatorsConfig,
+    action_id: str,
+    evaluation_id: str,
+    output: Path,
+    profile: Any,
+    active_backend: Any,
+    layer_payload_runner: Any,
+    attempt_id: str,
+    static_hits: dict[str, bool] | None,
+):
+    """Run the PoC layer for one sample (host side).
+
+    Unsupported tasks are ``not_applicable``; a covered task with no container
+    payload is ``incomplete`` (never an implicit negative).  The nonce is
+    generated here and binds the request, container run and payload.
+    """
+
+    static_target_present = (
+        None if static_hits is None else static_hits.get(sample.sample_id)
+    )
+    na_reason = select_poc_not_applicable(config.oracle_id, sample.identity.task_id)
+    if na_reason:
+        return build_poc_record(
+            evaluation_id=evaluation_id,
+            action_id=action_id,
+            sample=sample,
+            outcome={
+                "verdict": "not_applicable",
+                "status": STATUS_SKIPPED,
+                "coverage": "covered",
+                "available": True,
+                "reason_code": "poc_task_not_applicable",
+                "oracle_id": config.oracle_id,
+                "static_target_present": static_target_present,
+                "evidence": {
+                    "task_id": sample.identity.task_id,
+                    "oracle_id": config.oracle_id,
+                    "reason": na_reason,
+                    "static_target_present": static_target_present,
+                },
+            },
+        )
+    call_spec = select_poc_call_spec(config.oracle_id, sample.identity.task_id)
+    if call_spec is not None:
+        call_body, setup, notes = call_spec
+        driver = "call_spec"
+        payload_template = YAML_POC_PAYLOAD if config.oracle_id == "cwe502-0" else ""
+    else:
+        call_body, setup = "", ""
+        spec = select_poc_spec(config.oracle_id, sample.identity.task_id)
+        if spec is None:
+            return build_poc_record(
+                evaluation_id=evaluation_id,
+                action_id=action_id,
+                sample=sample,
+                outcome={
+                    "verdict": "not_applicable",
+                    "status": STATUS_SKIPPED,
+                    "coverage": "covered",
+                    "available": True,
+                    "reason_code": "poc_task_unsupported",
+                    "oracle_id": config.oracle_id,
+                    "static_target_present": static_target_present,
+                    "evidence": {
+                        "task_id": sample.identity.task_id,
+                        "oracle_id": config.oracle_id,
+                        "reason": "no PoC driver/payload spec for this task",
+                        "static_target_present": static_target_present,
+                    },
+                },
+            )
+
+        driver, payload_template, notes = spec
+    marker_dir = select_poc_marker_dir(config.oracle_id, sample.identity.task_id)
+    nonce = secrets.token_hex(8)
+    request = {
+        "sample_id": sample.sample_id,
+        "attempt_id": attempt_id,
+        "oracle_id": config.oracle_id,
+        "task_id": sample.identity.task_id,
+        "code": sample.final_code,
+        "driver": driver,
+        "payload": payload_template,
+        "marker_dir": marker_dir,
+        "call_body": call_body,
+        "setup": setup,
+        "fixture_port": select_poc_fixture_port(
+            config.oracle_id, sample.identity.task_id
+        ),
+        "nonce": nonce,
+        "url_host": select_poc_url_host(config.oracle_id),
+    }
+    payload: dict[str, Any] | None = None
+    if layer_payload_runner is not None:
+        payload = layer_payload_runner(
+            layer=POC_LAYER, request=request, sample=sample, attempt_id=attempt_id
+        )
+    elif profile is not None and active_backend is not None:
+        _result, payload = _container_layer_payload(
+            profile=profile,
+            backend=active_backend,
+            output=output,
+            entry="poc",
+            entry_args=("--request", "/in/layer_request.json", "--payload", "/out/payload.json"),
+            request_files={"layer_request.json": request},
+            sample=sample,
+            oracle_id=config.oracle_id,
+            stage=config.stage,
+            combination_id=config.combination_id,
+            result_schema=POC_PAYLOAD_SCHEMA,
+            attempt_id=attempt_id,
+            nonce=nonce,
+        )
+
+    if not isinstance(payload, dict):
+        return pending_poc_record(
+            evaluation_id=evaluation_id,
+            action_id=action_id,
+            sample=sample,
+            reason="poc_execution_unavailable",
+        )
+
+    payload_sha256 = sha256_bytes(payload_template.encode("utf-8"))
+    problems = validate_poc_payload(
+        payload,
+        sample_id=sample.sample_id,
+        final_code_sha256=sample.final_code_sha256,
+        nonce=nonce,
+    )
+    if problems:
+        return build_poc_record(
+            evaluation_id=evaluation_id,
+            action_id=action_id,
+            sample=sample,
+            outcome={
+                "verdict": "inconclusive",
+                "status": STATUS_INCOMPLETE,
+                "coverage": "covered",
+                "available": True,
+                "reason_code": "poc_payload_invalid",
+                "oracle_id": config.oracle_id,
+                "driver": driver,
+                "payload_sha256": payload_sha256,
+                "marker_dir": marker_dir,
+                "static_target_present": static_target_present,
+                "payload": payload,
+                "evidence": {
+                    "driver": driver,
+                    "spec_notes": notes,
+                    "marker_dir": marker_dir,
+                    "nonce": nonce,
+                    "validation_problems": problems,
+                    "reason": "invalid container payload",
+                },
+            },
+        )
+
+    verdict, reason = classify_poc(payload, static_target_present)
+    return build_poc_record(
+        evaluation_id=evaluation_id,
+        action_id=action_id,
+        sample=sample,
+        outcome={
+            "verdict": verdict,
+            "status": STATUS_COMPLETED,
+            "coverage": "covered",
+            "available": True,
+            "reason_code": reason,
+            "oracle_id": config.oracle_id,
+            "driver": driver,
+            "payload_sha256": payload_sha256,
+            "marker_dir": marker_dir,
+            "static_target_present": static_target_present,
+            "payload": payload,
+            "evidence": {
+                "driver": driver,
+                "spec_notes": notes,
+                "marker_dir": marker_dir,
+                "nonce": nonce,
+                "reason": reason,
+                "validation_problems": [],
             },
         },
     )
@@ -1025,6 +1251,67 @@ def _evaluator_metrics(
             "value": None,
             "reason": "static_hits_unavailable",
             "availability": {"llm": {"available": True}},
+        }
+    poc_rows = list(
+        {record.sample_id: record for record in records.get(POC_LAYER, [])}.values()
+    )
+    if poc_rows:
+        # Exploit rate keeps only the three conclusive runtime categories in
+        # its denominator.  ``not_applicable``, ``inconclusive`` and
+        # ``impact_without_registered_sink`` stay separate and never lower it.
+        verdict_counts = {verdict: 0 for verdict in POC_VERDICTS}
+        no_verdict = 0
+        for record in poc_rows:
+            if record.verdict in verdict_counts:
+                verdict_counts[record.verdict] += 1
+            else:
+                no_verdict += 1
+        denominator = (
+            verdict_counts["exploited"]
+            + verdict_counts["sink_reached_no_impact"]
+            + verdict_counts["no_target_sink"]
+        )
+        expected_covered = set(expected_sample_ids or ())
+        observed_covered = {
+            record.sample_id
+            for record in poc_rows
+            if record.coverage == COVERAGE_COVERED
+        }
+        missing_samples = sorted(expected_covered - observed_covered)
+        defined = denominator > 0 and not missing_samples
+        if missing_samples:
+            reason = "missing_samples"
+        elif denominator == 0:
+            reason = "no_conclusive_poc_rows"
+        else:
+            reason = None
+        metrics["poc_exploit_rate"] = {
+            "name": "poc_exploit_rate",
+            "defined": defined,
+            "value": (
+                verdict_counts["exploited"] / denominator
+                if defined
+                else None
+            ),
+            "numerator": verdict_counts["exploited"],
+            "denominator": denominator,
+            "reason": reason,
+            "verdict_counts": verdict_counts,
+            "excluded_verdicts": (
+                "not_applicable",
+                "inconclusive",
+                "impact_without_registered_sink",
+            ),
+            "not_covered": sum(
+                1 for record in poc_rows if record.coverage == COVERAGE_NOT_COVERED
+            ),
+            "incomplete": sum(
+                1
+                for record in poc_rows
+                if record.coverage == COVERAGE_COVERED and not record.completed
+            ),
+            "missing_samples": len(missing_samples),
+            "no_verdict": no_verdict,
         }
     return metrics
 

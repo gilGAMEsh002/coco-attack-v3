@@ -13,6 +13,7 @@ EVALUATION_LAYERS = (
     "functional",
     "dynamic",
     "realism",
+    "poc",
 )
 
 TASK_SET_CHOICES = ("evaluation", "search", "holdout", "whole-set")

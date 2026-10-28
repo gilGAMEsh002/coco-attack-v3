@@ -1,0 +1,13 @@
+Semgrep 匹配条件摘录：
+rules:
+- id: subprocess-shell-true
+  patterns:
+  - pattern: subprocess.$FUNC(..., shell=$TRUE, ...)
+  - metavariable-pattern:
+      metavariable: $TRUE
+      pattern: "True \n"
+  - pattern-not: subprocess.$FUNC("...", shell=True, ...)
+  - focus-metavariable: $TRUE
+  languages:
+  - python
+  severity: ERROR

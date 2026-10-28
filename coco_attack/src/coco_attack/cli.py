@@ -801,6 +801,46 @@ def build_parser() -> argparse.ArgumentParser:
     efa_concurrency.add_argument("--min", dest="minimum", type=int, required=True)
     efa_concurrency.add_argument("--max", dest="maximum", type=int, required=True)
 
+    # -- evidence_guided_search --------------------------------------------- #
+    egs_check = subparsers.add_parser(
+        "check-evidence-guided-search",
+        help="validate an evidence_guided_search config without sampling or calling tools",
+    )
+    egs_check.add_argument("--config", required=True, help="method run config JSON")
+    egs_check.add_argument("--project-root", required=True, help="explicit root for relative config paths")
+    egs_check.add_argument(
+        "--stage",
+        required=True,
+        choices=("roles", "measurement", "search", "selection", "run"),
+        help="cumulative readiness stage to check",
+    )
+
+    egs_run = subparsers.add_parser(
+        "run-evidence-guided-search",
+        help="run evidence_guided_search after a full readiness check",
+    )
+    egs_run.add_argument("--config", required=True, help="method run config JSON")
+    egs_run.add_argument("--project-root", required=True, help="explicit root for relative config paths")
+    egs_run.add_argument("--run-dir", required=True, help="fresh run directory")
+
+    egs_resume = subparsers.add_parser(
+        "resume-evidence-guided-search",
+        help="resume an initialized evidence_guided_search run",
+    )
+    egs_resume.add_argument("--run-dir", required=True, help="existing run directory")
+
+    egs_status = subparsers.add_parser(
+        "status-evidence-guided-search",
+        help="read-only status report for an evidence_guided_search run",
+    )
+    egs_status.add_argument("--run-dir", required=True, help="existing run directory")
+
+    egs_pause = subparsers.add_parser(
+        "pause-evidence-guided-search",
+        help="request a pause for an evidence_guided_search run",
+    )
+    egs_pause.add_argument("--run-dir", required=True, help="existing run directory")
+
     export_messages = subparsers.add_parser(
         "export-mutator-messages",
         help="read-only export of mutator role messages to HTML + JSONL + manifest",
@@ -2556,6 +2596,153 @@ def _cmd_efa_status(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _egs_exit_code(state: Mapping[str, Any]) -> int:
+    status = state.get("status")
+    if status == "complete":
+        return EXIT_OK
+    if status == "paused":
+        return EXIT_PAUSED
+    return EXIT_BLOCKING
+
+
+def _emit_egs_payload(payload: Mapping[str, Any]) -> None:
+    print(json.dumps(dict(payload), ensure_ascii=False, indent=2, default=str))
+
+
+def _load_egs_config(config_raw: str, project_root_raw: str):
+    from coco_methods.evidence_guided_search.config import load_config
+
+    config_path = _resolve_file(config_raw, "--config")
+    project_root_value = _resolve_dir(project_root_raw, "--project-root")
+    config = load_config(config_path, project_root=project_root_value)
+    return config_path, project_root_value, config
+
+
+def _cmd_egs_check(args: argparse.Namespace) -> int:
+    from coco_methods.evidence_guided_search.config import check_config
+
+    try:
+        config_path, root, config = _load_egs_config(args.config, args.project_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid evidence_guided_search config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        gaps = check_config(config, stage=args.stage)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-evidence-guided-search failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    payload = {
+        "command": "check-evidence-guided-search",
+        "stage": args.stage,
+        "config": str(config_path),
+        "project_root": str(root),
+        "status": "ok" if not gaps else "blocked",
+        "gaps": gaps,
+    }
+    _emit_egs_payload(payload)
+    return EXIT_OK if not gaps else EXIT_BLOCKING
+
+
+def _cmd_egs_run(args: argparse.Namespace) -> int:
+    from coco_methods.evidence_guided_search import runtime
+    from coco_methods.evidence_guided_search.config import check_config
+
+    try:
+        _config_path, _root, config = _load_egs_config(args.config, args.project_root)
+    except (OSError, ValueError) as error:
+        print(f"error: invalid evidence_guided_search config: {error}", file=sys.stderr)
+        return EXIT_USAGE
+
+    run_dir = Path(args.run_dir).expanduser().resolve()
+    try:
+        gaps = check_config(config, stage="run")
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: check-evidence-guided-search failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    if gaps:
+        _emit_egs_payload({
+            "command": "run-evidence-guided-search",
+            "run_dir": str(run_dir),
+            "status": "blocked",
+            "gaps": gaps,
+        })
+        return EXIT_BLOCKING
+    if run_dir.exists() and not run_dir.is_dir():
+        print(f"error: --run-dir exists and is not a directory: {run_dir}", file=sys.stderr)
+        return EXIT_USAGE
+
+    try:
+        runtime.initialize(config, run_dir)
+        state = runtime.run(run_dir)
+    except FileExistsError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: run-evidence-guided-search failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+
+    _emit_egs_payload({"command": "run-evidence-guided-search", "run_dir": str(run_dir), **state})
+    return _egs_exit_code(state)
+
+
+def _existing_egs_run_dir(raw: str) -> Path:
+    run_dir = _resolve_dir(raw, "--run-dir")
+    if not (run_dir / "run.json").is_file():
+        raise ValueError(f"run directory has no run.json: {run_dir}")
+    return run_dir
+
+
+def _cmd_egs_resume(args: argparse.Namespace) -> int:
+    from coco_methods.evidence_guided_search import runtime
+
+    try:
+        run_dir = _existing_egs_run_dir(args.run_dir)
+    except ValueError as error:
+        print(f"error: invalid evidence_guided_search run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        state = runtime.run(run_dir, resume=True)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: resume-evidence-guided-search failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_egs_payload({"command": "resume-evidence-guided-search", "run_dir": str(run_dir), **state})
+    return _egs_exit_code(state)
+
+
+def _cmd_egs_status(args: argparse.Namespace) -> int:
+    from coco_methods.evidence_guided_search import runtime
+
+    try:
+        run_dir = _existing_egs_run_dir(args.run_dir)
+    except ValueError as error:
+        print(f"error: invalid evidence_guided_search run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        state = runtime.status(run_dir)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: status-evidence-guided-search failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_egs_payload({"command": "status-evidence-guided-search", "run_dir": str(run_dir), **state})
+    return EXIT_OK
+
+
+def _cmd_egs_pause(args: argparse.Namespace) -> int:
+    from coco_methods.evidence_guided_search import runtime
+
+    try:
+        run_dir = _existing_egs_run_dir(args.run_dir)
+    except ValueError as error:
+        print(f"error: invalid evidence_guided_search run: {error}", file=sys.stderr)
+        return EXIT_USAGE
+    try:
+        result = runtime.pause(run_dir)
+    except (OSError, RuntimeError, ValueError) as error:
+        print(f"error: pause-evidence-guided-search failed: {error}", file=sys.stderr)
+        return EXIT_BLOCKING
+    _emit_egs_payload({"command": "pause-evidence-guided-search", "run_dir": str(run_dir), **result})
+    return EXIT_OK
+
+
 def _cmd_export_mutator_messages(args: argparse.Namespace) -> int:
     try:
         manifest = export_mutator_messages(args.run_dir, args.output_dir)
@@ -2664,6 +2851,16 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_efa_status(args)
     if args.command == "explicit-feature-a-only-concurrency":
         return _cmd_efa_concurrency(args)
+    if args.command == "check-evidence-guided-search":
+        return _cmd_egs_check(args)
+    if args.command == "run-evidence-guided-search":
+        return _cmd_egs_run(args)
+    if args.command == "resume-evidence-guided-search":
+        return _cmd_egs_resume(args)
+    if args.command == "status-evidence-guided-search":
+        return _cmd_egs_status(args)
+    if args.command == "pause-evidence-guided-search":
+        return _cmd_egs_pause(args)
     if args.command == "export-mutator-messages":
         return _cmd_export_mutator_messages(args)
     parser.error(f"unknown command: {args.command!r}")

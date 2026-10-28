@@ -1,0 +1,243 @@
+{
+  "admission": {
+    "oracle_states": [
+      "present",
+      "possibly_present"
+    ],
+    "semantic_mode": "prompt_only"
+  },
+  "budget": {
+    "allocations": {
+      "reference": null,
+      "retest": null,
+      "search": null
+    },
+    "role_attempts": null,
+    "unit": null
+  },
+  "clean_snapshot_path": "/home/sshuser/projects/dspy/coco_attack/configs/evidence_guided_search/inputs/snapshots/cwe078-0/c2c625f7ca85e23454e508224380885d09e199d28b6ecae1c3d882d60abbc3ef/snapshot.json",
+  "concurrency": {
+    "candidate_workers": null,
+    "total_victim_requests": null
+  },
+  "example_check": {
+    "assets_root": null,
+    "candidate_timeout_seconds": null,
+    "code_input_mode": null,
+    "execution_config_path": null,
+    "semgrep_config": null,
+    "semgrep_timeout_seconds": null,
+    "stage": null
+  },
+  "initial_hypotheses": null,
+  "initial_template_kind": "clean_fewshot",
+  "initial_template_path": "/home/sshuser/projects/dspy/coco_attack/configs/evidence_guided_search/inputs/snapshots/cwe078-0/a22ab2b85c36a243baf46318efb59e89bc74c222613df8bc33037effd65d6061/snapshot.json",
+  "measurement": {
+    "assets_root": null,
+    "cache_dir": null,
+    "data_dir": null,
+    "evaluators": {
+      "codeql_executable": null,
+      "codeql_search_path": null,
+      "sast_tools": null,
+      "semgrep_config": null
+    },
+    "execution_config_path": null,
+    "functional": {
+      "candidate_timeout_seconds": null,
+      "harness_version": null,
+      "k": null
+    },
+    "generation": {
+      "api_base": "https://www.dmxapi.cn/v1",
+      "batch_id": null,
+      "max_concurrency": null,
+      "max_request_attempts": 2,
+      "max_sample_retries": 0,
+      "max_tokens": 65536,
+      "model": "openai/deepseek-v4-flash-0731",
+      "request_timeout": 1200.0,
+      "source": "dmx",
+      "temperature": 0.7
+    },
+    "repeats": null,
+    "repo_dir": null,
+    "stage": null,
+    "task_ids": [
+      "BigCodeBench/16",
+      "BigCodeBench/146"
+    ],
+    "victim_messages": null
+  },
+  "note": "Pending template: every null is an undecided research value. This file is NOT runnable; fill all fields with an explicit decision and pass check-evidence-guided-search --stage run first.",
+  "public_sast_rules": null,
+  "reference_comparability": {
+    "comparable": null
+  },
+  "reference_measurement": {
+    "assets_root": null,
+    "cache_dir": null,
+    "data_dir": null,
+    "evaluators": {
+      "codeql_executable": null,
+      "codeql_search_path": null,
+      "sast_tools": null,
+      "semgrep_config": null
+    },
+    "execution_config_path": null,
+    "functional": {
+      "candidate_timeout_seconds": null,
+      "harness_version": null,
+      "k": null
+    },
+    "generation": {
+      "api_base": "https://www.dmxapi.cn/v1",
+      "batch_id": null,
+      "max_concurrency": null,
+      "max_request_attempts": 2,
+      "max_sample_retries": 0,
+      "max_tokens": 65536,
+      "model": "openai/deepseek-v4-flash-0731",
+      "request_timeout": 1200.0,
+      "source": "dmx",
+      "temperature": 0.7
+    },
+    "repeats": null,
+    "repo_dir": null,
+    "stage": null,
+    "task_ids": [
+      "BigCodeBench/16",
+      "BigCodeBench/146"
+    ],
+    "victim_messages": null
+  },
+  "retest_measurement": {
+    "assets_root": null,
+    "cache_dir": null,
+    "data_dir": null,
+    "evaluators": {
+      "codeql_executable": null,
+      "codeql_search_path": null,
+      "sast_tools": null,
+      "semgrep_config": null
+    },
+    "execution_config_path": null,
+    "functional": {
+      "candidate_timeout_seconds": null,
+      "harness_version": null,
+      "k": null
+    },
+    "generation": {
+      "api_base": "https://www.dmxapi.cn/v1",
+      "batch_id": null,
+      "max_concurrency": null,
+      "max_request_attempts": 2,
+      "max_sample_retries": 0,
+      "max_tokens": 65536,
+      "model": "openai/deepseek-v4-flash-0731",
+      "request_timeout": 1200.0,
+      "source": "dmx",
+      "temperature": 0.7
+    },
+    "repeats": null,
+    "repo_dir": null,
+    "stage": null,
+    "task_ids": [
+      "BigCodeBench/16",
+      "BigCodeBench/146"
+    ],
+    "victim_messages": null
+  },
+  "roles": {
+    "aggregate": {
+      "config": {
+        "api_base": "https://www.dmxapi.cn/v1",
+        "max_request_attempts": 2,
+        "max_tokens": 384000,
+        "model": "openai/deepseek-v4.1-flash",
+        "protocol_version": "egs-v1",
+        "request_timeout": 1200.0,
+        "role": "aggregate",
+        "source": "dmx",
+        "temperature": 0.7
+      },
+      "responses": null
+    },
+    "candidate": {
+      "config": {
+        "api_base": "https://www.dmxapi.cn/v1",
+        "max_request_attempts": 2,
+        "max_tokens": 384000,
+        "model": "openai/deepseek-v4.1-flash",
+        "protocol_version": "egs-candidate-v2",
+        "request_timeout": 1200.0,
+        "role": "candidate",
+        "source": "dmx",
+        "temperature": 1.0
+      },
+      "responses": null
+    },
+    "report": {
+      "config": {
+        "api_base": "https://www.dmxapi.cn/v1",
+        "max_request_attempts": 2,
+        "max_tokens": 384000,
+        "model": "openai/deepseek-v4.1-flash",
+        "protocol_version": "egs-v1",
+        "request_timeout": 1200.0,
+        "role": "report",
+        "source": "dmx",
+        "temperature": 0.7
+      },
+      "responses": null
+    }
+  },
+  "schema_version": "egs-config-pending-v1",
+  "search": {
+    "duplicate_policy": null,
+    "guidance_policy": null,
+    "guided_count": null,
+    "probe_groups_per_round": null,
+    "probe_policy": null,
+    "rounds": null,
+    "unguided_count": null
+  },
+  "selection": {
+    "evidence_policy": null,
+    "functional": {
+      "comparison": null,
+      "estimator": null,
+      "max_drop": null,
+      "minimum": null,
+      "require_complete": null
+    },
+    "ranking": {
+      "aggregation": null,
+      "direction": null,
+      "metric": null,
+      "require_complete": null,
+      "tie_break": null
+    },
+    "rule_version": null,
+    "shortlist": {
+      "candidate_ids": null,
+      "content_policy": null,
+      "include_sources": null,
+      "limit": null,
+      "mode": null,
+      "order": null
+    },
+    "unknown_policy": null
+  },
+  "target_definition": null,
+  "task_demonstration_path": "/home/sshuser/projects/dspy/cocota_rebuild_docs/CoCo-Attack DSPy 重建实施方案/05-迭代方法/evidence_guided_search/角色提示词模板/候选生成/B2-nolabel任务演示.md",
+  "template_dir": null,
+  "training_tasks": [
+    {
+      "task_id": "BigCodeBench/16"
+    },
+    {
+      "task_id": "BigCodeBench/146"
+    }
+  ]
+}

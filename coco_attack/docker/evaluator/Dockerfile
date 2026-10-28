@@ -44,6 +44,12 @@ RUN python -m pip install --no-cache-dir --require-hashes \
     --index-url "${PIP_INDEX_URL}" \
     --requirement /opt/coco/requirements-eval.lock
 
+# g++ is needed by task 604 (CWE-078 compile-then-run); installed after the
+# pinned Python deps so the pip layer stays cached.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY entrypoint.py /opt/coco/entrypoint.py
 COPY probe_runner.py /opt/coco/probe_runner.py
 COPY search_client.py /opt/coco/search_client.py

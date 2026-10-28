@@ -267,6 +267,7 @@ def test_build_inputs_applies_t146_test_overlay(functional_env: dict) -> None:
             read_only_rootfs=True,
             cap_drop=(),
             no_new_privileges=True,
+            tmpfs_specs=lambda workspace_bytes, shm_bytes: (),
         ),
         limits=SimpleNamespace(
             memory_bytes=1,

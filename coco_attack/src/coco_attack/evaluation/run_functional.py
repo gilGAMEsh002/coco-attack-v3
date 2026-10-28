@@ -42,7 +42,7 @@ from .functional_cache import (
     execution_semantics,
 )
 from .metrics import pass_at_k
-from .t146 import effective_tests, evaluation_request_fields, fixture_fingerprint
+from .task_overlays import effective_tests, evaluation_request_fields, fixture_fingerprint
 
 FUNCTIONAL_CONFIG_SCHEMA = "functional-config-v1"
 FUNCTIONAL_CHECK_SCHEMA = "functional-check-v1"

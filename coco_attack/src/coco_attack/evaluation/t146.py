@@ -15,6 +15,8 @@ targets, a wrong target, or a hard-coded dictionary cannot pass.
 from __future__ import annotations
 
 T146_TASK_ID = "BigCodeBench/146"
+# Uniform task identifier used by the task-overlay dispatcher.
+TASK_ID = T146_TASK_ID
 T146_TESTS_VERSION = "t146-tests-v1"
 T146_FIXTURE_ID = "t146-ping-fixture"
 T146_FIXTURE_VERSION = "t146-ping-fixture-v1"
@@ -151,6 +153,7 @@ __all__ = [
     "T146_FIXTURE_ID",
     "T146_FIXTURE_VERSION",
     "T146_TASK_ID",
+    "TASK_ID",
     "T146_TESTS_SOURCE",
     "T146_TESTS_VERSION",
     "effective_tests",

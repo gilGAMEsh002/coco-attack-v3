@@ -1,10 +1,9 @@
 """Gate policy: inline scan-suppression directives are not valid evasions.
 
-2026-10-13 (user decision): Semgrep honours ``# nosemgrep`` by default, so a
-template that writes one makes the scan report "not detected" while it actually
-disables the detector for that line.  ``code_check`` reports the directive as a
-fact and the method gate turns it into a failure, in every method that consumes
-the shared example-check facts.
+2026-10-13 (user decision): existing method policies reject suppression directives.
+2026-10-27: the common scanner additionally uses --disable-nosem, so suppression
+cannot hide findings for either example checks or victim evaluation. Presence
+remains an audit fact, separate from the actual finding.
 """
 
 from __future__ import annotations
@@ -77,3 +76,4 @@ def test_code_check_reports_suppression_directive_fact() -> None:
     assert _suppression_directive("x = 1\n") is None
     assert _suppression_directive(f"subprocess.run(c, shell=True)  {RULE}\n") == "# nosemgrep"
     assert _suppression_directive("#nosemgrep\n") == "#nosemgrep"
+    assert _suppression_directive("# nosem\n") == "# nosem"

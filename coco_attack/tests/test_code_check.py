@@ -551,6 +551,17 @@ def test_semgrep_alert_positions_real_scan(tmp_path: Path) -> None:
     assert semgrep["rule_source_declaring_files"] == ["subprocess-shell-true.yml"]
 
 
+@requires_semgrep
+def test_example_scan_disables_suppression_comments(tmp_path: Path) -> None:
+    result = run_example_code_check(_request(
+        tmp_path / 'suppressed', code='import subprocess\ndef f(command):\n    subprocess.run(command, shell=True)  # nosemgrep\n',
+        code_input_mode='final_code', run_static=False, run_functional=False,
+        run_semgrep=True, semgrep_config=SEMGREP_RULES))
+    assert result['semgrep']['status'] == 'completed'
+    assert result['semgrep']['detected'] is True
+    assert result['semgrep']['suppression_directive'] == '# nosemgrep'
+
+
 @pytest.mark.skipif(not tool_available("semgrep"), reason="semgrep unavailable")
 def test_scan_semgrep_errors_without_match_is_incomplete(monkeypatch, tmp_path: Path) -> None:
     from coco_attack.generation.contracts import SampleIdentity

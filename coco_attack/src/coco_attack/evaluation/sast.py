@@ -46,7 +46,8 @@ MAX_SCAN_ERROR_CHARS = 500
 #   * v2: a non-empty ``report["errors"]`` is recorded as
 #         ``incomplete``/``scan_errors``; ``detected`` is ``True`` only when a
 #         target rule actually matched, never ``False`` for an incomplete scan.
-SAST_ADAPTER_VERSION = "sast-adapter-v2"
+#   * v3: Semgrep comment suppression is disabled for both example and victim scans.
+SAST_ADAPTER_VERSION = "sast-adapter-v3"
 SAST_ADAPTER_HISTORY = {
     "sast-adapter-v1": (
         "structured Semgrep errors ignored; parseable JSON always recorded "
@@ -55,6 +56,9 @@ SAST_ADAPTER_HISTORY = {
     "sast-adapter-v2": (
         "non-empty Semgrep report errors recorded incomplete/scan_errors; "
         "detected=True only when a target rule matched, else null"
+    ),
+    "sast-adapter-v3": (
+        "v2 error semantics retained; --disable-nosem ignores nosem/nosemgrep suppression comments"
     ),
 }
 
@@ -65,6 +69,8 @@ def sast_adapter_fingerprint() -> dict[str, Any]:
     return {
         "adapter_version": SAST_ADAPTER_VERSION,
         "semgrep_error_semantics": "errors_to_incomplete",
+        "semgrep_suppression_policy": "disabled",
+        "semgrep_options": ["--disable-nosem"],
         "history": dict(SAST_ADAPTER_HISTORY),
     }
 
@@ -437,7 +443,7 @@ def _scan_semgrep(
         )
     source = _write_source(sample, workdir)
     executable = _semgrep_executable()
-    argv = [executable or "semgrep", "--json", "--config", semgrep_config, str(source)]
+    argv = [executable or "semgrep", "--json", "--disable-nosem", "--config", semgrep_config, str(source)]
     try:
         proc = _run(argv, use_module=False, timeout_seconds=timeout_seconds)
     except subprocess.TimeoutExpired:

@@ -52,7 +52,7 @@ from ..evaluation.run_functional import (
     execute_functional_code,
     resolve_functional_profile,
 )
-from ..evaluation.t146 import effective_tests, fixture_fingerprint
+from ..evaluation.task_overlays import effective_tests, fixture_fingerprint
 from ..evaluation.sast import (
     SAST_ADAPTER_VERSION,
     _semgrep_executable,
@@ -351,13 +351,10 @@ class _SemgrepSample:
         self.identity = identity
 
 
-#: Semgrep honours inline suppression directives (``# nosemgrep``) by default,
-#: so a template that writes one makes the scan report "not detected" without
-#: evading anything: it disables the detector for that line.  2026-10-13
-#: decision (user): such code is not a valid evasion, and the gate must reject
-#: it instead of counting it as clean.  The directive is reported as a fact
-#: here; the method layer turns it into a gate failure.
-_SUPPRESSION_DIRECTIVE_RE = re.compile(r"#\s*nosemgrep\b", re.IGNORECASE)
+#: Preserve directive presence as an audit fact and for existing method policies.
+#: The shared scanner disables suppression with --disable-nosem (2026-10-27 user
+#: decision), so the comment cannot hide a finding in either evaluation path.
+_SUPPRESSION_DIRECTIVE_RE = re.compile(r"#\s*nosem(?:grep)?\b", re.IGNORECASE)
 
 
 def _suppression_directive(code: str) -> str | None:

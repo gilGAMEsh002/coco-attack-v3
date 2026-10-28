@@ -497,6 +497,24 @@ def test_semgrep_local_rules_detect_and_clear(tmp_path: Path) -> None:
     assert clean.detected is False
 
 
+@pytest.mark.parametrize('comment', ['# nosem', '# nosemgrep', '# nosemgrep: subprocess-shell-true'])
+def test_semgrep_suppression_comments_cannot_hide_victim_findings(tmp_path: Path, comment: str) -> None:
+    from coco_attack.evaluation.sast import SAST_ADAPTER_VERSION, sast_adapter_fingerprint, semgrep_target_rules
+
+    rules = Path(__file__).resolve().parents[2] / 'cocota_data_eval_result/third_party/semgrep'
+    if not tool_available('semgrep') or not rules.is_dir():
+        pytest.skip('semgrep or local rules not available')
+    sample = _Sample(final_code=f'import subprocess\nsubprocess.run(command, shell=True)  {comment}\n',
+                     identity=_Identity())
+    result = scan_sample(sample, evaluation_id='suppression-test', action_id='scan', tool='semgrep',
+                         target_rules=semgrep_target_rules('cwe078-0'), workdir=tmp_path / 'scan',
+                         semgrep_config=str(rules))
+    assert result.status == 'completed', result.evidence
+    assert result.detected is True
+    assert result.sources['sast_adapter_version'] == SAST_ADAPTER_VERSION
+    assert sast_adapter_fingerprint()['semgrep_suppression_policy'] == 'disabled'
+
+
 def test_codeql_bundled_query_detect_and_clear(tmp_path: Path) -> None:
     from coco_attack.evaluation.sast import codeql_query_for, scan_sample
 
